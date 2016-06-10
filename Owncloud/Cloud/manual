@@ -1,0 +1,33 @@
+Welcome to Owncloud!
+This software allows you to make a cloud for all
+your things. You can extend it with plugins. This
+cloud is a multi user cloud.You can create user
+if you make a file in /owncloud/user that has the
+name of your user. The content of the file is
+the passwort of the user.
+
+Standard Login:
+User: root
+Password: root
+
+How to code a plugin:
+Create a file in /owncloud/plugins. A plugin is a
+normal programm. Owncloud run a plugin with Arguments,
+that the client send. If you want to load things
+from Owncloud, use os.loadAPI("/owncloud/owncloud API")
+Now you have the table "con". It has the following contents:
+user: The name of the user
+password: The password of the user
+At the end of your plugin, run Owncloud with shell.run("/owncloud/owncloud")
+
+How to code a client:
+A client must send the a table with
+the following things to the
+Owncloud Server:
+run: he name of the plugin you wnat to run with args
+user: The name of the user
+password: The password of the user
+If all that correct, Owncloud will run the plugin
+with your Args.
+
+Made by Wilma456
