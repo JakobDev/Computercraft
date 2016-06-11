@@ -30,12 +30,13 @@ print(tcou.." Plugins loaded")
 ev,a,b,c,con = os.pullEvent("modem_message")
 print(con["func"])
 --print(con["file"])
+if con["type"] == "owncloud" then
 if fs.exists("/owncloud/user/"..con["user"]) == true then
  ps = fs.open("/owncloud/user/"..con["user"],"r")
   wo = ps.readLine()
   ps.close()
   if wo == con["password"] then
-    if func == "logintest" then
+    if con["func"] == "logintest" then
     modem.transmit(2100,2100,"All right")
     else
     shell.run("/owncloud/plugins/"..con["func"])
@@ -44,26 +45,40 @@ end
 end
 end
 end
+end
 
 function Plugin()
+plr = splc
+--print(plr)
+print(startpl[plr])
   while true do
-  pft = fs.open("/owncloud/plugins/"..FileList[tcz],"r")
-  isstart = pft.readLine()
+  shell.run(startpl[plr].." start")
+  plr = plr - 1
+  if plr == 0 then
+    plr = splc
+  end
+  sleep(0.1)
+  end
+end
+
+startpl = {}
+tcz = tcou
+splc = 0
+scp = 1
+while true do
+  local pft = fs.open("/owncloud/plugins/"..FileList[tcz],"r")
+  local isstart = pft.readLine()
   pft.close()
   if isstart == "--start" then
-  shell.run("/owncloud/plugins/"..FileList[tcz].." start")
+    startpl[scp] = "/owncloud/plugins/"..FileList[tcz]
+    splc = splc + 1
+    scp = scp + 1
   end
   tcz = tcz - 1
   if tcz == 0 then
-    tcz = tcou
-  end
-  sleep(1)
+    break
   end
 end
 
 modem.open(2100)
-tcz = tcou
 parallel.waitForAny(Cloud,Plugin)
-
-
-
