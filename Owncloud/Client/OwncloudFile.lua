@@ -66,7 +66,7 @@ function mainshell()
    print("ver to see the version of the program")
    mainshell()
  elseif sh == "ver" then
-   print("Version 1.0.1")
+   print("Version 1.0.2")
    mainshell()
  elseif sh == "exit" then
    exit = 1
@@ -91,6 +91,7 @@ con["user"] = read()
 write("Please enter your password:")
 con["password"] = read("*")
 modem.open(2100)
+con["type"] = "owncloud"
 --modem.transmit(2100,2100,con)
 --modem.transmit(
 --if con == nil then
