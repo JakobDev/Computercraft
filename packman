@@ -1,0 +1,92 @@
+name = owncloud
+  type = meta
+	category = owncloud
+	dependencies = wilma456/owncloudpluginfile wilma456/owncloudplugingps wilma456/owncloudcore wilma456/owncloudmanual
+	version = 1.0.0
+	size = 0
+end
+
+name = simplestripmine
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/SimpleStripmine.lua
+   filename = SimpleStripmine
+  category = turtle
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 1032
+end
+
+name = numbers
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/numbers.lua
+   filename = Numbers
+  category = fun
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 588
+end
+
+name = owncloudfile
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Client/OwncloudFile.lua
+   filename = OwncloudFile
+  category = owncloud
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.1
+  size = 2383
+end
+
+name = owncloudcore
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Cloud/owncloud.lua
+   filename = owncloud
+  category = owncloud
+  dependencies = none
+  target = /owncloud
+  version = 1.2.0
+  size = 1625
+end
+
+name = owncloudmanual
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Cloud/manual.txt
+   filename = manual
+  category = owncloud
+  dependencies = none
+  target = /owncloud
+  version = 1.1.0
+  size = 1068
+end
+
+name = owncloudplugins
+  type = meta
+	category = owncloud
+	dependencies = Wilma456/owncloudpluginfile Wilma456/owncloudplugingps
+	version = 1.0.0
+	size = 0
+end
+
+name = owncloudpluginfile
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Cloud/plugins/file.lua
+   filename = file
+  category = owncloud
+  dependencies = none
+  target = /owncloud/plugins
+  version = 1.0.1
+  size = 690
+end
+
+name = owncloudplugingps
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Cloud/plugins/gps.lua
+   filename = gps
+  category = owncloud
+  dependencies = none
+  target = /owncloud/plugins
+  version = 1.0.0
+  size = 708
+end
