@@ -207,10 +207,12 @@ confile = fs.open("/etc/mynaptic","w")
 confile.writeLine("showVersion false")
 confile.writeLine("showRepository true")
 confile.writeLine("writeHistory true")
+confile.writeLine("sortAlphabetically false")
 confile.close()
 config["showVersion"] = "false"
 config["showRepository"] = "true"
 config["writeHistory"] = "true"
+config["sortAlphabetically"] = "false"
 end
     
 sandio = {write = getPrint}
@@ -255,9 +257,10 @@ for _,str in ipairs(textta) do
   end
 end
 
---searchch = false
---search = "wilma456"
---table.remove(textta,1)
+if config["sortAlphabetically"] == "true" then
+  table.sort(textta)
+end
+
 tpos = 1
 drawMenu()
 --statuscheck = {}
