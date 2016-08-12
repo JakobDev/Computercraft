@@ -35,8 +35,8 @@ name = mynaptic
   category = packman
   dependencies = main/packman
   target = /usr/bin
-  version = 1.0.0
-  size = 7704
+  version = 1.1.0
+  size = 7796
 end
 
 name = owncloudfile
