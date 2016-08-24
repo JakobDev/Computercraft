@@ -50,6 +50,17 @@ name = echo
   size = 11
 end
 
+name = man
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/man.lua
+   filename = man
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 159
+end
+
 name = owncloudfile
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Client/OwncloudFile.lua
@@ -75,10 +86,10 @@ end
 name = owncloudmanual
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Cloud/manual.txt
-   filename = manual
+   filename = owncloud
   category = owncloud
   dependencies = none
-  target = /owncloud
+  target = /usr/man
   version = 1.1.0
   size = 1068
 end
