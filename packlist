@@ -39,6 +39,17 @@ name = mynaptic
   size = 7796
 end
 
+name = echo
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/echo.lua
+   filename = echo
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 11
+end
+
 name = owncloudfile
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Client/OwncloudFile.lua
