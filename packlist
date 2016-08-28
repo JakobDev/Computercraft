@@ -72,6 +72,17 @@ name = htmlparser
   size = 9753
 end
 
+name = find
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/find.lua
+   filename = find
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 535
+end
+
 name = owncloudfile
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Client/OwncloudFile.lua
