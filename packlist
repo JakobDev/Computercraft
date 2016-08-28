@@ -83,6 +83,17 @@ name = find
   size = 535
 end
 
+name = size
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/size.lua
+   filename = size
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 198
+end
+
 name = owncloudfile
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Owncloud/Client/OwncloudFile.lua
