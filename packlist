@@ -167,3 +167,15 @@ name = webrun
   version = 1.0.0
   size = 492
 end
+
+name = wc
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/wc.lua
+   filename = wc
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 888
+end
+
