@@ -1,15 +1,16 @@
 --Made by Wilma456
 
+--print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
 function getPrint(text)
 packlist.writeLine(text)
 rcou = rcou + 1
 end
 
-function ioread()
+local function ioread()
   return "Y"
 end
 
-function nichts()
+local function nichts()
 end
 
 function shellresolve(ag)
@@ -32,14 +33,14 @@ print("")
 end
 
 function drawLine(te)
-term.setBackgroundColor(colors.white)
+term.setBackgroundColor(colors[config["notinstaledColour"]])
 term.setTextColor(colors.black)
 if statuscheck[te] == "instaled" then
-  term.setBackgroundColor(colors.green)
+  term.setBackgroundColor(colors[config["instaledColour"]])
 elseif statuscheck[te] == "install" then
-  term.setBackgroundColor(colors.orange)
+  term.setBackgroundColor(colors[config["installColour"]])
 elseif statuscheck[te] == "remove" then
-  term.setBackgroundColor(colors.red)
+  term.setBackgroundColor(colors[config["removeColour"]])
 end
 ins,teb,ver = te:match("([^ ]+) ([^ ]+) ([^ ]+)")
 if config["showRepository"] == "false" then
@@ -69,7 +70,7 @@ end
 end
 
 function drawMenu()
-term.setBackgroundColor(colors.gray)
+term.setBackgroundColor(colors[config["backgroundColour"]])
 term.clear()
 term.setCursorPos(1,1)
 checkcou = 1
@@ -77,9 +78,9 @@ local loop = true
 local lpos = 0
 while loop == true do
 if lpos == 0 then
-  term.setBackgroundColor(colors.blue)
+  term.setBackgroundColor(colors[config["menuColour"]])
   write("Apply                                             ")
-  term.setBackgroundColor(colors.red)
+  term.setBackgroundColor(colors[config["closeColour"]])
   print("X")
 else
   drawLine(textta[tpos+lpos])
@@ -91,7 +92,7 @@ end
   end
 end
 term.setCursorPos(1,19)
-term.setBackgroundColor(colors.gray)
+term.setBackgroundColor(colors[config["backgroundColour"]])
 write("Search: "..search)
 end
 
@@ -130,7 +131,7 @@ if y == 19 then
     term.clear()
     term.setCursorPos(1,1)
     if config["writeHistory"] == "true" then
-      history = fs.open("/var/history","a")
+      history = fs.open(config["historyPath"],"a")
     end
     sandta = {io={write=nichts,read=ioread},shell = shell}
     for _,pack in ipairs(installta) do
@@ -208,11 +209,27 @@ confile.writeLine("showVersion false")
 confile.writeLine("showRepository true")
 confile.writeLine("writeHistory true")
 confile.writeLine("sortAlphabetically false")
+confile.writeLine("historyPath /var/history")
+confile.writeLine("backgroundColour gray")
+confile.writeLine("menuColour blue")
+confile.writeLine("closeColour red")
+confile.writeLine("notinstaledColour white")
+confile.writeLine("instaledColour green")
+confile.writeLine("installColour orange")
+confile.writeLine("removeColour red")
 confile.close()
 config["showVersion"] = "false"
 config["showRepository"] = "true"
 config["writeHistory"] = "true"
 config["sortAlphabetically"] = "false"
+config["historyPath"] = "/var/history"
+config["backgroundColour"] = "gray"
+config["menuColour"] = "blue"
+config["closeColour"] = "red"
+confile["notinstaledColour"] = "white"
+config["instaledColour"] = "green"
+config["installColour"] = "orange"
+config["removeColour"] = "red"
 end
     
 sandio = {write = getPrint}
@@ -264,8 +281,8 @@ end
 tpos = 1
 drawMenu()
 --statuscheck = {}
-function mainMenu()
-mainloop = true
+local function mainMenu()
+local mainloop = true
 while mainloop == true do
   ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" then
