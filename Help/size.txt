@@ -1,1 +1,5 @@
-This program just show the size of a file in byte. Use size <path>. Note: You must use the path from / and not from your directory e.g if you are in /rom and want to know the size of "startup", you must write "size /rom/startup" and not "size startup".
+This program just show the size of a file in byte.
+Use size <path>. Note: You must use the path from /
+and not from your directory e.g if you are in /rom 
+and want to know the size of "startup", you must 
+write "size /rom/startup" and not "size startup".
