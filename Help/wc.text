@@ -1,0 +1,5 @@
+This program counts the Words, Lines and Characters 
+in a file. Use wc <path>. Note: You must use the 
+path from / and not from your directory e.g if 
+you are in /rom and want count "startup", you 
+must write "wc /rom/startup" and not "wc startup".
