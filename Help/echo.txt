@@ -1,0 +1,2 @@
+This program just print out the text where you run 
+with e.g "echo Hello World" print "Hello World".
