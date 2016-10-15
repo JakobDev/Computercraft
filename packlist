@@ -44,12 +44,14 @@ end
 name = man
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/man.lua
-   filename = man
+   filename = usr/bin/man
   category = shell
   dependencies = none
-  target = /usr/bin
-  version = 1.0.0
-  size = 159
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/man.txt /usr/help/man
+  cleanup = rom/programs/delete /usr/help/man
+  version = 2.0.0
+  size = 296
 end
 
 name = echo
