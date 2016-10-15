@@ -1,6 +1,12 @@
-local arg = {...}
-if fs.exists("/usr/man/"..arg[1]) == true then
-  shell.run("edit /usr/man/"..arg[1])
+local Args = {...}
+
+if Args[1] == nil then
+  print("Usage: "..shell.getRunningProgram().." <helpfile>")
+  return
+end
+
+if help.lookup(Args[1]) == nil then
+  print('Can\'t find helpfile "'..Args[1]..'"')
 else
-  print('No Manpage found for "'..arg[1]..'"')
+  shell.run("edit "..help.lookup(Args[1]))
 end
