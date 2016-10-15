@@ -9,10 +9,11 @@ end
 name = simplestripmine
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/SimpleStripmine.lua
-   filename = SimpleStripmine
+   filename = usr/bin/SimpleStripmine
   category = turtle
   dependencies = none
-  target = /usr/bin
+  target = /
+  setup = rom/programs/label
   version = 1.0.0
   size = 1032
 end
@@ -39,16 +40,6 @@ name = mynaptic
   size = 7796
 end
 
-name = echo
-  type = raw
-   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/echo.lua
-   filename = echo
-  category = shell
-  dependencies = none
-  target = /usr/bin
-  version = 1.0.0
-  size = 11
-end
 
 name = man
   type = raw
@@ -59,6 +50,19 @@ name = man
   target = /usr/bin
   version = 1.0.0
   size = 159
+end
+
+name = echo
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/echo.lua
+   filename = usr/bin/echo
+  category = shell
+  dependencies = none
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/echo.txt /usr/help/echo
+  cleanup = rom/programs/delete /usr/help/echo
+  version = 1.0.0
+  size = 110
 end
 
 name = htmlparser
@@ -75,23 +79,27 @@ end
 name = find
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/find.lua
-   filename = find
+   filename = usr/bin/find
   category = shell
   dependencies = none
-  target = /usr/bin
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/find.txt /usr/help/find
+  cleanup = rom/programs/delete /usr/help/find
   version = 1.0.0
-  size = 535
+  size = 668
 end
 
 name = size
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/size.lua
-   filename = size
+   filename = usr/bin/size
   category = shell
   dependencies = none
-  target = /usr/bin
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/size.txt /usr/help/size
+  cleanup = rom/programs/delete /usr/help/size
   version = 1.0.0
-  size = 198
+  size = 453
 end
 
 name = owncloudfile
@@ -122,7 +130,7 @@ name = owncloudmanual
    filename = owncloud
   category = owncloud
   dependencies = none
-  target = /usr/man
+  target = /usr/help
   version = 1.1.0
   size = 1068
 end
@@ -160,22 +168,25 @@ end
 name = webrun
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/webrun.lua
-   filename = webrun
+   filename = usr/bin/webrun
   category = shell
   dependencies = none
-  target = /usr/bin
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/webrun.txt /usr/help/webrun
+  cleanup = rom/programs/delete /usr/help/webrun
   version = 1.0.0
-  size = 492
+  size = 575
 end
 
 name = wc
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/wc.lua
-   filename = wc
+   filename = usr/bin/wc
   category = shell
   dependencies = none
-  target = /usr/bin
+  target = /
+  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/wc.txt /usr/help/wc
+  cleanup = delete /usr/help/wc
   version = 1.0.0
-  size = 888
+  size = 1136
 end
-
