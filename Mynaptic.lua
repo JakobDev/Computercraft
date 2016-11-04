@@ -223,7 +223,7 @@ while loop == true do
     loop = nil
   else
     head,cont = text:match("([^ ]+) ([^ ]+)")
-    if typecheck(head) == "string" then
+    if type(head) == "string" then
       config[head] = cont
     end
   end
