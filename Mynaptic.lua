@@ -1,5 +1,10 @@
 --Made by Wilma456
 
+if term.isColor() == false then
+  print("This Programm only run on a Advanced Computer")
+  return
+end
+
 --print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
 function getPrint(text)
 packlist.writeLine(text)
@@ -177,6 +182,23 @@ os.run(reta,"/usr/bin/packman","fetch")
 mainMenu()
 end
 
+function testConfig(name,contype)
+if not (type(config[name]) == "string") then
+print("There is no config entry for "..name) 
+configstatus = false
+elseif contype == "bool" then
+  if not (config[name] == "true" or config[name] == "false") then
+  print("The config entry for "..name.." is not true/false")
+  configstatus = false
+  end 
+elseif contype == "col" then
+  if not (type(colors[config[name]]) == "number") then
+    print("There is no existing Colour in the config entry for "..name)
+    configstatus = false
+  end
+end
+end
+
 textta = {}
 statuscheck = {}
 remove = {}
@@ -189,6 +211,7 @@ remove["list"] = {}
 remove["check"] = {}
 searchch = false
 search = ""
+configstatus = true
 
 --Read Config
 if fs.exists("/etc/mynaptic") == true then
@@ -200,7 +223,9 @@ while loop == true do
     loop = nil
   else
     head,cont = text:match("([^ ]+) ([^ ]+)")
-    config[head] = cont
+    if typecheck(head) == "string" then
+      config[head] = cont
+    end
   end
 end
 else
@@ -231,7 +256,25 @@ config["instaledColour"] = "green"
 config["installColour"] = "orange"
 config["removeColour"] = "red"
 end
-    
+
+testConfig("showVersion","bool") 
+testConfig("showRepository","bool")
+testConfig("sortAlphabetically","bool")
+testConfig("historyPath")
+testConfig("backgroundColour","col")
+testConfig("menuColour","col")
+testConfig("closeColour","col")
+testConfig("notinstaledColour","col")
+testConfig("instaledColour","col")
+testConfig("installColour","col")
+testConfig("removeColour","col")
+
+
+if configstatus == false then
+print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run delete /etc/mynaptic and the the config will be rubuild by the next start")
+return
+end
+
 sandio = {write = getPrint}
 sandsh = {resolveProgram = shellresolve}
 sandta = {io = sandio,shell = sandsh}
