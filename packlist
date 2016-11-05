@@ -37,7 +37,7 @@ name = mynaptic
   dependencies = main/packman
   target = /usr/bin
   version = 1.3.2
-  size = 7796
+  size = 9999
 end
 
 
@@ -191,4 +191,15 @@ name = wc
   cleanup = delete /usr/help/wc
   version = 1.0.0
   size = 1136
+end
+
+name = rednetspy
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/rednetspy.lua
+   filename = rednetspy
+  category = rednet
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 368
 end
