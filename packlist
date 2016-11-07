@@ -203,3 +203,15 @@ name = rednetspy
   version = 1.0.0
   size = 368
 end
+
+name = settingsmanager
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/settingsmanager.lua
+   filename = Settingsmanager
+  category = tools
+  dependencies = none
+  target = /usr/bin
+  version = 1.0.0
+  size = 2114
+end
+
