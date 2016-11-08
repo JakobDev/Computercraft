@@ -225,3 +225,14 @@ name = sleep
   version = 1.0
   size = 206
 end
+
+name = pwd
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/pwd.lua
+   filename = pwd
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 24
+end
