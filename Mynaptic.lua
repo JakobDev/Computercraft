@@ -1,4 +1,5 @@
 --Made by Wilma456
+print("Starting Mynaptic Please Wait ...")
 
 if term.isColor() == false then
   print("This Programm only run on a Advanced Computer")
@@ -11,8 +12,10 @@ packlist.writeLine(text)
 rcou = rcou + 1
 end
 
-local function ioread()
-  return "Y"
+local screenw,screenh = term.getSize()
+
+function ioread()
+ return "Y"
 end
 
 local function nichts()
@@ -22,22 +25,22 @@ function shellresolve(ag)
 shell.resolveProgram(ag)
 end
 
-function setLineColor(text)
+local function setLineColor(text)
 local lccou = string.len(text)
 write(text)
 local looplc = true
 while looplc == true do
-  write(" ")
+ write(" ")
   lccou = lccou + 1
-  if lccou == 51 then
-    looplc = nil
-    lccou = nil
-  end
+  if lccou == screenw then
+   looplc = nil
+   lccou = nil
+ end
 end
 print("")
 end
 
-function drawLine(te)
+local function drawLine(te)
 term.setBackgroundColor(colors[config["notinstaledColour"]])
 term.setTextColor(colors.black)
 if statuscheck[te] == "instaled" then
@@ -74,7 +77,7 @@ else
 end
 end
 
-function drawMenu()
+local function drawMenu()
 term.setBackgroundColor(colors[config["backgroundColour"]])
 term.clear()
 term.setCursorPos(1,1)
@@ -84,19 +87,23 @@ local lpos = 0
 while loop == true do
 if lpos == 0 then
   term.setBackgroundColor(colors[config["menuColour"]])
-  write("Apply                                             ")
+  setLineColor("Apply Fetch")
+  --for 0,screenw,1 do
+    --write(" ")
+  --end
+  term.setCursorPos(screenw,1)
   term.setBackgroundColor(colors[config["closeColour"]])
   print("X")
 else
   drawLine(textta[tpos+lpos])
 end
   lpos = lpos + 1
-  if lpos == 18 then
+  if lpos == screenh-1 then
     loop = nil
     lpos = nil
   end
 end
-term.setCursorPos(1,19)
+term.setCursorPos(1,screenh)
 term.setBackgroundColor(colors[config["backgroundColour"]])
 write("Search: "..search)
 end
@@ -123,16 +130,18 @@ for _,text in ipairs(remove["list"]) do
     print(pack)
   end
 end
-term.setCursorPos(1,19)
+term.setCursorPos(1,screenh)
 --term.setTextColor(colors.yellow)
-write("Cancel                                           OK")
+write("Cancel")
+term.setCursorPos(screenw-1,screenh)
+write("OK")
 ev,mouse,x,y = os.pullEvent("mouse_click")
-if y == 19 then 
+if y == screenh then 
   if x < 7 then
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1,1)
-  elseif x == 51 then
+  elseif x == screenw then
     term.clear()
     term.setCursorPos(1,1)
     if config["writeHistory"] == "true" then
@@ -141,7 +150,7 @@ if y == 19 then
     sandta = {io={write=nichts,read=ioread},shell = shell}
     for _,pack in ipairs(installta) do
       print("Install "..pack)
-      os.run(sandta,"/usr/bin/packman","install",pack)
+      os.run(sandta,"/usr/bin/packman","force","install",pack)
       if config["writeHistory"] == "true" then
         history.writeLine("Installed "..pack)
       end
@@ -150,7 +159,7 @@ if y == 19 then
     end
     for _, pack in ipairs(removeta) do
       print("Remove "..pack)
-      os.run(sandta,"/usr/bin/packman","remove",pack)
+      os.run(sandta,"/usr/bin/packman","force","remove",pack)
       term.setBackgroundColor(colors.white)
       term.setTextColor(colors.black)
       if config["writeHistory"] == "true" then
@@ -167,22 +176,25 @@ if y == 19 then
 end
 end
 
-function printcol(text)
+local function printcol(text)
 term.setTextColor(colors.black)
 term.setBackgroundColor(colors.white)
 print(text)
 end
 
-function reload()
+local function reload()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
 reta = {shell=shell,io={write=printcol}}
 os.run(reta,"/usr/bin/packman","fetch")
-mainMenu()
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
 end
 
-function testConfig(name,contype)
+local function testConfig(name,contype)
 if not (type(config[name]) == "string") then
 print("There is no config entry for "..name) 
 configstatus = false
@@ -199,19 +211,19 @@ elseif contype == "col" then
 end
 end
 
-textta = {}
+local textta = {}
 statuscheck = {}
 remove = {}
 install = {}
 checkta = {}
-config = {}
+local config = {}
 install["list"] = {}
 install["check"] = {}
 remove["list"] = {}
 remove["check"] = {}
-searchch = false
-search = ""
-configstatus = true
+local searchch = false
+local search = ""
+local configstatus = true
 
 --Read Config
 if fs.exists("/etc/mynaptic") == true then
@@ -330,7 +342,7 @@ while mainloop == true do
   ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" then
     if me == 1 then
-     if tpos+19 == packcou then
+     if tpos+screenh == packcou then
      --Problems with if not
      else
       tpos = tpos + 1
@@ -349,10 +361,10 @@ while mainloop == true do
     if x > 0 and x < 6 then
       mainloop = nil
       doChanges()
-    elseif x > 6 and x < 13 then
+    elseif x > 6 and x < 12 then
       mainloop = nil
       reload()
-    elseif x == 51 then
+    elseif x == screenw then
       mainloop = nil
       term.setBackgroundColor(colors.black)
       term.setTextColor(colors.white)
