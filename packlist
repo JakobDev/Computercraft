@@ -37,7 +37,7 @@ name = mynaptic
   dependencies = main/packman
   target = /usr/bin
   version = 2.0
-  size = 10342
+  size = 10312
 end
 
 
