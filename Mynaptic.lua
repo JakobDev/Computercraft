@@ -211,19 +211,19 @@ elseif contype == "col" then
 end
 end
 
-local textta = {}
+textta = {}
 statuscheck = {}
 remove = {}
 install = {}
 checkta = {}
-local config = {}
+config = {}
 install["list"] = {}
 install["check"] = {}
 remove["list"] = {}
 remove["check"] = {}
-local searchch = false
-local search = ""
-local configstatus = true
+searchch = false
+search = ""
+configstatus = true
 
 --Read Config
 if fs.exists("/etc/mynaptic") == true then
