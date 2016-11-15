@@ -1,7 +1,7 @@
 --Made by Wilma456
 print("Starting Mynaptic Please Wait ...")
 
-if term.isColor() == false then
+if term.isColor() == false or pocket then
   print("This Programm only run on a Advanced Computer or a Advaced Turtle")
   return 1
 end
