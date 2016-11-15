@@ -430,6 +430,8 @@ end
 --table.insert(updateta,returnstr)
 end
 
+lookUpdates()
+
 tpos = 1
 drawMenu()
 --statuscheck = {}
