@@ -2,8 +2,8 @@
 print("Starting Mynaptic Please Wait ...")
 
 if term.isColor() == false then
-  print("This Programm only run on a Advanced Computer")
-  return
+  print("This Programm only run on a Advanced Computer or a Advaced Turtle")
+  return 1
 end
 
 --print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
@@ -15,7 +15,7 @@ end
 local screenw,screenh = term.getSize()
 
 function ioread()
- return "Y"
+ return "N"
 end
 
 local function nichts()
@@ -26,23 +26,24 @@ shell.resolveProgram(ag)
 end
 
 local function setLineColor(text)
-local lccou = string.len(text)
-write(text)
-local looplc = true
-while looplc == true do
- write(" ")
-  lccou = lccou + 1
-  if lccou == screenw then
-   looplc = nil
-   lccou = nil
- end
-end
-print("")
+term.write( text .. string.rep( ' ', term.getSize() - #text ) )
+print()
+--local lccou = string.len(text)
+--write(text)
+--local looplc = true
+--while looplc == true do
+ --write(" ")
+ -- lccou = lccou + 1
+ -- if lccou == screenw then
+  -- looplc = nil
+  -- lccou = nil
+ --end
+--end
+--print("")
 end
 
 local function drawLine(te)
 term.setBackgroundColor(colors[config["notinstaledColour"]])
-term.setTextColor(colors.black)
 if statuscheck[te] == "instaled" then
   term.setBackgroundColor(colors[config["instaledColour"]])
 elseif statuscheck[te] == "install" then
@@ -78,6 +79,7 @@ end
 end
 
 local function drawMenu()
+term.setTextColor(colors[config["textColour"]])
 term.setBackgroundColor(colors[config["backgroundColour"]])
 term.clear()
 term.setCursorPos(1,1)
@@ -87,7 +89,7 @@ local lpos = 0
 while loop == true do
 if lpos == 0 then
   term.setBackgroundColor(colors[config["menuColour"]])
-  setLineColor("Apply Fetch")
+  setLineColor("Apply Fetch Update")
   --for 0,screenw,1 do
     --write(" ")
   --end
@@ -194,6 +196,49 @@ term.clear()
 term.setCursorPos(1,1)
 end
 
+local function updatemenu()
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+print("This packages will be updated:")
+for _,ucon in ipairs(updateta) do
+print(ucon)
+end
+term.setCursorPos(1,screenh)
+write("Cancel")
+term.setCursorPos(screenw-1,screenh)
+write("OK")
+local loop = true
+while loop do
+ev,me,x,y = os.pullEvent("mouse_click")
+if y == screenh then
+  if x < 7 then
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+    term.clear()
+    term.setCursorPos(1,1)
+    loop = nil
+  elseif x > screenw - 2 then
+    local runsa = {}
+    term.clear()
+    term.setCursorPos(1,1)
+    runsa.shell = shell
+    runsa.io = {write = nichts}
+    for _,una in ipairs(updateta) do
+      print("Updateting "..una)
+      os.run(runsa,"/usr/bin/packman","force","update",una)
+    end
+    print("Done!")
+    loop = nil
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+    term.clear()
+    term.setCursorPos(1,1)
+  end
+end
+end
+end
+
 local function testConfig(name,contype)
 if not (type(config[name]) == "string") then
 print("There is no config entry for "..name) 
@@ -211,6 +256,18 @@ elseif contype == "col" then
 end
 end
 
+local function deleteVars()
+textta = nil
+statuscheck = nil
+remove = nil
+install = nil
+checkta = nil
+config = nil
+search = nil
+searchch = nil
+configstatus = nil
+end
+
 textta = {}
 statuscheck = {}
 remove = {}
@@ -224,6 +281,7 @@ remove["check"] = {}
 searchch = false
 search = ""
 configstatus = true
+updateta = {}
 
 --Read Config
 if fs.exists("/etc/mynaptic") == true then
@@ -247,6 +305,7 @@ confile.writeLine("showRepository true")
 confile.writeLine("writeHistory true")
 confile.writeLine("sortAlphabetically false")
 confile.writeLine("historyPath /var/history")
+confile.writeLine("textColour black")
 confile.writeLine("backgroundColour gray")
 confile.writeLine("menuColour blue")
 confile.writeLine("closeColour red")
@@ -267,6 +326,7 @@ config["notinstaledColour"] = "white"
 config["instaledColour"] = "green"
 config["installColour"] = "orange"
 config["removeColour"] = "red"
+config["textColour"] = "black"
 end
 
 testConfig("showVersion","bool") 
@@ -280,11 +340,13 @@ testConfig("notinstaledColour","col")
 testConfig("instaledColour","col")
 testConfig("installColour","col")
 testConfig("removeColour","col")
+testConfig("textColour","col")
 
 
 if configstatus == false then
 print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run delete /etc/mynaptic and the the config will be rubuild by the next start")
-return
+deleteVars()
+return 2
 end
 
 sandio = {write = getPrint}
@@ -294,11 +356,11 @@ sandta = {io = sandio,shell = sandsh}
 --sandta...] = "test"
 --file = fs.open("/log","w")
 rcou = 1
-packlist = fs.open("/tmp/packlistsy","w")
+packlist = fs.open("/tmp/packlistsy.tmp","w")
 os.run(sandta,"/usr/bin/packman","search")
 --print(rcou)
 packlist.close()
-packread = fs.open("/tmp/packlistsy","r")
+packread = fs.open("/tmp/packlistsy.tmp","r")
 packread.readLine()
 packread.readLine()
 
@@ -321,7 +383,7 @@ while loop == true do
   --packcou = packcou + 1
 end
 packread.close()
-fs.delete("/tmp/packlistsy")
+fs.delete("/tmp/packlistsy.tmp")
 
 for _,str in ipairs(textta) do
   if string.byte(str,1) == 73 then
@@ -331,6 +393,41 @@ end
 
 if config["sortAlphabetically"] == "true" then
   table.sort(textta)
+end
+
+--Get the updates
+local function getUpdatePrint(text)
+updatetmp.writeLine(text)
+end
+
+local function lookUpdates()
+local updatesa = {}
+updatesa.shell = shell
+updatesa.io = {write = getUpdatePrint,read = ioread}
+updatetmp = fs.open("/tmp/update.tmp","w")
+os.run(updatesa,"/usr/bin/packman","update")
+updatetmp.close()
+updatere = fs.open("/tmp/update.tmp","r")
+updatere.readLine()
+updatere.readLine()
+local updatelist = updatere.readLine()
+updatere.close()
+fs.delete("/tmp/update.tmp")
+if updatelist:find("Nothing") == 1 then
+  return
+end
+updatelist = updatelist:sub(41,-1)
+local returnstr = ""
+for i = 1,#updatelist do
+local c = updatelist:sub(i,i)
+if c == " " then
+  table.insert(updateta,returnstr)
+  returnstr = ""
+else
+ returnstr = returnstr..c
+end
+end
+--table.insert(updateta,returnstr)
 end
 
 tpos = 1
@@ -364,6 +461,9 @@ while mainloop == true do
     elseif x > 6 and x < 12 then
       mainloop = nil
       reload()
+    elseif x > 12 and x < 19 then
+      mainloop = nil
+      updatemenu()
     elseif x == screenw then
       mainloop = nil
       term.setBackgroundColor(colors.black)
@@ -404,5 +504,9 @@ while mainloop == true do
 end
 end
 mainMenu()
+
+deleteVars()
+
+return 0
 --Thanks for using this Programm and reading the
 --source code
