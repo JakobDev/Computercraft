@@ -260,3 +260,15 @@ name = wilmaapi
   version = 1.0
   size = 643
 end
+
+name = monclear
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/monclear.lua
+   filename = monclear
+  category = utility
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 179
+end
+
