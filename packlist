@@ -81,27 +81,23 @@ end
 name = find
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/find.lua
-   filename = usr/bin/find
+   filename = find
   category = shell
-  dependencies = none
-  target = /
-  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/find.txt /usr/help/find
-  cleanup = rom/programs/delete /usr/help/find
-  version = 1.0.0
-  size = 668
+  dependencies = wilma456/wilmaapi
+  target = /usr/bin
+  version = 1.1
+  size = 225
 end
 
 name = size
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/size.lua
-   filename = usr/bin/size
+   filename = size
   category = shell
-  dependencies = none
-  target = /
-  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/size.txt /usr/help/size
-  cleanup = rom/programs/delete /usr/help/size
-  version = 1.0.0
-  size = 453
+  dependencies = wilma456/wilmaapi
+  target = /usr/bin
+  version = 2.0
+  size = 529
 end
 
 name = owncloudfile
@@ -183,14 +179,12 @@ end
 name = wc
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/wc.lua
-   filename = usr/bin/wc
+   filename = wc
   category = shell
   dependencies = none
-  target = /
-  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/wc.txt /usr/help/wc
-  cleanup = delete /usr/help/wc
-  version = 1.0.0
-  size = 1136
+  target = /ur/bin
+  version = 1.1
+  size = 932
 end
 
 name = rednetspy
@@ -254,4 +248,15 @@ name = shellutils
 	dependencies = wilma456/whois wilma456/pwd wilma456/sleep wilma456/wc wilma456/find wilma456/echo wilma456/size superaxander/cat
 	version = 1.0
 	size = 0
+end
+
+name = wilmaapi
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/API/wilmaapi.lua
+   filename = wilmaapi
+  category = api
+  dependencies = none
+  target = /usr/apis
+  version = 1.0
+  size = 643
 end
