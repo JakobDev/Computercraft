@@ -2,11 +2,26 @@ local Arg = {...}
 
 if Arg[1] == nil then
   print("Usage: size <path>")
-  return
+  return 1
 end
 
-if fs.exists(Arg[1]) == true then
-  print("Size: "..fs.getSize(Arg[1]))
+local filename = shell.resolve(Arg[1])
+
+if fs.exists(filename) == true then
+  if fs.isDir(filename) then
+    os.loadAPI("/usr/apis/wilmaapi")
+    local fileta = wilmaapi.listAllFiles(filename)
+    local size = 0
+    for _,sizefile in ipairs(fileta) do
+      size = size + fs.getSize(sizefile)
+    end
+    print("Size: "..size)
+  else
+  print("Size: "..fs.getSize(filename))
+  end
 else
   print("File does not exists")
+  return 2
 end
+
+return 0
