@@ -182,7 +182,7 @@ name = wc
    filename = wc
   category = shell
   dependencies = none
-  target = /ur/bin
+  target = /usr/bin
   version = 1.1
   size = 932
 end
