@@ -5,12 +5,14 @@ if not Arg[1] then
   return
 end
 
-if fs.exists(Arg[1]) == false then
+local filename = shell.resolve(Arg[1])
+
+if fs.exists(filename) == false then
   print("File not found")
   return
 end
 
-local coufile = fs.open(Arg[1],"r")
+local coufile = fs.open(filename,"r")
 local loop = true
 local linecou = 0
 local lines = {}
