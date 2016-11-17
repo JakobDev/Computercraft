@@ -50,6 +50,7 @@ end
 end
 
 wordcou = wordcou - 1
+linecou = linecou - 1
 
 print(linecou.." Lines")
 print(wordcou.." Words")
