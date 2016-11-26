@@ -11,7 +11,7 @@ print("                ||----w |")
 print("                ||     ||")
 end
 
-function cow.head(text)
+local function headin(text)
 print(" _______")
 print("< "..text.." >")
 print(" -------")
@@ -23,6 +23,8 @@ print("    (__)\\       )=(  ____|_ \\_____")
 print("        ||----w |  \\ \\     \\_____ |")
 print("        ||     ||   ||           ||")
 end
+
+cow["head-in"] = headin
 
 function cow.eyes(text)
 print(" _______")
@@ -189,6 +191,280 @@ rancou = rancou + 1
 end
 randomta[math.random(1,rancou)](text)
 end
+
+function cow.cock(text)
+print(" ______")
+print("< "..text.." >")
+print(" ------")
+print("    \\")
+print("     \\  /\\/\\")
+print("       \\   /")
+print("       |  0 >>")
+print("       |___|")
+print(" __((_<|   |")
+print("(          |")
+print("(__________)")
+print("   |      |")
+print("   |      |")
+print("   /\\     /\\")
+end
+
+function cow.moofasa(text)
+print(" ______")
+print("< "..text.." >")
+print(" ------")
+print("       \\    ____")
+print("        \\  /    \\")
+print("          | ^__^ |")
+print("          | (oo) |______")
+print("          | (__) |      )\\/\\")
+print("           \\____/|----w |")
+print("                ||     ||")
+print("")
+print("                 Moofasa")
+end
+
+function cow.suse(text)
+print(" _____")
+print("< "..text.." >")
+print(" -----")
+print("  \\")
+print("   \\____")
+print("  /@    ~-.")
+print("  \\/ __ .- |")
+print("   // //  @")
+end
+
+function cow.bong(text)
+print(" _______")
+print("< "..text.." >")
+print(" -------")
+print("         \\")
+print("          \\")
+print("            ^__^ ")
+print("    _______/(oo)")
+print("/\\/(       /(__)")
+print("   | W----|| |~|")
+print("   ||     || |~|  ~~")
+print("             |~|  ~")
+print("             |_| o")
+print("             |#|/")
+print("            _+#+_")
+end
+
+function cow.kosh(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("    \\")
+print("     \\")
+print("      \\")
+print("  ___       _____     ___")
+print(" /   \\     /    /|   /   \\")
+print("|     |   /    / |  |     |")
+print("|     |  /____/  |  |     |     ")
+print("|     |  |    |  |  |     |")
+print("|     |  | {} | /   |     |")
+print("|     |  |____|/    |     |")
+print("|     |    |==|     |     |")
+print("|      \\___________/      |")
+print("|                         |")
+print("|                         |")
+end
+
+local function flamingsheep(text)
+print("____")
+print("< "..text.." >")
+print(" ----")
+print("  \\            .    .     .   ")
+print("   \\      .  . .     `  ,     ")
+print("    \\    .; .  : .' :  :  : . ")
+print("     \\   i..`: i` i.i.,i  i . ")
+print("      \\   `,--.|i |i|ii|ii|i: ")
+print("           UooU\\.'@@@@@@`.||' ")
+print("           \\__/(@@@@@@@@@@)'  ")
+print("                (@@@@@@@@)    ")
+print("                `YY~~~~YY'    ")
+print("                 ||    ||     ")
+end
+
+cow["flaming-sheep"] = flamingsheep
+
+function cow.bunny(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("  \\")
+print("   \\   \\")
+print("        \\ /\\")
+print("        ( )")
+print("      .( o ).")
+end
+
+function cow.apt(text)
+print(" _____")
+print("< "..text.." >")
+print(" -----")
+print("       \\ (__)")
+print("         (oo)")
+print("   /------\\/")
+print("  / |    ||")
+print(" *  /\\---/\\")
+print("    ~~   ~~")
+end
+
+function cow.pony(text)
+print(" _______")
+print("< "..text.." >")
+print(" -------")
+print("     \\      _^^")
+print("      \\   _- oo\\")
+print("          \\----- \\______")
+print("                \\       )\\")
+print("                ||-----|| \\")
+print("                ||     ||")
+end
+
+function cow.unipony(text)
+print("____")
+print("< "..text.." >")
+print(" ----")
+print("   \\        \\")
+print("    \\        \\")
+print("     \\       _\\^")
+print("      \\    _- oo\\")
+print("           \\---- \\______")
+print("                 \\       )\\")
+print("                ||-----||  \\")
+print("                ||     ||")
+end
+
+local function lukekoala(text)
+print(" _______")
+print("< "..text.." >")
+print(" -------")
+print("  \\")
+print("   \\          .")
+print("       ___   //")
+print("     {~._.~}// ")
+print("      ( Y )K/  ")
+print("     ()~*~()   ")
+print("     (_)-(_)   ")
+print("     Luke    ")
+print("     Skywalker")
+print("     koala   ")
+end
+
+cow["luke-koala"] = lukekoala
+
+local function sodasheep(text)
+print(" _____")
+print("< "..text.." >")
+print(" -----")
+print("  \\                 __ ")
+print("   \\               (oo)")
+print("    \\              (  )")
+print("     \\             /--\\")
+print("       __         / \\  \\ ")
+print("      UooU\\.'@@@@@@`.\\  )")
+print("      \\__/(@@@@@@@@@@) /")
+print("           (@@@@@@@@)(( ")
+print("           `YY~~~~YY' \\\\")
+print("            ||    ||   >> ")
+end
+
+cow["sodomized-sheep"] = sodasheep
+
+function cow.cower(text)
+print("____")
+print("< "..text.." >")
+print(" ----")
+print("     \\")
+print("      \\")
+print("        ,__, |    | ")
+print("        (oo)\\|    |___")
+print("        (__)\\|    |   )\\_")
+print("             |    |_w |  \\")
+print("             |    |  ||   *")
+print("")
+print("             Cower....")
+end
+
+local function budfrogs(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("     \\")
+print("      \\")
+print("          oO)-.                       .-(Oo")
+print("         /__  _\\                     /_  __\\")
+print("         \\  \\(  |     ()~()         |  )/  /")
+print("          \\__|\\ |    (-___-)        | /|__/")
+print("          '  '--'    ==`-'==        '--'  '")
+end
+
+cow["bud-frogs"] = budfrogs
+
+function cow.kitty(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("     \\")
+print("      \\")
+print("      (\"`-'  '-/\") .___..--' ' \"`-._")
+print("         ` *_ *  )    `-.   (      ) .`-.__. `)")
+print("         (_Y_.) ' ._   )   `._` ;  `` -. .-'")
+print("      _.. `--'_..-_/   /--' _ .' ,4")
+print("   ( i l ),-''  ( l i),'  ( ( ! .-'    ")
+end
+
+local function vaderkoala(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("   \\")
+print("    \\        .")
+print("     .---.  //")
+print("    Y|o o|Y// ")
+print("   /_(i=i)K/ ")
+print("   ~()~*~()~  ")
+print("    (_)-(_)   ")
+print("")
+print("     Darth ")
+print("     Vader    ")
+print("     koala        ")
+end
+
+cow["vader-koala"] = vaderkoala
+
+local function elephantsnake(text)
+print(" ____")
+print("< "..text.." >")
+print(" ----")
+print("       \\")
+print("        \\  ....")
+print("          .    ........")
+print("          .            .")
+print("          .             .")
+print("    .......              .........")
+print("    ..............................")
+print("Elephant inside ASCII snake")
+end
+
+cow["elephant-in-snake"] = elephantsnake
+
+local function threeeyes(text)
+print(" ________")
+print("< Augen! >")
+print(" --------")
+print("        \\  ^___^")
+print("         \\ (ooo)\\_______")
+print("           (___)\\       )\\/\\")
+print("                ||----w |")
+print("                ||     ||")
+end
+
+cow["three-eyes"] = threeeyes
 
 table.sort(cow)
 
