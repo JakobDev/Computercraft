@@ -44,12 +44,10 @@ end
 name = man
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/man.lua
-   filename = usr/bin/man
+   filename = man
   category = shell
   dependencies = none
-  target = /
-  setup = rom/programs/http/wget https://raw.githubusercontent.com/Wilma456/Computercraft/master/Help/man.txt /usr/help/man
-  cleanup = rom/programs/delete /usr/help/man
+  target = /usr/bin
   version = 2.0.0
   size = 296
 end
@@ -272,3 +270,13 @@ name = monclear
   size = 179
 end
 
+name = cowsay
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/cowsay.lua
+   filename = cowsay
+  category = fun
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 5116
+end
