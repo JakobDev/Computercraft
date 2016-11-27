@@ -280,3 +280,25 @@ name = cowsay
   version = 1.1
   size = 11566
 end
+
+name = fortune
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/fortune.lua
+   filename = fortune
+  category = fun
+  dependencies = wilma456/fortune-cookie
+  target = /usr/bin
+  version = 1.0
+  size = 685
+end
+
+name = fortune-cookie
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/FortuneCookies/master/en/cookie
+   filename = cookie
+  category = fortune
+  dependencies = none
+  target = /usr/share/fortune
+  version = 1.0
+  size = 245093
+end
