@@ -302,3 +302,14 @@ name = fortune-cookie
   version = 1.0
   size = 245093
 end
+
+name = cron
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/cron.lua
+   filename = cron
+  category = tools
+  dependencies = wilma456/wilmaapi
+  target = /usr/bin
+  version = 1.0
+  size = 1365
+end
