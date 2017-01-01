@@ -7,7 +7,18 @@ if fs.exists("/etc/crontab") == false then
   writecron:write("#Example:\n")
   writecron:write("#7 * ls\n")
   writecron:write("#Runs ls every day at 7\n")
+  writecron:write("#If the command a Folder, cron will run all files insid\n")
+  writecron:write("* * /etc/cron.hourly\n")
+  writecron:write("7 * /etc/cron.daily\n")
   writecron:close()
+end
+
+if fs.exists("/etc/cron.daily") == false then
+  fs.makeDir("/etc/cron.daily")
+end
+
+if fs.exists("/etc/cron.hourly") == false then
+  fs.makeDir("/etc/cron.hourly")
 end
 
 print("Cron is running! Put your tasks in /etc/crontab!")
@@ -26,30 +37,48 @@ end
 
 cronfile:close()
 
+local function runAll(folder)
+local filelist = fs.list(folder)
+for ind,file in ipairs(filelist) do
+  shell.run(folder.."/"..file)
+end
+end
+
 local blocktime = math.floor(os.time())
 local sleepta = {}
 local check = {}
 
+local function loop()
+for ind,ta in ipairs(cronta) do
+local time = math.floor(os.time())
+local day = os.day()
+local crontime = ta["time"]:gsub("*",time)
+local cronday = ta["day"]:gsub("*",day)
+if time == tonumber(crontime) then
+  if day == tonumber(cronday) then
+    --if not(sleepta[ind]==true) then
+      if fs.isDir(ta["command"]) == true then
+        runAll(ta["command"])
+      else
+        shell.run(ta["command"])
+      end
+      sleepta[ind] = true
+    end
+  --end
+end
+end
+end
+
+loop()
 while true do
 
 if not(blocktime==math.floor(os.time())) then
   sleepta = {}
   blocktime = math.floor(os.time())
-end
-
-for ind,ta in ipairs(cronta) do
-local time = math.floor(os.time())
-local day = os.day()
-ta["time"] = ta["time"]:gsub("*",time)
-ta["day"] = ta["day"]:gsub("*",day)
-if time == tonumber(ta["time"]) then
-  if day == tonumber(ta["day"]) then
-    if not(sleepta[ind]==true) then
-      shell.run(ta["command"])
-      sleepta[ind] = true
-    end
-  end
-end
+  --if fs.isDir("/etc/cron.hourly") == true then
+  --  runAll("/etc/cron.hourly")
+  --ssend
+  loop()
 end
 
 os.sleep(0.1)
