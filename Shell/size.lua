@@ -15,9 +15,9 @@ if fs.exists(filename) == true then
     for _,sizefile in ipairs(fileta) do
       size = size + fs.getSize(sizefile)
     end
-    print("Size: "..size)
+    print("Size: "..size.." Bytes")
   else
-  print("Size: "..fs.getSize(filename))
+  print("Size: "..fs.getSize(filename).." Bytes")
   end
 else
   print("File does not exists")
