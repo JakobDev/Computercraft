@@ -37,7 +37,7 @@ name = mynaptic
   dependencies = main/packman wilma456/wilmaapi
   target = /usr/bin
   version = 2.2
-  size = 14205
+  size = 14202
 end
 
 
