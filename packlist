@@ -34,10 +34,10 @@ name = mynaptic
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Mynaptic.lua
    filename = Mynaptic
   category = packman
-  dependencies = main/packman
+  dependencies = main/packman wilma456/wilmaapi
   target = /usr/bin
-  version = 2.1
-  size = 12651
+  version = 2.2
+  size = 14205
 end
 
 
@@ -94,8 +94,8 @@ name = size
   category = shell
   dependencies = wilma456/wilmaapi
   target = /usr/bin
-  version = 2.0
-  size = 529
+  version = 2.1
+  size = 549
 end
 
 name = owncloudfile
