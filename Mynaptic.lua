@@ -1,9 +1,17 @@
 --Made by Wilma456
 print("Starting Mynaptic Please Wait ...")
 
+os.loadAPI("/usr/apis/wilmaapi")
+
 if term.isColor() == false or pocket then
   print("This Programm only run on a Advanced Computer or a Advaced Turtle")
-  return 1
+  return 2
+end
+
+if wilmaapi == nil then
+  term.setTextColor(colors.red)
+  print("Error whith loading /usr/apis/wilmaapi")
+  return 3
 end
 
 --print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
@@ -53,7 +61,7 @@ elseif statuscheck[te] == "remove" then
 end
 ins,teb,ver = te:match("([^ ]+) ([^ ]+) ([^ ]+)")
 if config["showRepository"] == "false" then
-  repo,teb = teb:match("([^/]+)/([^/]+)")
+  repo,teb = wilmaapi.splitString(teb,"/")
 end
 if searchch == true then
   if string.find(te,search,1) == nil then
@@ -119,7 +127,7 @@ removeta = {}
 print("These Packages will be installed:")
 for _,text in ipairs(install["list"]) do
   if install["check"][text] == true then
-    ins,pack = text:match("([^ ]+) ([^ ]+)")
+    ins,pack = wilmaapi.splitString(text," ")
     table.insert(installta,pack)
     print(pack)
   end
@@ -152,7 +160,7 @@ if y == screenh then
     sandta = {io={write=nichts,read=ioread},shell = shell}
     for _,pack in ipairs(installta) do
       print("Install "..pack)
-      os.run(sandta,"/usr/bin/packman","force","install",pack)
+      os.run(sandta,config["packmanPath"],"force","install",pack)
       if config["writeHistory"] == "true" then
         history.writeLine("Installed "..pack)
       end
@@ -161,7 +169,7 @@ if y == screenh then
     end
     for _, pack in ipairs(removeta) do
       print("Remove "..pack)
-      os.run(sandta,"/usr/bin/packman","force","remove",pack)
+      os.run(sandta,config["packmanPath"],"force","remove",pack)
       term.setBackgroundColor(colors.white)
       term.setTextColor(colors.black)
       if config["writeHistory"] == "true" then
@@ -189,7 +197,7 @@ term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
 reta = {shell=shell,io={write=printcol}}
-os.run(reta,"/usr/bin/packman","fetch")
+os.run(reta,config["packmanPath"],"fetch")
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
 term.clear()
@@ -226,7 +234,7 @@ if y == screenh then
     runsa.io = {write = nichts}
     for _,una in ipairs(updateta) do
       print("Updateting "..una)
-      os.run(runsa,"/usr/bin/packman","force","update",una)
+      os.run(runsa,config["packmanPath"],"force","update",una)
     end
     print("Done!")
     loop = nil
@@ -292,7 +300,7 @@ while loop == true do
   if text == nil then
     loop = nil
   else
-    head,cont = text:match("([^ ]+) ([^ ]+)")
+    head,cont = wilmaapi.splitString(text," ")
     if type(head) == "string" then
       config[head] = cont
     end
@@ -304,7 +312,9 @@ confile.writeLine("showVersion false")
 confile.writeLine("showRepository true")
 confile.writeLine("writeHistory true")
 confile.writeLine("sortAlphabetically false")
+confile.writeLine("showWelcomeScreen false")
 confile.writeLine("historyPath /var/history")
+confile.writeLine("packmanPath /usr/bin/packman")
 confile.writeLine("textColour black")
 confile.writeLine("backgroundColour gray")
 confile.writeLine("menuColour blue")
@@ -318,7 +328,9 @@ config["showVersion"] = "false"
 config["showRepository"] = "true"
 config["writeHistory"] = "true"
 config["sortAlphabetically"] = "false"
+config["showWelcomeScreen"] = "true"
 config["historyPath"] = "/var/history"
+config["packmanPath"] = config["packmanPath"]
 config["backgroundColour"] = "gray"
 config["menuColour"] = "blue"
 config["closeColour"] = "red"
@@ -329,10 +341,13 @@ config["removeColour"] = "red"
 config["textColour"] = "black"
 end
 
+term.setTextColor(colors.red)
 testConfig("showVersion","bool") 
 testConfig("showRepository","bool")
 testConfig("sortAlphabetically","bool")
+testConfig("showWelcomeScreen","bool")
 testConfig("historyPath")
+testConfig("packmanPath")
 testConfig("backgroundColour","col")
 testConfig("menuColour","col")
 testConfig("closeColour","col")
@@ -341,12 +356,19 @@ testConfig("instaledColour","col")
 testConfig("installColour","col")
 testConfig("removeColour","col")
 testConfig("textColour","col")
+term.setTextColor(colors.white)
 
 
 if configstatus == false then
 print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run delete /etc/mynaptic and the the config will be rubuild by the next start")
 deleteVars()
-return 2
+return 4
+end
+
+if fs.exists(config["packmanPath"]) == false then
+  term.setTextColor(colors.red)
+  print("Can't found Packman. If packman are installed, please change the Path in /etc/mynaptic")
+  return 5
 end
 
 sandio = {write = getPrint}
@@ -357,7 +379,7 @@ sandta = {io = sandio,shell = sandsh}
 --file = fs.open("/log","w")
 rcou = 1
 packlist = fs.open("/tmp/packlistsy.tmp","w")
-os.run(sandta,"/usr/bin/packman","search")
+os.run(sandta,config["packmanPath"],"search")
 --print(rcou)
 packlist.close()
 packread = fs.open("/tmp/packlistsy.tmp","r")
@@ -405,7 +427,7 @@ local updatesa = {}
 updatesa.shell = shell
 updatesa.io = {write = getUpdatePrint,read = ioread}
 updatetmp = fs.open("/tmp/update.tmp","w")
-os.run(updatesa,"/usr/bin/packman","update")
+os.run(updatesa,config["packmanPath"],"update")
 updatetmp.close()
 updatere = fs.open("/tmp/update.tmp","r")
 updatere.readLine()
@@ -432,6 +454,23 @@ end
 
 lookUpdates()
 
+--Welcome Screen
+if config["showWelcomeScreen"] == "true" then
+term.setBackgroundColor(colors.white)
+term.setTextColor(colors.black)
+term.clear()
+term.setCursorPos(1,1)
+print("Welcome to Mynaptic!")
+print()
+print("This Programm is a GUI for Packman. Scroll with the mousewhell or the arrow keys. Software that you have installed are green. Select it the mark it to remove.Select sofware that you don't have installed to mark it to install. Click \"Apply\" to do all changes, that you have marked")
+print()
+print("If you want to change the config, edit /etc/mynaptic")
+print()
+print("Press any key to continue")
+os.pullEvent("key_up")
+os.pullEvent("key_up")
+end
+--os.pullEvent("key_up")
 tpos = 1
 drawMenu()
 --statuscheck = {}
@@ -441,16 +480,12 @@ while mainloop == true do
   ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" then
     if me == 1 then
-     if tpos+screenh == packcou then
-     --Problems with if not
-     else
+     if not(tpos+screenh == packcou) then
       tpos = tpos + 1
       drawMenu()
      end
     elseif me == -1 then
-       if tpos == 1 then
-         --Problems with if not
-       else
+       if not(tpos == 1) then
          tpos = tpos - 1
          drawMenu()
        end
@@ -501,7 +536,18 @@ while mainloop == true do
     if me == keys.backspace then
       search = string.sub(search,1,-2)
       drawMenu()
+    elseif me == keys.down then
+      if not(tpos+screenh == packcou) then
+      tpos = tpos + 1
+      drawMenu()
+     end
     end
+    elseif me == keys.up then
+     if not(tpos == 1) then
+         tpos = tpos - 1
+         drawMenu()
+       end
+    --end
   end
 end
 end
