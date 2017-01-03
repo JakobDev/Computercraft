@@ -3,6 +3,7 @@ os.loadAPI("/usr/apis/wilmaapi")
 local condef = {}
 table.insert(condef,"enableAutocomplete true")
 table.insert(condef,"saveHistory true")
+table.insert(condef,"enableScroll true")
 table.insert(condef,'startLine return "$PATH>"')
 table.insert(condef,'commandNotFound write("")')
 table.insert(condef,"runKey enter")
@@ -14,6 +15,43 @@ table.insert(condef,"exitCommand exit")
 table.insert(condef,"historyCommand history")
 
 local config = wilmaapi.loadConfig("/etc/wsh",condef)
+local configstatus = true
+
+local function testConfig(name,contype)
+if not (type(config[name]) == "string") then
+print("There is no config entry for "..name) 
+configstatus = false
+elseif contype == "bool" then
+  if not (config[name] == "true" or config[name] == "false") then
+  print("The config entry for "..name.." is not true/false")
+  configstatus = false
+  end 
+elseif contype == "key" then
+  if not (type(keys[config[name]]) == "number") then
+    print(name.." is no Key")
+    configstatus = false
+  end
+end
+end
+
+term.setTextColor(colors.red)
+testConfig("enableAutocomplete","bool")
+testConfig("saveHistory","bool")
+testConfig("enableScroll","bool")
+testConfig("startLine")
+testConfig("commandNotFound")
+testConfig("runKey","key")
+testConfig("deleteKey","key")
+testConfig("completeKey","key")
+testConfig("historyUpKey","key")
+testConfig("historyDownKey","key")
+testConfig("exitCommand")
+testConfig("historyCommand")
+term.setTextColor(colors.white)
+
+if configstatus == false then
+  return 2
+end
 
 local runstr = ""
 local comp
@@ -41,9 +79,11 @@ end
 writeLine()
 --local runstr = ""
 while true do
+term.setTextColor(colors.white)
 local ev,me = os.pullEvent()
 term.setCursorBlink(true)
 if ev == "mouse_scroll" then
+  if config.enableScroll == "true" then
   local x,y = term.getCursorPos()
   if me == 1 then
     term.clearLine()
@@ -63,6 +103,7 @@ if ev == "mouse_scroll" then
       term.setCursorPos(1,1)
     end
     writeLine()
+  end
   end
 elseif ev == "char" then
   runstr = runstr..me
