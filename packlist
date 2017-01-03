@@ -243,8 +243,8 @@ end
 name = shellutils
   type = meta
 	category = shell
-	dependencies = wilma456/whois wilma456/pwd wilma456/sleep wilma456/wc wilma456/find wilma456/echo wilma456/size superaxander/cat
-	version = 1.0
+	dependencies = wilma456/whois wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat
+	version = 1.1
 	size = 0
 end
 
@@ -255,8 +255,8 @@ name = wilmaapi
   category = api
   dependencies = none
   target = /usr/apis
-  version = 1.0
-  size = 643
+  version = 2.0
+  size = 1120
 end
 
 name = monclear
@@ -323,4 +323,15 @@ name = lsper
   target = /usr/bin
   version = 1.0
   size = 128
+end
+
+name = wsh
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/wsh.lua
+   filename = wsh
+  category = shell
+  dependencies = wilma456/wilmaapi
+  target = /usr/bin
+  version = 1.0
+  size = 2425
 end
