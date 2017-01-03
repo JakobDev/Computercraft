@@ -28,3 +28,24 @@ end
 function splitString(str,split)
 return str:match("([^"..split.."]+)"..split.."([^"..split.."]+)")
 end
+
+function loadConfig(path,default)
+local returnta = {}
+if fs.exists(path) == false then
+  local writecon = io.open(path,"w")
+  for _,text in ipairs(default) do
+    writecon:write(text.."\n")
+  end
+  writecon:close()
+end
+local confile = io.open(path,"r")
+for linecon in confile:lines() do
+  if not(linecon:find("#")==1) then
+    local ind,con = splitString(linecon," ")
+    con = linecon:sub(ind:len()+2,-1)
+    returnta[ind] = con
+  end
+end
+confile:close()
+return returnta
+end
