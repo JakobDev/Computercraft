@@ -335,3 +335,25 @@ name = wsh
   version = 1.1
   size = 4543
 end
+
+name = faketime
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/faketime.lua
+   filename = faketime
+  category = tools
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 307
+end
+
+name = fakeday
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/fakeday.lua
+   filename = fakeday
+  category = tools
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 291
+end
