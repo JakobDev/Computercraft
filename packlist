@@ -36,8 +36,8 @@ name = mynaptic
   category = packman
   dependencies = main/packman wilma456/wilmaapi
   target = /usr/bin
-  version = 2.2
-  size = 14202
+  version = 3.0
+  size = 20357
 end
 
 
@@ -255,8 +255,8 @@ name = wilmaapi
   category = api
   dependencies = none
   target = /usr/apis
-  version = 2.0
-  size = 1120
+  version = 3.0
+  size = 3249
 end
 
 name = monclear
