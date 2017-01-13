@@ -255,8 +255,8 @@ name = wilmaapi
   category = api
   dependencies = none
   target = /usr/apis
-  version = 3.0
-  size = 3249
+  version = 3.1
+  size = 3325
 end
 
 name = monclear
