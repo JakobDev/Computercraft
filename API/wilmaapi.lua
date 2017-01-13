@@ -26,7 +26,10 @@ return files
 end
 
 function splitString(str,split)
-return str:match("([^"..split.."]+)"..split.."([^"..split.."]+)")
+local a,b = str:match("([^"..split.."]+)"..split.."([^"..split.."]+)")
+local len = a:len()+split:len()+1
+local b = str:sub(len,-1)
+return a,b
 end
 
 function loadConfig(path,default)
@@ -121,5 +124,5 @@ return packagelist
 end
 
 function version()
-  return 3.0
+  return 3.1
 end
