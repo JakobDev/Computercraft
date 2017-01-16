@@ -14,6 +14,12 @@ if wilmaapi == nil then
   return 3
 end
 
+mynaptic = {}
+
+mynaptic.version = 4.0
+
+mynaptic.shellmode = false
+
 local packinfo = wilmaapi.readPackmanRepo()
 --print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
 function getPrint(text)
@@ -23,64 +29,175 @@ end
 
 local screenw,screenh = term.getSize()
 
+--Write lang
+lang = {}
+lang["keyContinue"] = "Press any Key to continue"
+lang["search"] = "Search:"
+lang.shell = "Shell:"
+lang.noCommand = "Command not found"
+lang.packNotFound = "Package not found"
+lang.cancel = "Cancel"
+lang.ok = "OK"
+lang.apply = "Apply"
+lang.fetch = "Fetch"
+lang.update = "Update"
+lang.config = "Config"
+lang.help = "Help"
+lang.yes = "Yes"
+lang.no = "No"
+lang.name = "Name:"
+lang.installed = "Installed:"
+lang.updateAviable = "Update aviable:"
+lang.filename = "Filename:"
+lang.target = "Target:"
+lang.size = "Size:"
+lang.category = "Category:"
+lang.dependencies = "Dependencies:"
+lang.installPack = "These Packages will be installed:"
+lang.removePack = "These Packages will be removed:"
+lang.updatePack = "These Packages will be updated:"
+lang.youEdit = "You Edit:"
+lang.old = "Old:"
+lang.selectColour = "Please select a Colour"
+lang.newEntry = "New Entry:"
+lang.newEntryText = "Please enter new Entry"
+lang.boolEntry = "Please choose new Entry"
 --Start Help
-local helpta = {}
+local tmpta = {}
 
-helpta[1] = {}
-helpta[1]["titel"] = "Navigate"
-helpta[1]["con"] = [[Use the mousewhell or the arrwo keys to scroll. You can mark packages by leftclicking it.
+helpta = {}
+
+tmpta = {}
+tmpta["titel"] = "Navigate"
+tmpta["con"] = [[Use the mousewhell or the arrwo keys to scroll. You can mark packages by leftclicking it.
 
 Exit Mynaptic by clicking to "X" in to right up corner
 To use the search, just write your text
 
 Warning: The search is a little bit buggy]]
 
-helpta[2] = {}
-helpta[2]["titel"] = "Install Software"
-helpta[2]["con"] = [[The white software are not installed. Click on it to mark it to install.
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Install Software"
+tmpta["con"] = [[The white software are not installed. Click on it to mark it to install.
 
 If you have choose your software, just click "Apply"
-"]]
+]]
 
-helpta[3] = {}
-helpta[3]["titel"] = "Remove Software"
-helpta[3]["con"] = [[The red software are installed. Click on it to mark it to remove.
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Remove Software"
+tmpta["con"] = [[The red software are installed. Click on it to mark it to remove.
 
 If you have choose your software, just click "Apply"
-"]]
+]]
 
-helpta[4] = {}
-helpta[4]["titel"] = "Get more information"
-helpta[4]["con"] = "If you want more information about a package, just rightclick it"
+table.insert(helpta,tmpta)
 
-helpta[5] = {}
-helpta[5]["titel"] = "Use History"
-helpta[5]["con"] = [[In the default config, Mynaptic write all changes to the file /var/history]]
+tmpta = {}
+tmpta["titel"] = "Get more Information"
+tmpta["con"] = "If you want more information about a package, just rightclick it"
 
-helpta[6] = {}
-helpta[6]["titel"] = "Personalisierte Mynaptic"
-helpta[6]["con"] = [[You can change the Config with the "config" Menu or by editing /etc/mynaptic
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Use History"
+tmpta["con"] = [[In the default config, Mynaptic write all changes to the file /var/history]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Personalisierte Mynaptic"
+tmpta["con"] = [[You can change the Config with the "config" Menu or by editing /etc/mynaptic
 
 Mynaptic checks every run, if the config correct.
 
-If you get any config errors by runing Mynaptic (maybe after update) and don't want to fix it, just delete /etc/mynaptic. If the config file not exists, Mynaptic will create them by running]]
+If you get any config errors by runing Mynaptic (maybe after update) and don't want to fix it, just delete /etc/mynaptic. If the config file not exists, Mynaptic will create them by running
 
-helpta[7] = {}
-helpta[7]["titel"] = "Report bugs/Feedback"
-helpta[7]["con"] = [[You can report bugs or left feedback at this sites:
+Lines in /etc/mynaptic who are started with # are ignored.
+]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "On what Devices run Mynaptic"
+tmpta["con"] = [[Mynaptic fully supports Advanced Computers
+
+On Turtles you haave only the main function. You don't have acces to the config or help menu
+
+Other Devices are not supported]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Using Plugins"
+tmpta["con"] = [[With Plugins you can modify Mynaptic e.g another language or another package system
+
+Simple place Plugins in the pluginFoler (default /usr/share/mynaptic/plugins) and be sure, thet loadPlugins is true
+]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Report Bugs/Feedback"
+tmpta["con"] = [[You can report bugs or left feedback at this sites:
 
 http://www.computercraft.info/forums2/index.php?/topic/27327-mynaptic-a-gui-for-packman/
 
 https://github.com/Wilma456/Computercraft/issues]]
 
-helpta[8] = {}
-helpta[8]["titel"] = "Use Mynaptic in your OS"
-helpta[8]["con"] = [[If you use packman in your OS, you may want to incluse Mynaptic. You have my permission to do this. If you want to optimize Mynaptic for your OS, just write Wilma456 at the CC Forum a PM.]]
+table.insert(helpta,tmpta)
 
-helpta[9] = {}
-helpta[9]["titel"] = "About"
-helpta[9]["con"] = "This is Mynaptic Version 3.0 made by Wilma456"
+tmpta = {}
+tmpta["titel"] = "Use Mynaptic in your OS"
+tmpta["con"] = [[If you use packman in your OS, you may want to incluse Mynaptic. You have my permission to do this. If you want to optimize Mynaptic for your OS, just write Wilma456 at the CC Forum a PM.]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "About"
+tmpta["con"] = "This is Mynaptic Version 3.1 made by Wilma456"
+
+table.insert(helpta,tmpta)
+
+tmpta = nil
 --End Help
+
+--Shellcommands
+shellcom = {}
+
+function shellcom.update()
+  mynaptic.updatemenu()
+end
+
+function shellcom.top()
+  tpos = 0
+  mynaptic.drawMenu()
+end
+
+function shellcom.debug()
+  mynaptic.debugmenu()
+end
+
+function shellcom.bottom()
+  tpos = packcou - screenh + 1
+  mynaptic.drawMenu()
+end
+
+function shellcom.apply()
+  mynaptic.doChanges()
+end
+
+function shellcom.fetch()
+  mynaptic.reload()
+end
+
+function shellcom.about()
+  mynaptic.setShellText("Mynaptic Version "..mynaptic.version.." made by Wilma456")  
+end
+--End Shellcommands
 
 function ioread()
  return "N"
@@ -93,7 +210,13 @@ function shellresolve(ag)
 shell.resolveProgram(ag)
 end
 
-local function setLineColor(text)
+function mynaptic.setShellText(text)
+term.setCursorPos(1,screenh)
+term.clearLine()
+write(text)
+end
+
+function mynaptic.setLineColor(text)
 term.write( text .. string.rep( ' ', term.getSize() - #text ) )
 print()
 --local lccou = string.len(text)
@@ -110,7 +233,10 @@ print()
 --print("")
 end
 
-local function drawLine(te)
+function mynaptic.drawLine(te)
+if te == nil then
+  return
+end
 term.setBackgroundColor(colors[config["notinstaledColour"]])
 if statuscheck[te] == "instaled" then
   term.setBackgroundColor(colors[config["instaledColour"]])
@@ -128,25 +254,26 @@ if searchch == true then
     --Problems with if not
   else
     if config["showVersion"] == "true" then
-      setLineColor(teb.." "..ver)
+      mynaptic.setLineColor(teb.." "..ver)
     else
-      setLineColor(teb)
+      mynaptic.setLineColor(teb)
     end
     checkta[checkcou] = te
     checkcou = checkcou + 1
   end
 else
   if config["showVersion"] == "true" then
-    setLineColor(teb.." "..ver)
+    mynaptic.setLineColor(teb.." "..ver)
   else
-    setLineColor(teb)
+    mynaptic.setLineColor(teb)
   end
   checkta[checkcou] = te
   checkcou = checkcou + 1
 end
 end
 
-local function drawMenu()
+function shellcom.secret() term.setBackgroundColor(colors.white) term.clear() term.setCursorPos(1,1) print("You found the Secret Screen!") sleep(0.5) print("This is the Secret Screen!") sleep(0.5) print("Goodbye!") sleep(0.5) mynaptic.drawMenu() end
+function mynaptic.drawMenu()
 term.setTextColor(colors[config["textColour"]])
 term.setBackgroundColor(colors[config["backgroundColour"]])
 term.clear()
@@ -157,7 +284,7 @@ local lpos = 0
 while loop == true do
 if lpos == 0 then
   term.setBackgroundColor(colors[config["menuColour"]])
-  setLineColor("Apply Fetch Update Config Help")
+  mynaptic.setLineColor(lang.apply.." "..lang.fetch.." "..lang.update.." "..lang.config.." "..lang.help)
   --for 0,screenw,1 do
     --write(" ")
   --end
@@ -165,7 +292,9 @@ if lpos == 0 then
   term.setBackgroundColor(colors[config["closeColour"]])
   print("X")
 else
-  drawLine(textta[tpos+lpos])
+  if not(type(textta[tpos+lpos]) == nil) then
+    mynaptic.drawLine(textta[tpos+lpos])
+  end
 end
   lpos = lpos + 1
   if lpos == screenh-1 then
@@ -174,17 +303,25 @@ end
   end
 end
 term.setCursorPos(1,screenh)
-term.setBackgroundColor(colors[config["backgroundColour"]])
-write("Search: "..search)
+term.setBackgroundColor(colors[config["searchColour"]])
+term.write(string.rep( ' ', term.getSize()))
+term.setCursorPos(1,screenh)
+if mynaptic.shellmode == true then
+  write(lang.shell..shelltext)
+else
+  write(lang.search..search)
+end
 end
 
-function doChanges()
+helpta["egg"] = {}
+
+function mynaptic.doChanges()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
 installta = {}
 removeta = {}
-print("These Packages will be installed:")
+print(lang.installPack)
 for _,text in ipairs(install["list"]) do
   if install["check"][text] == true then
     ins,pack = wilmaapi.splitString(text," ")
@@ -192,7 +329,7 @@ for _,text in ipairs(install["list"]) do
     print(pack)
   end
 end
-print("These Packages will be removed:")
+print(lang.removePack)
 for _,text in ipairs(remove["list"]) do
   if remove["check"][text] == true then
     ins,pack = text:match("([^ ]+) ([^ ]+)")
@@ -202,15 +339,16 @@ for _,text in ipairs(remove["list"]) do
 end
 term.setCursorPos(1,screenh)
 --term.setTextColor(colors.yellow)
-write("Cancel")
+write(lang.cancel)
 term.setCursorPos(screenw-1,screenh)
-write("OK")
+write(lang.ok)
 ev,mouse,x,y = os.pullEvent("mouse_click")
 if y == screenh then 
   if x < 7 then
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1,1)
+    mynaptic.drawMenu()
   elseif x == screenw then
     term.clear()
     term.setCursorPos(1,1)
@@ -220,7 +358,8 @@ if y == screenh then
     sandta = {io={write=nichts,read=ioread},shell = shell}
     for _,pack in ipairs(installta) do
       print("Install "..pack)
-      os.run(sandta,config["packmanPath"],"force","install",pack)
+      --os.run(sandta,config["packmanPath"],"force","install",pack)
+      shell.run(config["packmanPath"].." force install "..pack)
       if config["writeHistory"] == "true" then
         history.writeLine("Installed "..pack)
       end
@@ -229,7 +368,8 @@ if y == screenh then
     end
     for _, pack in ipairs(removeta) do
       print("Remove "..pack)
-      os.run(sandta,config["packmanPath"],"force","remove",pack)
+      -- os.run(sandta,config["packmanPath"],"force","remove",pack)
+      shell.run(config["packmanPah"].. " force remove "..pack) 
       term.setBackgroundColor(colors.white)
       term.setTextColor(colors.black)
       if config["writeHistory"] == "true" then
@@ -242,38 +382,47 @@ if y == screenh then
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1,1)
+    mynaptic.drawMenu()
   end
 end
 end
 
-local function printcol(text)
+helpta["egg"]["con"] = "You found a EasterEgg!"
+
+function mynaptic.printcol(text)
 term.setTextColor(colors.black)
 term.setBackgroundColor(colors.white)
 print(text)
 end
 
-local function reload()
+function shellcom.time()
+  mynaptic.setShellText("It's "..os.time())
+end
+
+function mynaptic.reload()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
 reta = {shell=shell,io={write=printcol}}
-os.run(reta,config["packmanPath"],"fetch")
+--os.run(reta,config["packmanPath"],"fetch")
+shell.run(config.packmanPath.." fetch")
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
+mynaptic.drawMenu()
 end
 
-local function updatemenu()
+function mynaptic.updatemenu()
 term.setTextColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
-print("This packages will be updated:")
+print(lang.updatePack)
 for _,ucon in ipairs(updateta) do
 print(ucon)
 end
 term.setCursorPos(1,screenh)
-write("Cancel")
+write(lang.cancel)
 term.setCursorPos(screenw-1,screenh)
 write("OK")
 local loop = true
@@ -281,87 +430,127 @@ while loop do
 ev,me,x,y = os.pullEvent("mouse_click")
 if y == screenh then
   if x < 7 then
+    mynaptic.drawMenu()
+    break
+    --[[
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
     term.clear()
     term.setCursorPos(1,1)
     loop = nil
+    ]]--
   elseif x > screenw - 2 then
     local runsa = {}
     term.clear()
     term.setCursorPos(1,1)
     runsa.shell = shell
     runsa.io = {write = nichts}
-    for _,una in ipairs(updateta) do
-      print("Updateting "..una)
-      os.run(runsa,config["packmanPath"],"force","update",una)
-    end
+    --for _,una in ipairs(updateta) do
+    --  print("Updateting "..una)
+     -- os.run(runsa,config["packmanPath"],"force","update",una)
+    --end
+    shell.run(config.packmanPath.. "force update")
     print("Done!")
     loop = nil
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
     term.clear()
     term.setCursorPos(1,1)
+    mynaptic.drawMenu()
   end
 end
 end
 end
 
-local function getPackInfo(ypos)
+function mynaptic.debugmenu()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
-local updatetext = "No"
-local installtest = "No"
+while true do
+write(">")
+local re = read()
+
+if re == "exit()" then
+  break
+else
+  load(re,nil,nil,_ENV)()
+end
+end
+mynaptic.drawMenu()
+end
+
+function mynaptic.getPackInfo(ypos)
+term.setBackgroundColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+local getname = textta[tpos+ypos]:sub(3,-1)
+getname = wilmaapi.splitString(getname," ")
+if packinfo[getname] == nil then
+  print("Error while getting Information")
+  print()
+  print(lang["keyContinue"])
+  os.pullEvent("key_up")
+  mynaptic.drawMenu()
+  return
+end
+local updatetext = lang.no
+local installtest = lang.no
 if string.byte(textta[tpos+ypos],1) == 85 then --U
-  updatetext = "Yes"
-  installtest = "Yes"
+  updatetext = lang.yes
+  installtest = lang.yes
 elseif string.byte(textta[tpos+ypos],1) == 73 then
-  installtest = "Yes"
+  installtest = lang.yes
 end
 local getname = textta[tpos+ypos]:sub(3,-1)
 getname = wilmaapi.splitString(getname," ")
-print("Name: "..getname)
-print("Installed: "..installtest)
-print("Update aviable: "..updatetext)
+print(lang.name.." "..tostring(getname))
+print(lang.installed.." "..tostring(installtest))
+print(lang.updateAviable.." "..tostring(updatetext))
 if not(type(packinfo[getname]["target"]) == "string") then
-  print("Target: /usr/bin")
+  print(lang.target.." /usr/bin")
 else
-  print("Target: "..packinfo[getname]["target"])
+  print(lang.target.." "..packinfo[getname]["target"])
 end
-print("Filename: "..packinfo[getname]["filename"])
-print("Size: "..packinfo[getname]["size"])
-print("Version: "..packinfo[getname]["version"])
-print("Category: "..packinfo[getname]["category"])
-write("Dependencies: ")
+print(lang.filename.." "..tostring(packinfo[getname]["filename"]))
+print(lang.size.." "..tostring(packinfo[getname]["size"]).." Bytes")
+print("Version: "..tostring(packinfo[getname]["version"]))
+print(lang.category.." "..tostring(packinfo[getname]["category"]))
+write(lang.dependencies.." ")
 for _,depname in ipairs(packinfo[getname]["dependencies"]) do
 write(depname.." ")
 end
 print()
 print()
-print("Press any Key to continue")
+print(lang["keyContinue"])
 os.pullEvent("key_up")
-drawMenu()
+mynaptic.drawMenu()
 end
 
-local function configNormal(entry)
+function mynaptic.configNormal(entry)
 term.clear()
 term.setCursorPos(1,1)
-print("Please enter new entry")
+print(lang.newEntryText)
 print()
-print("Old: "..config[entry])
+print(lang.youEdit.." "..entry)
 print()
-write("New Entry:")
-config[entry] = read()
-configScreen()
+print(lang.old.." "..config[entry])
+print()
+write(lang.newEntry)
+local input = read()
+if not(input=="") then
+  config[entry] = input
+end
+mynaptic.configScreen()
 end
 
-local function configColor(entry)
+function mynaptic.configColor(entry)
 term.clear()
 term.setCursorPos(1,1)
-print("Please select a Colour")
+print(lang.selectColour)
 print()
-print("Old: "..config[entry])
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
 print()
 local colorta = {}
 for ind in pairs(colors) do
@@ -373,22 +562,28 @@ for ind in pairs(colors) do
 end
 while true do
 ev,me,x,y = os.pullEvent("mouse_click")
-if y == 5 then
+if y == 7 then
   if type(colorta[x]) == "string" then
     config[entry] = colorta[x]
     break
   end
 end
 end
-configScreen()
+mynaptic.configScreen()
 end
 
-local function configBool(entry)
+function shellcom.computercraft()
+  mynaptic.setShellText("Best Mod ever!")
+end
+
+function mynaptic.configBool(entry)
 term.clear()
 term.setCursorPos(1,1)
-print("Please choice new entry")
+print(lang.boolEntry)
 print()
-print("Old: "..config[entry])
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
 print()
 term.setTextColor(colors.green)
 write("true ")
@@ -397,7 +592,7 @@ write("false")
 term.setTextColor(colors.black)
 while true do
 local ev,me,x,y = os.pullEvent("mouse_click")
-if y == 5 then
+if y == 7 then
   if x < 5 then
     config[entry] = "true"
     break
@@ -407,10 +602,16 @@ if y == 5 then
   end   
 end
 end
-configScreen()
+mynaptic.configScreen()
 end
 
-function configScreen()
+local function tmpfunc()
+ mynaptic.setShellText("You found the Solution!")
+end
+
+shellcom["42"] = tmpfunc
+
+function mynaptic.configScreen()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
@@ -427,11 +628,11 @@ if y == screenh then
   break
 elseif type(configed[y]) == "table" then
   if configed[y]["contype"] == "col" then
-    configColor(configed[y]["name"])
+    mynaptic.configColor(configed[y]["name"])
   elseif configed[y]["contype"] == "bool" then
-    configBool(configed[y]["name"])
+    mynaptic.configBool(configed[y]["name"])
   else
-    configNormal(configed[y]["name"])
+    mynaptic.configNormal(configed[y]["name"])
   end
 end
 end
@@ -445,10 +646,10 @@ writecon:close()
 --term.setBackgroundColor(colors.black)
 --term.setTextColor(colors.white)
 --term.clear()
-drawMenu()
+mynaptic.drawMenu()
 end
 
-local function helpList()
+function mynaptic.helpList()
 term.setBackgroundColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
@@ -459,30 +660,54 @@ term.setCursorPos(1,screenh)
 write("OK")
 end
 
-local function showHelp(num)
+function mynaptic.showHelp(num)
 term.clear()
 term.setCursorPos(1,1)
 print(helpta[num]["con"])
 print()
-print("Press any key to continue")
+print(lang["keyContinue"])
 end
 
-local function helpMenu()
-helpList()
+function mynaptic.helpMenu()
+mynaptic.helpList()
 while true do
-local ev,me,x,y = os.pullEvent("mouse_click")
-if y == screenh then
-  drawMenu()
-  break
-elseif type(helpta[y]) == "table" then
-  showHelp(y)
-  os.pullEvent("key_up")
-  helpList()
+local ev,me,x,y = os.pullEvent()
+if ev == "mouse_click" then
+  if y == screenh then
+    mynaptic.drawMenu()
+    break
+  elseif type(helpta[y]) == "table" then
+    mynaptic.showHelp(y)
+    os.pullEvent("key_up")
+    mynaptic.helpList()
+  end
+elseif ev == "key_up" then
+  if me == keys.backspace then
+    mynaptic.drawMenu()
+    break
+  elseif me == keys.e then
+    mynaptic.showHelp("egg")
+    os.pullEvent("key_up")
+    mynaptic.helpList()
+  end  
 end
 end
 end
 
-local function testConfig(name,contype)
+function mynaptic.writeSearch()
+--backupta = textta
+textta = {}
+packcouba = packcou
+packcou = 0
+for _,sete in ipairs(backupta) do
+  if not(sete:find(search)==nil) then
+    table.insert(textta,sete)
+    packcou = packcou + 1
+  end
+end
+end
+
+function mynaptic.testConfig(name,contype)
 if not (type(config[name]) == "string") then
 print("There is no config entry for "..name) 
 configstatus = false
@@ -504,7 +729,7 @@ tmpta.con = config[name]
 table.insert(configed,tmpta)
 end
 
-local function deleteVars()
+function mynaptic.deleteVars()
 textta = nil
 statuscheck = nil
 remove = nil
@@ -517,6 +742,8 @@ configstatus = nil
 configed = nil
 configloop = nil
 configScreen = nil
+mynaptic = nil
+shelltext = nil
 end
 
 textta = {}
@@ -532,6 +759,7 @@ remove["list"] = {}
 remove["check"] = {}
 searchch = false
 search = ""
+shelltext = ""
 configstatus = true
 updateta = {}
 
@@ -543,7 +771,7 @@ while loop == true do
   text = confile.readLine()
   if text == nil then
     loop = nil
-  else
+  elseif not(text:find("#") == 1) then
     head,cont = wilmaapi.splitString(text," ")
     if type(head) == "string" then
       config[head] = cont
@@ -557,6 +785,8 @@ confile.writeLine("showRepository true")
 confile.writeLine("writeHistory true")
 confile.writeLine("sortAlphabetically false")
 confile.writeLine("showWelcomeScreen false")
+confile.writeLine("loadPlugins true")
+confile.writeLine("pluginPath /usr/share/mynaptic/plugins")
 confile.writeLine("historyPath /var/history")
 confile.writeLine("packmanPath /usr/bin/packman")
 confile.writeLine("textColour black")
@@ -567,12 +797,15 @@ confile.writeLine("notinstaledColour white")
 confile.writeLine("instaledColour green")
 confile.writeLine("installColour orange")
 confile.writeLine("removeColour red")
+confile.writeLine("searchColour brown")
 confile.close()
 config["showVersion"] = "false"
 config["showRepository"] = "true"
 config["writeHistory"] = "true"
+config["loadPlugins"] = "true"
 config["sortAlphabetically"] = "false"
 config["showWelcomeScreen"] = "true"
+config["pluginPath"] = "/usr/share/mynaptic/plugins"
 config["historyPath"] = "/var/history"
 config["packmanPath"] = "/usr/bin/packman"
 config["backgroundColour"] = "gray"
@@ -583,29 +816,33 @@ config["instaledColour"] = "green"
 config["installColour"] = "orange"
 config["removeColour"] = "red"
 config["textColour"] = "black"
+config["searchColour"] = "brown"
 end
 
 term.setTextColor(colors.red)
-testConfig("showVersion","bool") 
-testConfig("showRepository","bool")
-testConfig("sortAlphabetically","bool")
-testConfig("showWelcomeScreen","bool")
-testConfig("historyPath")
-testConfig("packmanPath")
-testConfig("backgroundColour","col")
-testConfig("menuColour","col")
-testConfig("closeColour","col")
-testConfig("notinstaledColour","col")
-testConfig("instaledColour","col")
-testConfig("installColour","col")
-testConfig("removeColour","col")
-testConfig("textColour","col")
+mynaptic.testConfig("showVersion","bool") 
+mynaptic.testConfig("showRepository","bool")
+mynaptic.testConfig("sortAlphabetically","bool")
+mynaptic.testConfig("showWelcomeScreen","bool")
+mynaptic.testConfig("loadPlugins","bool")
+mynaptic.testConfig("pluginPath")
+mynaptic.testConfig("historyPath")
+mynaptic.testConfig("packmanPath")
+mynaptic.testConfig("backgroundColour","col")
+mynaptic.testConfig("menuColour","col")
+mynaptic.testConfig("closeColour","col")
+mynaptic.testConfig("notinstaledColour","col")
+mynaptic.testConfig("instaledColour","col")
+mynaptic.testConfig("installColour","col")
+mynaptic.testConfig("removeColour","col")
+mynaptic.testConfig("textColour","col")
+mynaptic.testConfig("searchColour","col")
 term.setTextColor(colors.white)
 
 
 if configstatus == false then
 print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run delete /etc/mynaptic and the the config will be rubuild by the next start")
-deleteVars()
+mynaptic.deleteVars()
 return 4
 end
 
@@ -631,7 +868,7 @@ packread.readLine()
 packread.readLine()
 
 local loop = true
-local packcou = 1
+packcou = 1
 while loop == true do
   textta[packcou] = packread.readLine()
   packread.readLine()
@@ -698,6 +935,21 @@ end
 
 lookUpdates()
 
+backupta = textta
+
+--Load Plugins
+if config["loadPlugins"] == "true" then
+
+if fs.isDir(config.pluginPath) == true then
+local pluginlist = fs.list(config.pluginPath)
+
+for _,plugname in ipairs(pluginlist) do
+  shell.run(config.pluginPath.."/"..plugname)
+end
+end
+
+end
+
 --Welcome Screen
 if config["showWelcomeScreen"] == "true" then
 term.setBackgroundColor(colors.white)
@@ -708,13 +960,13 @@ print("Welcome to Mynaptic!")
 print()
 print("This Programm is a GUI for Packman, the awesome package manager from lyqyd. It will help you to manage your packages. To get startet, just click \"Help\" at the menu bar.")
 print()
-print("Press any key to continue")
+print(lang.keyContinue)
 os.pullEvent("key_up")
 os.pullEvent("key_up")
 end
 --os.pullEvent("key_up")
-tpos = 1
-drawMenu()
+tpos = 0
+mynaptic.drawMenu()
 --statuscheck = {}
 local function mainMenu()
 local mainloop = true
@@ -722,33 +974,33 @@ while mainloop == true do
   ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" then
     if me == 1 then
-     if not(tpos+screenh == packcou) then
-      tpos = tpos + 1
-      drawMenu()
+     if not(tpos+screenh == packcou+1) then
+      if packcou > screenh-2 then
+        tpos = tpos + 1
+        mynaptic.drawMenu()
+      end
      end
     elseif me == -1 then
-       if not(tpos == 1) then
+       if not(tpos == 0) then
          tpos = tpos - 1
-         drawMenu()
+         mynaptic.drawMenu()
        end
     end
   elseif ev == "mouse_click" then
   --Leftclick
   if me == 1 then
   if y == 1 then
-    if x > 0 and x < 6 then
-      mainloop = nil
-      doChanges()
-    elseif x > 6 and x < 12 then
-      mainloop = nil
-      reload()
-    elseif x > 12 and x < 19 then
-      mainloop = nil
-      updatemenu()
-    elseif x > 19 and x < 26 then
-      configScreen()
-    elseif x > 26 and x < 31 then
-      helpMenu()
+    if x > 0 and x < lang.apply:len()+1 then
+      --mainloop = nil
+      mynaptic.doChanges()
+    elseif x > lang.apply:len()+1 and x < lang.apply:len()+lang.fetch:len()+2 then
+      mynaptic.reload()
+    elseif x > lang.apply:len()+lang.fetch:len()+2 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+3 then
+      mynaptic.updatemenu()
+    elseif x > lang.apply:len()+lang.fetch:len()+lang.update:len()+3 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+4 then
+      mynaptic.configScreen()
+    elseif x > lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+4 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+lang.help:len()+5 then
+      mynaptic.helpMenu()
     elseif x == screenw then
       mainloop = nil
       term.setBackgroundColor(colors.black)
@@ -774,33 +1026,78 @@ while mainloop == true do
       table.insert(install["list"],strte)
       install["check"][strte] = true
     end
-    drawMenu()
+    mynaptic.drawMenu()
   end
   elseif me == 2 then
     if not(y==1) then
       if not(y==screenh) then
-        getPackInfo(y-1)
+        mynaptic.getPackInfo(y-1)
       end
     end
   end
   elseif ev == "char" then
-    searchch = true
-    search = search..me
-    drawMenu()
+    if mynaptic.shellmode == true then
+      shelltext = shelltext..me
+      mynaptic.drawMenu()
+    else
+      searchch = true
+      search = search..me
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
   elseif ev == "key_up" then
     if me == keys.backspace then
-      search = string.sub(search,1,-2)
-      drawMenu()
+      if mynaptic.shellmode == true then
+        shelltext = shelltext:sub(1,-2)
+      else
+        search = string.sub(search,1,-2)
+        if search:len() == 0 then
+          textta = backupta
+        else
+          mynaptic.writeSearch()
+        end
+        tpos = 0
+      end
+      mynaptic.drawMenu()
     elseif me == keys.down then
-      if not(tpos+screenh == packcou) then
-      tpos = tpos + 1
-      drawMenu()
+      if not(tpos+screenh == packcou+1) then
+        if packcou > screenh-2 then
+          tpos = tpos + 1
+          mynaptic.drawMenu()
+        end
      end
     end
+    elseif me == keys.rightAlt then
+      mynaptic.debugmenu()
+    elseif me == keys.leftCtrl then
+      if mynaptic.shellmode == true then
+        mynaptic.shellmode = false
+      else
+        mynaptic.shellmode = true
+      end
+      mynaptic.drawMenu()
+    elseif me == keys.enter then
+      if mynaptic.shellmode == true then
+        local runstr,runargs
+        if shelltext:find(" ") == nil then
+          runstr = shelltext
+        else
+          runstr,runargs = wilmaapi.splitString(shelltext," ")
+        end
+        shelltext = ""
+        if type(shellcom[runstr]) == "function" then
+          shellcom[runstr](runargs)
+        else
+          term.setCursorPos(1,screenh)
+          term.clearLine()
+          write(lang.noCommand)
+        end
+      end
     elseif me == keys.up then
-     if not(tpos == 1) then
+     if not(tpos == 0) then
          tpos = tpos - 1
-         drawMenu()
+         mynaptic.drawMenu()
        end
     --end
   end
@@ -808,7 +1105,7 @@ end
 end
 mainMenu()
 
-deleteVars()
+mynaptic.deleteVars()
 
 return 0
 --Thanks for using this Programm and reading the
