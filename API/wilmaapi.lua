@@ -27,8 +27,10 @@ end
 
 function splitString(str,split)
 local a,b = str:match("([^"..split.."]+)"..split.."([^"..split.."]+)")
-local len = a:len()+split:len()+1
-local b = str:sub(len,-1)
+if not(a==nil) then
+  local len = a:len()+split:len()+1
+  local b = str:sub(len,-1)
+end
 return a,b
 end
 
@@ -124,5 +126,5 @@ return packagelist
 end
 
 function version()
-  return 3.1
+  return 3.2
 end
