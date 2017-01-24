@@ -332,8 +332,8 @@ name = wsh
   category = shell
   dependencies = wilma456/wilmaapi
   target = /usr/bin
-  version = 1.1
-  size = 4543
+  version = 2.0
+  size = 12682
 end
 
 name = faketime
@@ -343,8 +343,8 @@ name = faketime
   category = tools
   dependencies = none
   target = /usr/bin
-  version = 1.0
-  size = 307
+  version = 1.1
+  size = 380
 end
 
 name = fakeday
@@ -356,4 +356,15 @@ name = fakeday
   target = /usr/bin
   version = 1.0
   size = 291
+end
+
+name = fakeid
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/fakeid.lua
+   filename = fakeid
+  category = tools
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 191
 end
