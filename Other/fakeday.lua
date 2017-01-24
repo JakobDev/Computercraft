@@ -1,19 +1,23 @@
-if type(oldday) == "function" then
-  os.day = oldday
+if type(oldtime) == "function" then
+  os.time = oldtime
 end
 
-oldday = os.day
-write("Enter new day:")
-local newday = tonumber(read())
+oldtime = os.time
+write("Enter new time:")
+local newtime = tonumber(read())
 
-if newday == nil then
+if newtime == nil then
   print("Please enter number")
   return
 end
 
-local nowday = os.day()
-difday = newday-nowday
+local nowtime = os.time()
+diftime = newtime-nowtime
 
-function os.day()
-return oldday()+difday
+function os.time()
+if oldtime()+diftime >= 24 then
+  return oldtime()+diftime-24
+else
+  return oldtime()+diftime
+end
 end
