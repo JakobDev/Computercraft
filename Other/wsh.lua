@@ -25,13 +25,18 @@ table.insert(condef,"enableScroll true")
 table.insert(condef,"#Enable or Disable Vars")
 table.insert(condef,"#Note: Enableing vars my make your Shell slower")
 table.insert(condef,"enableVars true")
+table.insert(condef,"#Use the Shebang if exists")
+table.insert(condef,"enableShebang true")
+table.insert(condef,"#Make a copy of the file without Shebang and run this")
+table.insert(condef,"#This may be useful if the shebang causes a error")
+table.insert(condef,"removeShebang true")
 table.insert(condef,"#This function give the text at the start of each Line")
 table.insert(condef,"#You can use shell Vars.")
 table.insert(condef,"#Note: You can't use the shell API")
 table.insert(condef,'startLine return "$PWD+>"')
 table.insert(condef,"#This function is called when a command is not found")
 table.insert(condef,"#Note: You can't use the shell API")
-table.insert(condef,'commandNotFound write("")')
+table.insert(condef,'commandNotFound print("Command not found")')
 table.insert(condef,"#Select your Keys")
 table.insert(condef,"runKey enter")
 table.insert(condef,"deleteKey backspace")
@@ -75,6 +80,8 @@ testConfig("enableAutocomplete","bool")
 testConfig("saveHistory","bool")
 testConfig("enableScroll","bool")
 testConfig("enableVars","bool")
+testConfig("enableShebang","bool")
+testConfig("removeShebang")
 testConfig("startLine")
 testConfig("commandNotFound")
 testConfig("runKey","key")
@@ -115,7 +122,7 @@ local w,h = term.getSize()
 wsh.line = 1
 wsh.markx = {}
 wsh.marky = {}
-wsh.version = 2.0
+wsh.version = 2.1
 wsh.output = true
 wsh.varta = {}
 wsh.linewrite = false
@@ -345,7 +352,7 @@ comptest = false
       print()
       local varname,varcon = wilmaapi.splitString(runstr,"=")
       if varname == nil or varcon == nil then
-        print("Usage "..config.varsetCommand.. " <Varname>=<Varcon>")
+        print("Usage: "..config.varsetCommand.. " <Varname>=<Varcon>")
       else
         wsh.varta[varname] = varcon
       end
@@ -368,8 +375,50 @@ comptest = false
       --wsh.checkString()
       term.setCursorBlink(false)
       print()
-      if not(shell.run(runstr)==true) then
-        load(config["commandNotFound"])()
+      local runargs
+      local pro,arg = wilmaapi.splitString(runstr," ")
+      if pro == nil then
+        runargs = ""
+        pro = runstr
+      else
+        runargs = runstr:sub(pro:len()+1,-1)
+      end
+      local runpath = shell.resolveProgram(pro)
+      if runpath == nil then
+        if not(runstr=="") then
+          load(config["commandNotFound"])()
+        end
+      else
+        runpath = "/"..runpath
+        if config.enableShebang == "true" then
+          local sheread = fs.open(runpath,"r")
+          local exestr = sheread.readLine()
+          sheread:close()
+          if exestr:find("#!") == 1 then
+            if config.removeShebang == "true" then
+              local readfi = io.open(runpath,"r")
+              local writefi = fs.open("/tmp/wshrun","w")
+              local check = true
+              for linecon in readfi:lines() do
+                if check == true then
+                  check = nil
+                else
+                  writefi.writeLine(linecon)
+                end
+              end
+              writefi.close()
+              readfi:close()
+              exestr = exestr:sub(3,-1).." /tmp/wshrun"
+            else
+              exestr = exestr:sub(3,-1).." "..runpath
+            end
+          else
+            exestr = runpath
+          end
+          shell.run(exestr..runargs)
+        else
+          shell.run(runpath..runargs)
+        end
       end
       runstr = ""
       --wsh.afterRun()
