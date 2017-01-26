@@ -2,6 +2,7 @@
 print("Starting Mynaptic Please Wait ...")
 
 os.loadAPI("wilmaapi")
+os.loadAPI("clipboard")
 
 if term.isColor() == false or pocket then
   print("This Programm only run on a Advanced Computer or a Advaced Turtle")
@@ -14,9 +15,15 @@ if wilmaapi == nil then
   return 3
 end
 
+if clipboard == nil then
+  term.setTextColor(colors.red)
+  print("Error whith loading clipboard API")
+  return 3
+end
+
 mynaptic = {}
 
-mynaptic.version = 4.0
+mynaptic.version = 4.1
 
 mynaptic.shellmode = false
 
@@ -73,8 +80,7 @@ tmpta["con"] = [[Use the mousewhell or the arrwo keys to scroll. You can mark pa
 
 Exit Mynaptic by clicking to "X" in to right up corner
 To use the search, just write your text
-
-Warning: The search is a little bit buggy]]
+]]
 
 table.insert(helpta,tmpta)
 
@@ -105,6 +111,15 @@ table.insert(helpta,tmpta)
 tmpta = {}
 tmpta["titel"] = "Use History"
 tmpta["con"] = [[In the default config, Mynaptic write all changes to the file /var/history]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Use Clipboard"
+tmpta.con = [[You can use the system clipboard by pressing Ctrl+V
+
+You can use the clipboard from the clipboard API by pressing the mousewhell
+]]
 
 table.insert(helpta,tmpta)
 
@@ -158,7 +173,7 @@ table.insert(helpta,tmpta)
 
 tmpta = {}
 tmpta["titel"] = "About"
-tmpta["con"] = "This is Mynaptic Version 3.1 made by Wilma456"
+tmpta["con"] = "This is Mynaptic Version "..mynaptic.version.." made by Wilma456"
 
 table.insert(helpta,tmpta)
 
@@ -987,8 +1002,20 @@ while mainloop == true do
        end
     end
   elseif ev == "mouse_click" then
+  --Mousewheel
+  if me == 3 then
+    if mynaptic.shellmode == true then
+      shelltext = shelltext..clipboard.getTextLine()
+      mynaptic.drawMenu()
+    else
+      searchch = true
+      search = search..clipboard.getTextLine()
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
   --Leftclick
-  if me == 1 then
+  elseif me == 1 then
   if y == 1 then
     if x > 0 and x < lang.apply:len()+1 then
       --mainloop = nil
@@ -1036,6 +1063,17 @@ while mainloop == true do
     end
   end
   elseif ev == "char" then
+    if mynaptic.shellmode == true then
+      shelltext = shelltext..me
+      mynaptic.drawMenu()
+    else
+      searchch = true
+      search = search..me
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
+  elseif ev == "paste" then
     if mynaptic.shellmode == true then
       shelltext = shelltext..me
       mynaptic.drawMenu()
