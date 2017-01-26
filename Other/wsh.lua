@@ -9,9 +9,15 @@ if term.isColour() == false then
 end
 
 os.loadAPI("/usr/apis/wilmaapi")
+os.loadAPI("clipboard")
 
 if wilmaapi == nil then
   print("Can't found wilmaapi. If you have it unistalled, run \"packman install wilmaapi\" to reinstall it")
+  return
+end
+
+if clipboard == nil then
+  print("Can't found Clipboard API. If you have it unistalled, run \"packman install clipboard\" to reinstall it")
   return
 end
 
@@ -122,7 +128,7 @@ local w,h = term.getSize()
 wsh.line = 1
 wsh.markx = {}
 wsh.marky = {}
-wsh.version = 2.1
+wsh.version = 2.2
 wsh.output = true
 wsh.varta = {}
 wsh.linewrite = false
@@ -419,6 +425,9 @@ comptest = false
         else
           shell.run(runpath..runargs)
         end
+        if fs.exists("/tmp/wshrun") == true then
+          fs.delete("/tmp/wshrun")
+        end
       end
       runstr = ""
       --wsh.afterRun()
@@ -552,9 +561,15 @@ elseif ev == "paste" then
   comptest = false
   runstr = runstr..me
   write(me)
+elseif ev =="mouse_click" then
+  if me == 3 then
+    comptest = false
+    runstr = runstr..clipboard.getTextLine()
+    write(clipboard.getTextLine())
+  end
 elseif ev == "mouse_drag" then
   --wsh.markx[x] = true
   --wsh.marky[y] = true
-  --wsh.redrawScreen()
+  --wsh.redrawScreen() 
 end
 end
