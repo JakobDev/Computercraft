@@ -34,10 +34,10 @@ name = mynaptic
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Mynaptic.lua
    filename = Mynaptic
   category = packman
-  dependencies = main/packman wilma456/wilmaapi
+  dependencies = main/packman wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 4.0
-  size = 28152
+  version = 4.1
+  size = 29058
 end
 
 
@@ -330,10 +330,10 @@ name = wsh
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/wsh.lua
    filename = wsh
   category = shell
-  dependencies = wilma456/wilmaapi
+  dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
   version = 2.1
-  size = 14352
+  size = 14783
 end
 
 name = faketime
@@ -368,3 +368,15 @@ name = fakeid
   version = 1.0
   size = 191
 end
+
+name = clipboard
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/API/clipboard.lua
+   filename = clipboard
+  category = api
+  dependencies = none
+  target = /usr/apis
+  version = 1.0
+  size = 718
+end
+
