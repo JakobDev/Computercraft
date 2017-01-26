@@ -332,7 +332,7 @@ name = wsh
   category = shell
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 2.1
+  version = 2.2
   size = 14783
 end
 
