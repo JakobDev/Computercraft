@@ -39,7 +39,7 @@ if os.clipcon then
   if os.clipcon.type == "text" then
     local linecon = os.clipcon.con:match("([^\n]+)\n([^\n]+)")
     if linecon == nil then
-      return os.clipcon.con
+      return os.clipcon.con:gsub("\n","")
     else
       return linecon
     end
