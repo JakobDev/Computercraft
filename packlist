@@ -376,7 +376,17 @@ name = clipboard
   category = api
   dependencies = none
   target = /usr/apis
-  version = 1.0
-  size = 718
+  version = 1.1
+  size = 732
 end
 
+name = readpaste
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/readpaste.lua
+   filename = readpaste
+  category = tools
+  dependencies = wilma456/clipboard
+  target = /usr/bin
+  version = 1.0
+  size = 943
+end
