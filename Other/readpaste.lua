@@ -45,10 +45,5 @@ return readcopy
 end
 
 if not(Args[1] == "mute") then
-  term.clear()
-  term.setCursorPos(1,1)
   print("All Done! You can now click the Mousewhell to paste Text from the Clipboard API to Textfiels who are made with read()")
 end
-
-shell.exit()
-shell.run("shell")
