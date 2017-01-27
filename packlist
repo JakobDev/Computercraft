@@ -387,6 +387,6 @@ name = readpaste
   category = tools
   dependencies = wilma456/clipboard
   target = /usr/bin
-  version = 1.0
-  size = 943
+  version = 1.1
+  size = 870
 end
