@@ -36,6 +36,8 @@ table.insert(condef,"enableShebang true")
 table.insert(condef,"#Make a copy of the file without Shebang and run this")
 table.insert(condef,"#This may be useful if the shebang causes a error")
 table.insert(condef,"removeShebang true")
+table.insert(condef,"#Enable selecting text")
+table.insert(condef,"enableTextSelect true")
 table.insert(condef,"#This function give the text at the start of each Line")
 table.insert(condef,"#You can use shell Vars.")
 table.insert(condef,"#Note: You can't use the shell API")
@@ -49,6 +51,7 @@ table.insert(condef,"deleteKey backspace")
 table.insert(condef,"completeKey tab")
 table.insert(condef,"historyUpKey up")
 table.insert(condef,"historyDownKey down")
+table.insert(condef,"copyKey rightAlt")
 table.insert(condef,"exitCommand exit")
 table.insert(condef,"historyCommand history")
 table.insert(condef,"aboutCommand about")
@@ -87,7 +90,8 @@ testConfig("saveHistory","bool")
 testConfig("enableScroll","bool")
 testConfig("enableVars","bool")
 testConfig("enableShebang","bool")
-testConfig("removeShebang")
+testConfig("removeShebang","bool")
+testConfig("enableTextSelect","bool")
 testConfig("startLine")
 testConfig("commandNotFound")
 testConfig("runKey","key")
@@ -95,6 +99,7 @@ testConfig("deleteKey","key")
 testConfig("completeKey","key")
 testConfig("historyUpKey","key")
 testConfig("historyDownKey","key")
+testConfig("copyKey","key")
 testConfig("exitCommand")
 testConfig("historyCommand")
 testConfig("aboutCommand")
@@ -126,12 +131,16 @@ local hiscou = 1
 local histempcou = 1
 local w,h = term.getSize()
 wsh.line = 1
-wsh.markx = {}
-wsh.marky = {}
+wsh.mark = {}
 wsh.version = 2.2
 wsh.output = true
 wsh.varta = {}
 wsh.linewrite = false
+wsh.markx = {}
+wsh.marky = {}
+wsh.cliplines = 1
+wsh.clipstart = term.getSize()
+wsh.clipend = 1
 
 wsh.varta.PWD = function() return "/"..shell.dir() end
 wsh.varta.TIME = os.time
@@ -445,7 +454,15 @@ for i=1,h,1 do
   if type(termcon[i+wsh.line-1]) == "table" then
     local workta = termcon[i+wsh.line-1]
     if type(workta.text) == "string" then
-      term.blit(workta.text,workta.colour,workta.background)
+	  local colstr = workta.background
+      if type(wsh.mark[i-1]) == "table" then
+        for _,pos in ipairs(wsh.mark[i-1]) do
+          if not (pos > workta.text:len()) then
+          colstr = colstr:sub(1, pos-1) .."8".. colstr:sub(pos+1)
+          end
+        end
+      end
+      term.blit(workta.text,workta.colour,colstr)
       oldprint()
     else 
     for cou,con in ipairs(termcon[i+wsh.line-1]) do
@@ -453,11 +470,11 @@ for i=1,h,1 do
       if not(con.colour==nil) then
         term.setTextColour(con["colour"])
       end
-      if wsh.marky[i] == true then
-        if wsh.markx[cou] == true then
-          term.setBackgroundColor(colors.gray)
-        end
-      end
+        --if wsh.marky[i] == true then
+       -- if wsh.markx[cou] == true then
+        --  term.setBackgroundColor(colors.gray)
+       -- end
+      --end
       if not(con["text"]==nil) then
         oldwrite(con["text"])
       end
@@ -490,8 +507,12 @@ local ev,me,x,y = os.pullEvent()
 term.setCursorBlink(true)
 if ev == "mouse_scroll" then
   if config.enableScroll == "true" then
+  wsh.mark = {}
   wsh.markx = {}
-  wsh.marky ={}
+  wsh.marky = {}
+  wsh.clipstart = term.getSize()
+  wsh.cliplines = 1
+  wsh.clipend = 1
   if me == 1 then
     wsh.line = wsh.line + 1
     wsh.redrawScreen()
@@ -511,6 +532,7 @@ elseif ev == "key_up" then
       exit = nil
       break
     end
+  --[[
   elseif me == keys[config.deleteKey] then
     comptest = false
     runstr = runstr:sub(1,-2)
@@ -518,6 +540,7 @@ elseif ev == "key_up" then
     term.clearLine()
     term.setCursorPos(1,y)
     writeLine()
+  ]]--
   elseif me == keys[config.completeKey] then
     if config["enableAutocomplete"] == "true" then
     if comptest == true then
@@ -542,6 +565,32 @@ elseif ev == "key_up" then
       end
    end
    end
+  elseif me == keys[config.copyKey] then
+    local clipstr = ""
+    local newline = false
+    --local w,h = term.getSize()
+    for i=1,wsh.cliplines do
+      if type(termcon[i+wsh.line]["text"]) == "string" then
+        for k=1,#termcon[i+wsh.line]["text"] do
+          if wsh.marky[i] == true then
+            if wsh.markx[i][k] == true then
+              clipstr = clipstr..termcon[i+wsh.line]["text"]:sub(k,k)
+              newline = true
+            else
+              if not(k<wsh.clipstart) then
+                if not(k>wsh.clipend) then
+                  clipstr = clipstr.." "
+                end
+              end
+            end
+          end
+        end
+        if newline == true then
+          clipstr = clipstr.."\n"
+        end
+      end
+    end
+    clipboard.setText(clipstr)
   elseif me == keys[config.historyUpKey] then
     comptest = false
     if not(histempcou==1) then
@@ -561,15 +610,42 @@ elseif ev == "paste" then
   comptest = false
   runstr = runstr..me
   write(me)
-elseif ev =="mouse_click" then
+elseif ev == "mouse_click" then
   if me == 3 then
     comptest = false
     runstr = runstr..clipboard.getTextLine()
     write(clipboard.getTextLine())
   end
+elseif ev == "key" then
+   if me == keys[config.deleteKey] then
+    comptest = false
+    runstr = runstr:sub(1,-2)
+    local x,y = term.getCursorPos()
+    term.clearLine()
+    term.setCursorPos(1,y)
+    writeLine()
+   end
 elseif ev == "mouse_drag" then
-  --wsh.markx[x] = true
-  --wsh.marky[y] = true
-  --wsh.redrawScreen() 
+  if config.enableTextSelect == "true" then
+  if not(type(wsh.mark[y]) == "table") then
+    wsh.mark[y] = {}
+  end
+  if not(type(wsh.markx[y]) == "table") then
+    wsh.markx[y] = {}
+  end
+  table.insert(wsh.mark[y],x)
+  wsh.markx[y][x] = true
+  wsh.marky[y] = true
+  if y > wsh.cliplines then
+    wsh.cliplines = y
+  end
+  if x < wsh.clipstart then
+    wsh.clipstart = x
+  end
+  if x > wsh.clipend then
+    wsh.clipend = x
+  end
+  wsh.redrawScreen()
+  end
 end
 end
