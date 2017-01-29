@@ -332,8 +332,8 @@ name = wsh
   category = shell
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 2.2
-  size = 14783
+  version = 2.3
+  size = 16846
 end
 
 name = faketime
@@ -389,4 +389,15 @@ name = readpaste
   target = /usr/bin
   version = 1.1
   size = 870
+end
+
+name = filecopy
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/filecopy.lua
+   filename = filecopy
+  category = tools
+  dependencies = wilma456/clipboard
+  target = /usr/bin
+  version = 1.0
+  size = 411
 end
