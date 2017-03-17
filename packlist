@@ -401,3 +401,15 @@ name = filecopy
   version = 1.0
   size = 411
 end
+
+name = mineshark
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/Mineshark.lua
+   filename = Mineshark
+  category = tools
+  dependencies = wilma456/wilmaapi wilma456/clipboard
+  target = /usr/bin
+  version = 1.0
+  size = 5053
+end
+
