@@ -24,7 +24,7 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 5.0
+mynaptic.version = 5.1
 
 mynaptic.shellmode = false
 
@@ -1034,6 +1034,7 @@ table.insert(mynaptic.menubar,{text = lang.history,func = mynaptic.history})
 
 textta = {}
 packcou = 0
+shell.run(config.packmanPath.." install")
 for name,con in pairs(package.list) do
   if type(con.version) == "string" then
     if type(package.installed[name]) == "table" then
