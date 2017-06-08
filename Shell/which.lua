@@ -1,6 +1,6 @@
 local Arg = {...}
 if Arg[1] == nil then
-print("Usage: whois <command>")
+print("Usage: which <command>")
 return
 end
 local path = shell.resolveProgram(Arg[1])
