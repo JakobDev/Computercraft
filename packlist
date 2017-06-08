@@ -36,8 +36,8 @@ name = mynaptic
   category = packman
   dependencies = main/packman wilma456/wilmaapi wilma456/clipboard main/package
   target = /usr/bin
-  version = 5.1
-  size = 33026
+  version = 6.0
+  size = 35801
 end
 
 
@@ -229,9 +229,9 @@ name = pwd
   size = 24
 end
 
-name = whois
+name = which
   type = raw
-   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/whois.lua
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/which.lua
    filename = whois
   category = shell
   dependencies = none
@@ -243,7 +243,7 @@ end
 name = shellutils
   type = meta
 	category = shell
-	dependencies = wilma456/whois wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat
+	dependencies = wilma456/which wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat
 	version = 1.1
 	size = 0
 end
