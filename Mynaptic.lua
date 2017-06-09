@@ -1,8 +1,8 @@
 --Made by Wilma456
 print("Starting Mynaptic Please Wait ...")
 
-os.loadAPI("wilmaapi")
-os.loadAPI("clipboard")
+os.loadAPI("/usr/apis/wilmaapi")
+os.loadAPI("/usr/apis/clipboard")
 --os.loadAPI("package")
 
 if term.isColor() == false or pocket then
@@ -24,7 +24,7 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 6
+mynaptic.version = 6.1
 
 mynaptic.shellmode = false
 
