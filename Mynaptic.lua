@@ -3,7 +3,6 @@ print("Starting Mynaptic Please Wait ...")
 
 os.loadAPI("/usr/apis/wilmaapi")
 os.loadAPI("/usr/apis/clipboard")
---os.loadAPI("package")
 
 if term.isColor() == false or pocket then
   print("This Programm only run on a Advanced Computer or a Advaced Turtle")
@@ -11,25 +10,23 @@ if term.isColor() == false or pocket then
 end
 
 if wilmaapi == nil then
-  term.setTextColor(colors.red)
-  print("Error whith loading wilmaapi")
+  printError("Error whith loading wilmaapi")
   return 3
 end
 
 if clipboard == nil then
-  term.setTextColor(colors.red)
-  print("Error whith loading clipboard API")
+  printError("Error whith loading clipboard API")
   return 3
 end
 
 mynaptic = {}
 
-mynaptic.version = 6.1
+mynaptic.version = 7.0
 
 mynaptic.shellmode = false
 
 local packinfo = wilmaapi.readPackmanRepo()
---print("If Mynaptic does not start and you see this errot, try to delete /etc/mynaptic")
+
 function getPrint(text)
 packlist.writeLine(text)
 rcou = rcou + 1
@@ -41,8 +38,8 @@ mynaptic.screenh = screenh
 
 --Write lang
 lang = {}
-lang["keyContinue"] = "Press any Key to continue"
-lang["search"] = "Search:"
+lang.keyContinue = "Press any Key to continue"
+lang.search = "Search:"
 lang.shell = "Shell:"
 lang.noCommand = "Command not found"
 lang.packNotFound = "Package not found"
@@ -60,6 +57,7 @@ lang.installed = "Installed:"
 lang.updateAviable = "Update aviable:"
 lang.filename = "Filename:"
 lang.target = "Target:"
+lang.typ = "Type:"
 lang.size = "Size:"
 lang.version = "Version:"
 lang.category = "Category:"
@@ -70,6 +68,7 @@ lang.removePack = "These Packages will be removed:"
 lang.updatePack = "These Packages will be updated:"
 lang.youEdit = "You Edit:"
 lang.old = "Old:"
+lang.needRestart = "Needs Restart"
 lang.selectColour = "Please select a Colour"
 lang.newEntry = "New Entry:"
 lang.newEntryText = "Please enter new Entry"
@@ -118,19 +117,16 @@ tmpta["con"] = [[The red software are installed. Click on it to mark it to remov
 
 If you have choose your software, just click "Apply"
 ]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
 tmpta["titel"] = "Get more Information"
 tmpta["con"] = "If you want more information about a package, just rightclick it"
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
 tmpta["titel"] = "Use History"
 tmpta["con"] = [[In the default config, Mynaptic write all changes to the file /var/MynapticHistory.txt. To view the content of the file, use the Historymenu.]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -139,7 +135,6 @@ tmpta.con = [[You can use the system clipboard by pressing Ctrl+V
 
 You can use the clipboard from the clipboard API by pressing the mousewhell
 ]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -152,7 +147,6 @@ If you get any config errors by runing Mynaptic (maybe after update) and don't w
 
 Lines in /etc/mynaptic who are started with # are ignored.
 ]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -164,10 +158,9 @@ tmpta = {}
 tmpta["titel"] = "On what Devices run Mynaptic"
 tmpta["con"] = [[Mynaptic fully supports Advanced Computers
 
-On Turtles you haave only the main function. You don't have acces to the config or help menu
+The Helpmenu doesn't works full on a turle. Other thinks work.
 
 Other Devices are not supported]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -176,7 +169,11 @@ tmpta["con"] = [[With Plugins you can modify Mynaptic e.g another language or an
 
 Simple place Plugins in the pluginFoler (default /usr/share/mynaptic/plugins) and be sure, thet loadPlugins is true
 ]]
+table.insert(helpta,tmpta)
 
+tmpta = {}
+tmpta.titel = "Develop Plugins"
+tmpta.con = "To install the developer Documentation install the Package mynaptic-plugindev and view the help with 'ghv Mynaptic'"
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -191,7 +188,6 @@ tmpta["con"] = [[You can report bugs or left feedback at this sites:
 http://www.computercraft.info/forums2/index.php?/topic/27327-mynaptic-a-gui-for-packman/
 
 https://github.com/Wilma456/Computercraft/issues]]
-
 table.insert(helpta,tmpta)
 
 tmpta = {}
@@ -267,7 +263,6 @@ end
 
 function mynaptic.setLineColor(text,arrow)
 if type(text) == "string" then
---term.write( text .. string.rep( ' ', term.getSize() - #text ) )
 term.clearLine()
 term.write(text)
 local x,y = term.getCursorPos()
@@ -314,7 +309,7 @@ for key,menuitem in ipairs(mynaptic.menubar) do
     menutext = menutext..menuitem.text.." "
 end
 mynaptic.setLineColor(menutext)
-term.setCursorPos(screenw,1)
+term.setCursorPos(mynaptic.screenw,1)
 term.setBackgroundColor(colors[config["closeColour"]])
 print("X")
 if tpos ~= 0 and config.showScrollArrows == "true" then
@@ -325,15 +320,15 @@ end
 for i=3,mynaptic.screenh-2 do
     mynaptic.drawLine(textta[tpos+i-1]," ")
 end
-if tpos+screenh ~= packcou+1 and config.showScrollArrows == "true" then
+if tpos+mynaptic.screenh-2 ~= #textta and config.showScrollArrows == "true" then
    mynaptic.drawLine(textta[tpos+mynaptic.screenh-2],"\31")
 else
     mynaptic.drawLine(textta[tpos+mynaptic.screenh-2]," ")
 end
-term.setCursorPos(1,screenh)
+term.setCursorPos(1,mynaptic.screenh)
 term.setBackgroundColor(colors[config["searchColour"]])
-term.write(string.rep( ' ', term.getSize()))
-term.setCursorPos(1,screenh)
+term.clearLine()
+term.setCursorPos(1,mynaptic.screenh)
 if mynaptic.shellmode == true then
   write(lang.shell..shelltext)
 else
@@ -499,9 +494,14 @@ local getname = textta[tpos+ypos]:sub(3,-1)
 getname = wilmaapi.splitString(getname," ")
 print(lang.name.." "..tostring(getname))
 print(lang.installed.." "..tostring(installtest))
-print(lang.target.." "..package.list[getname]["target"])
-print(lang.filename.." "..tostring(package.list[getname]["download"]["type"]["filename"]))
-print(lang.size.." "..tostring(package.list[getname]["size"]).." Bytes")
+if package.list[getname]["download"]["type"]["type"] ~= "meta" then
+    print(lang.target.." "..package.list[getname]["target"])
+    print(lang.filename.." "..tostring(package.list[getname]["download"]["type"]["filename"]))
+end
+print(lang.typ.." "..tostring(package.list[getname]["download"]["type"]["type"]))
+if package.list[getname]["download"]["type"]["type"] ~= "meta" then
+    print(lang.size.." "..tostring(package.list[getname]["size"]).." Bytes")
+end
 print(lang.version.." "..tostring(package.list[getname]["version"]))
 io.write(lang.category.. " ")
 for cate,_ in pairs(package.list[getname]["category"]) do
@@ -526,7 +526,7 @@ os.pullEvent("key_up")
 mynaptic.drawMenu()
 end
 
-function mynaptic.configNormal(entry)
+function mynaptic.configNormal(entry,restart)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.newEntryText)
@@ -535,15 +535,18 @@ print(lang.youEdit.." "..entry)
 print()
 print(lang.old.." "..config[entry])
 print()
+if restart == true then
+    print(lang.needRestart)
+    print()
+end
 write(lang.newEntry)
 local input = read()
 if not(input=="") then
   config[entry] = input
 end
---mynaptic.configScreen()
 end
 
-function mynaptic.configColor(entry)
+function mynaptic.configColor(entry,restart)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.selectColour)
@@ -569,10 +572,9 @@ if y == 7 then
   end
 end
 end
---mynaptic.configScreen()
 end
 
-function mynaptic.configBool(entry)
+function mynaptic.configBool(entry,restart)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.boolEntry)
@@ -586,6 +588,11 @@ write("true ")
 term.setTextColor(colors.red)
 write("false")
 term.setTextColor(colors.black)
+if restart == true then
+    print()
+    print()
+    print(lang.needRestart)
+end
 while true do
 local ev,me,x,y = os.pullEvent("mouse_click")
 if y == 7 then
@@ -598,10 +605,9 @@ if y == 7 then
   end   
 end
 end
---mynaptic.configScreen()
 end
 
-function mynaptic.configKey(entry)
+function mynaptic.configKey(entry,restart)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.keyEntry)
@@ -612,7 +618,6 @@ print(lang.old.." "..config[entry])
 print()
 local ev,me = os.pullEvent("key_up")
 config[entry] = keys.getName(me)
---mynaptic.configScreen()
 end
 
 function mynaptic.configScreen()
@@ -660,13 +665,13 @@ elseif ev == "mouse_click" then
     break
   elseif type(configed[configpos+y]) == "table" then
     if configed[configpos+y]["contype"] == "col" then
-      mynaptic.configColor(configed[configpos+y]["name"])
+      mynaptic.configColor(configed[configpos+y]["name"],configed[configpos+y]["restart"])
     elseif configed[configpos+y]["contype"] == "bool" then
-      mynaptic.configBool(configed[configpos+y]["name"])
+      mynaptic.configBool(configed[configpos+y]["name"],configed[configpos+y]["restart"])
     elseif configed[configpos+y]["contype"] == "key" then
-      mynaptic.configKey(configed[configpos+y]["name"])
+      mynaptic.configKey(configed[configpos+y]["name"],configed[configpos+y]["restart"])
     else
-      mynaptic.configNormal(configed[configpos+y]["name"])
+      mynaptic.configNormal(configed[configpos+y]["name"],configed[configpos+y]["restart"])
     end
   end
 end
@@ -685,8 +690,18 @@ term.setBackgroundColor(colors[config.menuBackgroundColour])
 term.setTextColor(colors[config.menuTextColour])
 term.clear()
 term.setCursorPos(1,1)
-for _,helpna in ipairs(helpta) do
-  print(helpna["titel"])
+for i=1,mynaptic.screenh-1 do
+    if type(helpta[i+mynaptic.helpos]) == "table" then
+        print(helpta[i+mynaptic.helpos]["titel"])
+    end
+end
+if mynaptic.helpos ~= 0 and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+end
+if mynaptic.helpos+mynaptic.screenh-1 ~= #helpta and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
 end
 term.setCursorPos(1,screenh)
 term.setBackgroundColor(colors[config.bottomBarColour])
@@ -704,6 +719,7 @@ print(lang["keyContinue"])
 end
 
 function mynaptic.helpMenu()
+mynaptic.helpos = 0
 mynaptic.helpList()
 while true do
 local ev,me,x,y = os.pullEvent()
@@ -711,11 +727,23 @@ if ev == "mouse_click" then
   if y == screenh then
     mynaptic.drawMenu()
     break
-  elseif type(helpta[y]) == "table" then
-    mynaptic.showHelp(y)
+  elseif type(helpta[mynaptic.helpos+y]) == "table" then
+    mynaptic.showHelp(mynaptic.helpos+y)
     os.pullEvent("key_up")
     mynaptic.helpList()
   end
+elseif ev == "mouse_scroll" then
+    if me == 1 then
+        if mynaptic.helpos+mynaptic.screenh-1 ~= #helpta then
+            mynaptic.helpos = mynaptic.helpos + 1
+            mynaptic.helpList()
+        end
+    elseif me == -1 then
+        if mynaptic.helpos ~= 0 then
+            mynaptic.helpos = mynaptic.helpos - 1
+            mynaptic.helpList()
+        end
+    end
 elseif ev == "key_up" then
   if me == keys.backspace then
     mynaptic.drawMenu()
@@ -810,7 +838,7 @@ for _,sete in ipairs(backupta) do
 end
 end
 
-function mynaptic.testConfig(name,contype)
+function mynaptic.testConfig(name,contype,restart)
 if not(type(config[name]) == "string") then
 print("There is no config entry for "..name) 
 configstatus = false
@@ -834,6 +862,7 @@ local tmpta = {}
 tmpta.contype = contype
 tmpta.name = name
 tmpta.con = config[name]
+tmpta.restart = restart
 table.insert(configed,tmpta)
 mynaptic.configcou = mynaptic.configcou + 1
 end
@@ -955,11 +984,11 @@ term.setTextColor(colors.red)
 mynaptic.testConfig("showVersion","bool") 
 mynaptic.testConfig("showRepository","bool")
 mynaptic.testConfig("writeHistory","bool")
-mynaptic.testConfig("sortAlphabetically","bool")
-mynaptic.testConfig("loadPlugins","bool")
+mynaptic.testConfig("sortAlphabetically","bool",true)
+mynaptic.testConfig("loadPlugins","bool",true)
 mynaptic.testConfig("showExitText","bool")
 mynaptic.testConfig("showScrollArrows","bool")
-mynaptic.testConfig("pluginPath")
+mynaptic.testConfig("pluginPath",nil,true)
 mynaptic.testConfig("historyPath")
 mynaptic.testConfig("packmanPath")
 mynaptic.testConfig("backgroundColour","col")
@@ -1026,23 +1055,9 @@ end
 
 backupta = textta
 
---Load Plugins
-if config["loadPlugins"] == "true" then
-
-if fs.isDir(config.pluginPath) == true then
-local pluginlist = fs.list(config.pluginPath)
-
-for _,plugname in ipairs(pluginlist) do
-  shell.run(config.pluginPath.."/"..plugname)
-end
-end
-
-end
-
 tpos = 0
-mynaptic.drawMenu()
---statuscheck = {}
-local function mainMenu()
+
+function mynaptic.mainMenu()
 local mainloop = true
 while mainloop == true do
   ev,me,x,y = os.pullEvent()
@@ -1059,8 +1074,6 @@ while mainloop == true do
         local tmpta = con
         if mynaptic.dragx > coustr then
           if mynaptic.dragx < con.text:len()+coustr+1 then
-            --table.insert(mynaptic.menubar,cou,mynaptic.menubar[mynaptic.menuitem])
-            --table.remove(mynaptic.menubar,mynaptic.menuitem)
             mynaptic.menubar[cou] = mynaptic.menubar[mynaptic.menuitem]
             mynaptic.menubar[mynaptic.menuitem] = tmpta
             mynaptic.drawMenu()
@@ -1073,14 +1086,12 @@ while mainloop == true do
      end
   elseif ev == "mouse_scroll" then
     if me == 1 then
-     if not(tpos+screenh == packcou+1) then
-      if packcou > screenh-2 then
-        tpos = tpos + 1
-        mynaptic.drawMenu()
-      end
-     end
+        if tpos+mynaptic.screenh-2 ~= #textta then
+          tpos = tpos + 1
+          mynaptic.drawMenu()
+        end
     elseif me == -1 then
-       if not(tpos == 0) then
+       if tpos ~= 0 then
          tpos = tpos - 1
          mynaptic.drawMenu()
        end
@@ -1101,19 +1112,6 @@ while mainloop == true do
   --Leftclick
   elseif me == 1 then
   if y == 1 then
-    --[[
-    if x > 0 and x < lang.apply:len()+1 then
-      --mainloop = nil
-      mynaptic.doChanges()
-    elseif x > lang.apply:len()+1 and x < lang.apply:len()+lang.fetch:len()+2 then
-      mynaptic.reload()
-    elseif x > lang.apply:len()+lang.fetch:len()+2 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+3 then
-      mynaptic.updatemenu()
-    elseif x > lang.apply:len()+lang.fetch:len()+lang.update:len()+3 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+4 then
-      mynaptic.configScreen()
-    elseif x > lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+4 and x < lang.apply:len()+lang.fetch:len()+lang.update:len()+lang.config:len()+lang.help:len()+5 then
-      mynaptic.helpMenu()
-    --]]
     if x == mynaptic.screenw then
       mainloop = nil
       term.setBackgroundColor(colors.black)
@@ -1192,6 +1190,9 @@ while mainloop == true do
       mynaptic.getPackInfo(y-1)
     end
   end
+  elseif ev == "term_resize" then
+    mynaptic.screenw,mynaptic.screenh = term.getSize()
+    mynaptic.drawMenu()
   elseif ev == "char" then
     if mynaptic.shellmode == true then
 	  mynaptic.completemode = false
@@ -1295,7 +1296,19 @@ while mainloop == true do
   end
 end
 end
-mainMenu()
+
+--Load Plugins
+if config["loadPlugins"] == "true" then
+  if fs.isDir(config.pluginPath) == true then
+    local pluginlist = fs.list(config.pluginPath)
+    for _,plugname in ipairs(pluginlist) do
+      shell.run(config.pluginPath.."/"..plugname)
+    end
+  end
+end
+
+mynaptic.drawMenu()
+mynaptic.mainMenu()
 
 mynaptic.deleteVars()
 
