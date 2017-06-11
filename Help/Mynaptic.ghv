@@ -1,0 +1,169 @@
+# Overview
+Welcome to Mynaptic Plugin Documentation!
+
+If you want to know, how to use Mynaptic, use the Help Menu.
+
+Select section with left/right arrow
+
+Scroll with the Mousewheel
+
+#General
+Plugins are normal Programs that are started with Mynaptic. It must be placed in the Path, that is configed in Mynaptic (Default /usr/share/mynaptic/plugins).
+
+You can download a example Plugin with install the package mynaptic-pluginexample
+
+Note: Something might be changed in newer Versions
+
+#All Functions
+_mynaptic.setShellText(text)_
+Show Text in the Searchbar
+
+_mynaptic.drawMenu()_
+Show the Main Menu.
+
+_mynaptic.doChanges()_
+This Menu called, when you click "Apply"
+
+_mynaptic.reload()_
+This Menu called, when you click "Fetch"
+
+_mynaptic.updatemenu()_
+This Menu called, when you click "Update"
+
+_mynaptic.debugmenu()_
+The Debugmenu
+
+_mynaptic.getPackInfo(ypos)_
+Show Information about a Package. ypos is the y-Position of the Mouse when clicking
+
+_mynaptic.configNormal(entry,restart)_
+Config a normal entry. Entry must be in the config table. If restart is true, it will show the text "Needs Restart".
+
+_mynaptic.configColor(entry,restart)_
+Config a colour. Entry must be in the config table. If restart is true, it will show the text "Needs Restart".
+
+_mynaptic.configBool(entry,restart)_
+Config a boolean. Entry must be in the config table. If restart is true, it will show the text "Needs Restart".
+
+_mynaptic.configKey(entry,restart)_
+Config a Key. Entry must be in the config table. If restart is true, it will show the text "Needs Restart".
+
+_mynaptic.configScreen()_
+This Menu called, when you click "Config"
+
+_mynaptic.helpList()_
+Show a List with all Helppages
+
+_mynaptic.showHelp(num)_
+Show a Helppage
+
+_mynaptic.helpMenu()_
+This Menu called, when you click "History"
+
+_mynaptic.writeSearch()_
+Update the List with Packages
+
+_mynaptic.testConfig(name,contype,restart)_
+Check, if a Config Entry exists and is the correct format and add it to the Config menu.
+
+_mynaptic.deleteVars()_
+Delete all global Vars of Mynaptic
+
+_mynaptic.mainMenu()_
+The Main Logic of Mynaptic. Please do not call this function direct.
+
+#All Variables
+All Variables, no function and no tables.
+
+_mynaptic.version_
+The Version of Mynaptic
+
+_mynaptic.shellmode_
+If false, then the bootom bar is the Search, when true, it is the shell.
+
+_mynaptic.screenw_
+The Width of the Screen
+
+_mynaptic.screenh_
+The Hight of the Screen
+
+_packcou_
+The number of packages
+
+_tpos_
+The Position in the Mainmenu
+
+_search_
+The text of the Search
+
+_shelltext_
+The text of the Shell
+
+_mynaptic.helpos_
+The Position in the Helpmenu. nil, when not in the Helpmenu.
+
+#All Tables
+_textta_
+All Packages
+
+_statuscheck_
+The satus, that is show in the menu. instaled,install and remove
+
+_helpta_
+All Helppage. Every entry mus be a table with title and con.
+
+_lang_
+The Text in Mynaptic
+
+_config_
+The config of Mynaptic
+
+_shellcom_
+All Commands of the Shell+
+
+_mynaptic.menubar_
+The Menubar of Mynaptic
+
+#The lang Table
+You can overrite this table to translate Mynaptic
+
+lang.keyContinue = "Press any Key to continue"
+lang.search = "Search:"
+lang.shell = "Shell:"
+lang.noCommand = "Command not found"
+lang.packNotFound = "Package not found"
+lang.cancel = "Cancel"
+lang.ok = "OK"
+lang.apply = "Apply"
+lang.fetch = "Fetch"
+lang.update = "Update"
+lang.config = "Config"
+lang.help = "Help"
+lang.yes = "Yes"
+lang.no = "No"
+lang.name = "Name:"
+lang.installed = "Installed:"
+lang.updateAviable = "Update aviable:"
+lang.filename = "Filename:"
+lang.target = "Target:"
+lang.typ = "Type:"
+lang.size = "Size:"
+lang.version = "Version:"
+lang.category = "Category:"
+lang.dependencies = "Dependencies:"
+lang.none = "None"
+lang.installPack = "These Packages will be installed:"
+lang.removePack = "These Packages will be removed:"
+lang.updatePack = "These Packages will be updated:"
+lang.youEdit = "You Edit:"
+lang.old = "Old:"
+lang.needRestart = "Needs Restart"
+lang.selectColour = "Please select a Colour"
+lang.newEntry = "New Entry:"
+lang.newEntryText = "Please enter new Entry"
+lang.boolEntry = "Please choose new Entry"
+lang.keyEntry = "Please choose a new Key"
+lang.back = "Back"
+lang.history = "History"
+lang.clear = "Clear"
+lang.exitText = "Thank you for using Mynaptic!"
