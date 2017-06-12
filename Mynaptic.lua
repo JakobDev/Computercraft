@@ -4,8 +4,8 @@ print("Starting Mynaptic Please Wait ...")
 os.loadAPI("/usr/apis/wilmaapi")
 os.loadAPI("/usr/apis/clipboard")
 
-if term.isColor() == false or pocket then
-  print("This Programm only run on a Advanced Computer or a Advaced Turtle")
+if term.isColor() == false then
+  printError("This Programm only run on a Advanced Computer/Turtle/Pocket")
   return 2
 end
 
@@ -21,11 +21,11 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 7.0
+mynaptic.version = 8.0
 
 mynaptic.shellmode = false
 
-local packinfo = wilmaapi.readPackmanRepo()
+--local packinfo = wilmaapi.readPackmanRepo()
 
 function getPrint(text)
 packlist.writeLine(text)
@@ -49,6 +49,7 @@ lang.apply = "Apply"
 lang.fetch = "Fetch"
 lang.update = "Update"
 lang.config = "Config"
+lang.menu = "Menu"
 lang.help = "Help"
 lang.yes = "Yes"
 lang.no = "No"
@@ -158,7 +159,7 @@ tmpta = {}
 tmpta["titel"] = "On what Devices run Mynaptic"
 tmpta["con"] = [[Mynaptic fully supports Advanced Computers
 
-The Helpmenu doesn't works full on a turle. Other thinks work.
+The Helpmenu doesn't works full on a turle and on a Pocket Computer. Other things work.
 
 Other Devices are not supported]]
 table.insert(helpta,tmpta)
@@ -242,6 +243,10 @@ end
 function shellcom.about()
   mynaptic.setShellText("Mynaptic Version "..mynaptic.version.." made by Wilma456")  
 end
+
+function shellcom.menu()
+  mynaptic.showMenulist()
+end
 --End Shellcommands
 
 function ioread()
@@ -304,14 +309,23 @@ term.clear()
 term.setCursorPos(1,1)
 checkcou = 1
 term.setBackgroundColor(colors[config["menubarColour"]])
+term.clearLine()
+if config.closeButtonRight == "true" then
+    term.setBackgroundColor(colors[config["closeColour"]])
+    term.write("X")
+    term.setBackgroundColor(colors[config["menubarColour"]])
+end
 local menutext = ""
 for key,menuitem in ipairs(mynaptic.menubar) do
     menutext = menutext..menuitem.text.." "
 end
-mynaptic.setLineColor(menutext)
-term.setCursorPos(mynaptic.screenw,1)
-term.setBackgroundColor(colors[config["closeColour"]])
-print("X")
+term.write(menutext)
+if config.closeButtonRight == "false" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.setBackgroundColor(colors[config["closeColour"]])
+    term.write("X")
+end
+print()
 if tpos ~= 0 and config.showScrollArrows == "true" then
    mynaptic.drawLine(textta[tpos+1],"\30")
 else
@@ -699,7 +713,7 @@ if mynaptic.helpos ~= 0 and config.showScrollArrows == "true" then
     term.setCursorPos(mynaptic.screenw,1)
     term.write("\30")
 end
-if mynaptic.helpos+mynaptic.screenh-1 ~= #helpta and config.showScrollArrows == "true" then
+if mynaptic.helpos+mynaptic.screenh-1 < #helpta and config.showScrollArrows == "true" then
     term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
     term.write("\31")
 end
@@ -734,7 +748,7 @@ if ev == "mouse_click" then
   end
 elseif ev == "mouse_scroll" then
     if me == 1 then
-        if mynaptic.helpos+mynaptic.screenh-1 ~= #helpta then
+        if mynaptic.helpos+mynaptic.screenh-1 < #helpta then
             mynaptic.helpos = mynaptic.helpos + 1
             mynaptic.helpList()
         end
@@ -824,6 +838,33 @@ while true do
     end
   end
 end
+end
+
+function mynaptic.showMenulist()
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColour(colors[config.menuTextColour])
+term.clear()
+term.setCursorPos(1,1)
+for _,v in pairs(mynaptic.menulist) do
+  print(v.text)
+end
+term.setCursorPos(1,mynaptic.screenh)
+term.setBackgroundColor(colors[config.menubarColour])
+term.clearLine()
+term.setCursorPos(1,mynaptic.screenh)
+term.write(lang.back)
+while true do
+local ev,me,x,y = os.pullEvent()
+  if ev == "mouse_click" then
+    if y == mynaptic.screenh then
+      break
+    elseif type(mynaptic.menulist[y]) == "table" then
+      mynaptic.menulist[y]["func"]()
+      break
+    end
+  end
+end
+mynaptic.drawMenu()
 end
 
 function mynaptic.writeSearch()
@@ -926,6 +967,7 @@ confile.writeLine("sortAlphabetically false")
 confile.writeLine("loadPlugins true")
 confile.writeLine("showExitText true")
 confile.writeLine("showScrollArrows true")
+confile.writeLine("closeButtonRight false")
 confile.writeLine("pluginPath /usr/share/mynaptic/plugins")
 confile.writeLine("historyPath /var/MynapticHistory.txt")
 confile.writeLine("packmanPath /usr/bin/packman")
@@ -956,6 +998,7 @@ config["loadPlugins"] = "true"
 config["sortAlphabetically"] = "false"
 config["showExitText"] = "true"
 config.showScrollArrows = "true"
+config.closeButtonRight = "false"
 config["pluginPath"] = "/usr/share/mynaptic/plugins"
 config["historyPath"] = "/var/MynapticHistory.txt"
 config["packmanPath"] = "/usr/bin/packman"
@@ -988,6 +1031,7 @@ mynaptic.testConfig("sortAlphabetically","bool",true)
 mynaptic.testConfig("loadPlugins","bool",true)
 mynaptic.testConfig("showExitText","bool")
 mynaptic.testConfig("showScrollArrows","bool")
+mynaptic.testConfig("closeButtonRight","bool")
 mynaptic.testConfig("pluginPath",nil,true)
 mynaptic.testConfig("historyPath")
 mynaptic.testConfig("packmanPath")
@@ -1027,12 +1071,23 @@ end
 
 --Add Menuitems
 mynaptic.menubar = {}
-table.insert(mynaptic.menubar,{text = lang.apply,func = mynaptic.doChanges})
-table.insert(mynaptic.menubar,{text = lang.fetch,func = mynaptic.reload})
-table.insert(mynaptic.menubar,{text = lang.update,func = mynaptic.updatemenu})
-table.insert(mynaptic.menubar,{text = lang.config,func = mynaptic.configScreen})
-table.insert(mynaptic.menubar,{text = lang.help,func = mynaptic.helpMenu})
-table.insert(mynaptic.menubar,{text = lang.history,func = mynaptic.history})
+if pocket then
+  table.insert(mynaptic.menubar,{text = lang.menu,func = mynaptic.showMenulist})
+else
+  table.insert(mynaptic.menubar,{text = lang.apply,func = mynaptic.doChanges})
+  table.insert(mynaptic.menubar,{text = lang.fetch,func = mynaptic.reload})
+  table.insert(mynaptic.menubar,{text = lang.update,func = mynaptic.updatemenu})
+  table.insert(mynaptic.menubar,{text = lang.config,func = mynaptic.configScreen})
+  table.insert(mynaptic.menubar,{text = lang.help,func = mynaptic.helpMenu})
+  table.insert(mynaptic.menubar,{text = lang.history,func = mynaptic.history})
+end
+mynaptic.menulist = {}
+table.insert(mynaptic.menulist,{text = lang.apply,func = mynaptic.doChanges})
+table.insert(mynaptic.menulist,{text = lang.fetch,func = mynaptic.reload})
+table.insert(mynaptic.menulist,{text = lang.update,func = mynaptic.updatemenu})
+table.insert(mynaptic.menulist,{text = lang.config,func = mynaptic.configScreen})
+table.insert(mynaptic.menulist,{text = lang.help,func = mynaptic.helpMenu})
+table.insert(mynaptic.menulist,{text = lang.history,func = mynaptic.history})
 
 textta = {}
 packcou = 0
@@ -1112,7 +1167,7 @@ while mainloop == true do
   --Leftclick
   elseif me == 1 then
   if y == 1 then
-    if x == mynaptic.screenw then
+    if (x == mynaptic.screenw and config.closeButtonRight == "false") or (x == 1 and config.closeButtonRight == "true") then
       mainloop = nil
       term.setBackgroundColor(colors.black)
       term.setTextColor(colors.white)
@@ -1123,6 +1178,9 @@ while mainloop == true do
       end
     end
     local menupos = 0
+    if config.closeButtonRight == "true" then
+        menupos = 1
+    end
     for key,menuitem in ipairs(mynaptic.menubar) do
       if x > menupos and x < menuitem.text:len()+menupos+1 then
         menuitem.func()
@@ -1219,14 +1277,12 @@ while mainloop == true do
     end
   elseif ev == "key" then
 	if me == keys[config.scrollDownKey] then
-     if not(tpos+screenh == packcou+1) then
-      if packcou > screenh-2 then
+      if tpos+mynaptic.screenh-2 ~= #textta then
         tpos = tpos + 1
         mynaptic.drawMenu()
       end
-     end
     elseif me == keys[config.scrollUpKey] then
-       if not(tpos == 0) then
+       if tpos ~= 0 then
          tpos = tpos - 1
          mynaptic.drawMenu()
        end
