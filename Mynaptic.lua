@@ -21,11 +21,9 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 8.0
+mynaptic.version = 8.1
 
 mynaptic.shellmode = false
-
---local packinfo = wilmaapi.readPackmanRepo()
 
 function getPrint(text)
 packlist.writeLine(text)
@@ -1125,6 +1123,9 @@ while mainloop == true do
     if type(mynaptic.dragx) == "number" then
     if y == y then
       local coustr = 0
+      if config.closeButtonRight == "true" then
+        coustr = 1
+      end
       for cou,con in ipairs(mynaptic.menubar) do
         local tmpta = con
         if mynaptic.dragx > coustr then
@@ -1190,10 +1191,10 @@ while mainloop == true do
       end
     end
   elseif y == mynaptic.screenh then
-    if mynaptic.shellmode == true then
+    if mynaptic.shellmode == true and shelltext ~= "" then
       shelltext = ""
       mynaptic.drawMenu()
-    else
+    elseif mynaptic.shellmode == false and search ~= "" then
       search = ""
       searchch = false
       mynaptic.writeSearch()
@@ -1223,6 +1224,9 @@ while mainloop == true do
   elseif me == 2 then
     if y == 1 then
       local coustr = 0
+      if config.closeButtonRight == "true" then
+        coustr = 1
+      end
       for cou,con in ipairs(mynaptic.menubar) do
         if x > coustr then
           if x < con.text:len()+coustr+1 then
