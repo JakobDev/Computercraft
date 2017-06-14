@@ -36,8 +36,8 @@ name = mynaptic
   category = packman mynaptic
   dependencies = main/packman wilma456/wilmaapi wilma456/clipboard main/package
   target = /usr/bin
-  version = 8.0
-  size = 38191
+  version = 8.1
+  size = 38370
 end
 
 
