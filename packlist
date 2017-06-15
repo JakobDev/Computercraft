@@ -435,3 +435,13 @@ name = mynaptic-pluginexample
   size = 722
 end
 
+name = ping
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/ping.lua
+   filename = ping
+  category = utility
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 461
+end
