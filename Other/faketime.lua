@@ -14,6 +14,14 @@ end
 local nowtime = os.time()
 diftime = newtime-nowtime
 
-function os.time()
-return oldtime()+diftime
+function os.time(source)
+if source == "ingame" or source == nil then
+  if oldtime()+diftime >= 24 then
+    return oldtime()+diftime-24
+  else
+    return oldtime()+diftime
+  end
+else
+  return oldtime(source)
+end
 end
