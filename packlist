@@ -343,8 +343,8 @@ name = faketime
   category = tools
   dependencies = none
   target = /usr/bin
-  version = 1.1
-  size = 380
+  version = 1.2
+  size = 474
 end
 
 name = fakeday
@@ -354,8 +354,8 @@ name = fakeday
   category = tools
   dependencies = none
   target = /usr/bin
-  version = 1.0
-  size = 291
+  version = 1.1
+  size = 376
 end
 
 name = fakeid
