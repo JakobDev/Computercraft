@@ -445,3 +445,14 @@ name = ping
   version = 1.0
   size = 461
 end
+
+name = chatkeyboard
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Command/chatkeyboard.lua
+   filename = chatkeyboard
+  category = command
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 3347
+end
