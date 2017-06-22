@@ -452,7 +452,7 @@ name = chatkeyboard
    filename = chatkeyboard
   category = command
   dependencies = none
-  target = /usr/bin
+  target = /usr/b1n
   version = 1.0
-  size = 3347
+  size = 3410
 end
