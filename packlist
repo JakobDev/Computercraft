@@ -36,8 +36,8 @@ name = mynaptic
   category = packman mynaptic
   dependencies = main/packman wilma456/wilmaapi wilma456/clipboard main/package
   target = /usr/bin
-  version = 8.1
-  size = 38370
+  version = 9.0
+  size = 46047
 end
 
 
@@ -409,8 +409,8 @@ name = mineshark
   category = tools
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 1.0
-  size = 5053
+  version = 1.1
+  size = 5369
 end
 
 name = mynaptic-plugindev
@@ -455,4 +455,15 @@ name = chatkeyboard
   target = /usr/b1n
   version = 1.0
   size = 3410
+end
+
+name = uptime
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/uptime.lua
+   filename = uptime.lua
+  category = utility
+  dependencies = none
+  target = /usr/b1n
+  version = 1.0
+  size = 339
 end
