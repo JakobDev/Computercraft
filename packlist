@@ -467,3 +467,14 @@ name = uptime
   version = 1.0
   size = 339
 end
+
+name = imagecon
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Tools/imagecon.lua
+   filename = imagecon.lua
+  category = tools
+  dependencies = none
+  target = /usr/b1n
+  version = 1.0
+  size = 1096
+end
