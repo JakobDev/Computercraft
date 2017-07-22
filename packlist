@@ -424,6 +424,17 @@ name = mynaptic-plugindev
   size = 4217
 end
 
+name = bitapi
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/API/bitapi.lua
+   filename = bitapi
+  category = api
+  dependencies = none
+  target = /usr/apis
+  version = 1.0
+  size = 385
+end
+
 name = mynaptic-pluginexample
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/Mynaptic-Pluginexample.lua
