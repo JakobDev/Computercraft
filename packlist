@@ -463,7 +463,7 @@ name = chatkeyboard
    filename = chatkeyboard
   category = command
   dependencies = none
-  target = /usr/b1n
+  target = /usr/bin
   version = 1.0
   size = 3410
 end
@@ -474,7 +474,7 @@ name = uptime
    filename = uptime.lua
   category = utility
   dependencies = none
-  target = /usr/b1n
+  target = /usr/bin
   version = 1.0
   size = 339
 end
@@ -485,7 +485,7 @@ name = imagecon
    filename = imagecon.lua
   category = tools
   dependencies = none
-  target = /usr/b1n
+  target = /usr/bin
   version = 1.0
   size = 1096
 end
@@ -496,7 +496,7 @@ name = screentool
    filename = screentool
   category = tools
   dependencies = none
-  target = /usr/b1n
+  target = /usr/bin
   version = 1.0
   size = 14733
 end
