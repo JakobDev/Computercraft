@@ -500,3 +500,14 @@ name = screentool
   version = 1.0
   size = 14733
 end
+
+name = textpaint
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Programs/textpaint.lua
+   filename = textpaint.lua
+  category = programs
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 312815
+end
