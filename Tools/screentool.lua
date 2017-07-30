@@ -435,9 +435,19 @@ local function screen()
             local file = fs.open("/screen/"..os.clock()..".nft","w")
             for i=1,b do
                 local ta = win.getLine(i)
+                local nWriteColor
+                local nWriteBackground
                 for w = 1, #ta.text do
-                    file.write("\30"..ta.backgroundColor:sub(w,w))
-                    file.write("\31"..ta.textColor:sub(w,w))
+                    local x = ta.backgroundColor:sub(w,w)
+                    local z = ta.textColor:sub(w,w)
+                    if x ~= nWriteBackground then
+                        nWriteBackground = x
+                        file.write("\30"..x)
+                    end
+                    if z ~= nWriteColor then
+                        nWriteColor = z
+                        file.write("\31"..z)
+                    end
                     file.write(ta.text:sub(w,w))
                 end
                 file.write("\n")
