@@ -497,7 +497,7 @@ name = screentool
   category = tools
   dependencies = none
   target = /usr/bin
-  version = 1.0
+  version = 1.1
   size = 14733
 end
 
