@@ -38,6 +38,7 @@ name = mynaptic
   target = /usr/bin
   version = 9.0
   size = 46047
+  description = A GUI for Packman
 end
 
 
@@ -466,6 +467,7 @@ name = chatkeyboard
   target = /usr/bin
   version = 1.0
   size = 3410
+  description = Use the Chat as Keyboard
 end
 
 name = uptime
@@ -477,6 +479,7 @@ name = uptime
   target = /usr/bin
   version = 1.0
   size = 339
+  description = Shows, how long your computer run
 end
 
 name = imagecon
@@ -488,6 +491,7 @@ name = imagecon
   target = /usr/bin
   version = 1.0
   size = 1096
+  description = Convert a .nfp image to lua code
 end
 
 name = screentool
@@ -499,6 +503,7 @@ name = screentool
   target = /usr/bin
   version = 1.1
   size = 14733
+  description = Make Screenshots
 end
 
 name = textpaint
@@ -510,4 +515,41 @@ name = textpaint
   target = /usr/bin
   version = 1.0
   size = 312815
+  description = A paint Program for .nft Files
+end
+
+name = minepack
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Minepack/master/minepack.lua
+   filename = minepack.lua
+  category = minepack
+  dependencies = wilma456/minepackapi
+  target = /usr/bin
+  version = 1.0
+  size = 6257
+  description = A Package Manager
+end
+
+name = minepackapi
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Minepack/master/minepackapi.lua
+   filename = minepackapi
+  category = minepack
+  dependencies = none
+  target = /usr/apis
+  version = 1.0
+  size = 31096
+  description = The API for Minepack
+end
+
+name = minepackapi
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Minepack/master/packshell.lua
+   filename = packshell.lua
+  category = minepack
+  dependencies = none
+  target = /startup
+  version = 1.0
+  size = 955
+  description = Easy-Shell for Minepack
 end
