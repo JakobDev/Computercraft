@@ -542,7 +542,7 @@ name = minepackapi
   description = The API for Minepack
 end
 
-name = minepackapi
+name = packshell
   type = raw
    url = https://raw.githubusercontent.com/Wilma456/Minepack/master/packshell.lua
    filename = packshell.lua
