@@ -525,8 +525,8 @@ name = minepack
   category = minepack
   dependencies = wilma456/minepackapi
   target = /usr/bin
-  version = 1.0
-  size = 6257
+  version = 1.1
+  size = 7765
   description = A Package Manager
 end
 
@@ -549,7 +549,7 @@ name = packshell
   category = minepack
   dependencies = none
   target = /startup
-  version = 1.0
-  size = 955
+  version = 1.1
+  size = 976
   description = Easy-Shell for Minepack
 end
