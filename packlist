@@ -244,7 +244,7 @@ end
 name = shellutils
   type = meta
 	category = shell
-	dependencies = wilma456/which wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat
+	dependencies = wilma456/which wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat wilma456/basename wilma456/dirname
 	version = 1.1
 	size = 0
 end
@@ -513,8 +513,8 @@ name = textpaint
   category = programs
   dependencies = none
   target = /usr/bin
-  version = 1.0
-  size = 312815
+  version = 2.0
+  size = 9809
   description = A paint Program for .nft Files
 end
 
@@ -552,4 +552,28 @@ name = packshell
   version = 1.1
   size = 976
   description = Easy-Shell for Minepack
+end
+
+name = basename
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/basename.lua
+   filename = basename
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 125
+  description = Extract the filename from a path
+end
+
+name = dirname
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/dirname.lua
+   filename = dirname
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 128
+  description = Extract the directory from a path
 end
