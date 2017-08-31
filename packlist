@@ -34,10 +34,10 @@ name = mynaptic
    url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Mynaptic.lua
    filename = Mynaptic
   category = packman mynaptic
-  dependencies = main/packman wilma456/wilmaapi wilma456/clipboard main/package
+  dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 9.0
-  size = 46047
+  version = 10.0
+  size = 47675
   description = A GUI for Packman
 end
 
