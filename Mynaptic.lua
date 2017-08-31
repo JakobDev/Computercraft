@@ -1,998 +1,1629 @@
+--Made by Wilma456
+print("Starting Mynaptic Please Wait ...")
+
+os.loadAPI("/usr/apis/wilmaapi")
+os.loadAPI("/usr/apis/clipboard")
+if fs.exists("/usr/apis/backpack") then
+  os.loadAPI("/usr/apis/backpack")
+elseif fs.exists("/usr/apis/minepackapi") then
+  os.loadAPI("/usr/apis/minepackapi")
+else
+  printError("Could not find Backpack/minepackapi")
+  return 1
+end
+
+if term.isColor() == false then
+  printError("This Programm only run on a Advanced Computer/Turtle/Pocket")
+  return 2
+end
+
 --[[
-The MIT License (MIT)
-
-Copyright (c) 2012 Lyqyd, (c) 2017 Wilma456
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-You can find the original here:
-https://github.com/lyqyd/cc-packman/blob/master/package
+term.setBackgroundColor(colors.blue)
+term.clear()
+local logo={
+{16384,16384,00000,00000,00000,16384,16384,00000,16384,00000,00000,00000,16384,00000,16384,00000,00000,16384,00000,00000,00000,00000,16384,00000,00000,00000,00000,16384,16384,16384,00000,16384,16384,16384,00000,16384,00000,16384,16384,16384,},
+{16384,00000,16384,00000,16384,00000,16384,00000,00000,16384,00000,16384,00000,00000,16384,16384,00000,16384,00000,00000,00000,16384,00000,16384,00000,00000,00000,16384,00000,16384,00000,00000,16384,00000,00000,16384,00000,16384,},
+{16384,00000,00000,16384,00000,00000,16384,00000,00000,00000,16384,00000,00000,00000,16384,00000,16384,16384,00000,00000,16384,16384,16384,16384,16384,00000,00000,16384,16384,16384,00000,00000,16384,00000,00000,16384,00000,16384,},
+{16384,00000,00000,00000,00000,00000,16384,00000,00000,00000,16384,00000,00000,00000,16384,00000,00000,16384,00000,16384,00000,00000,00000,00000,00000,16384,00000,16384,00000,00000,00000,00000,16384,00000,00000,16384,00000,16384,16384,16384,},
+}
+local logoPocket={
+{16384,16384,00000,00000,00000,16384,16384,},
+{16384,00000,16384,00000,16384,00000,16384,},
+{16384,00000,00000,16384,00000,00000,16384,},
+{16384,00000,00000,00000,00000,00000,16384,},
+}
+if pocket then
+  paintutils.drawImage(logoPocket,5,5)
+else
+  paintutils.drawImage(logo,5,5)
+end
 --]]
 
-list = {}
-installed = {}
-installRoot = "/"
-config = {}
-local unpack = unpack or table.unpack
-
-local function postStatus(type, text)
-	os.queueEvent("package_status", type, text)
-	while true do
-		local event = {os.pullEvent("package_status")}
-		if event[1] == "package_status" then break end
-	end
+if wilmaapi == nil then
+  printError("Error whith loading wilmaapi")
+  return 3
 end
 
-local function printInformation(text)
-	postStatus("info", text)
+if clipboard == nil then
+  printError("Error whith loading clipboard API")
+  return 3
 end
 
-local function printWarning(text)
-	postStatus("warning", text)
+mynaptic = {}
+
+mynaptic.version = 10.0
+
+mynaptic.shellmode = false
+
+if minepackapi then
+    minepackapi.loadConfig("/etc/minepack/config.conf")
+    mynaptic.packapi = minepackapi
+elseif backpack then
+    mynaptic.packapi = backpack
 end
 
-local function printError(text)
-	postStatus("error", text)
+function getPrint(text)
+packlist.writeLine(text)
+rcou = rcou + 1
 end
 
-local function findFileEntry(fileList, path)
-	local entryFound = false
-	for i = 1, #fileList do
-		if fileList[i].path == path then
-			entryFound = i
-			break
-		end
-	end
-	return entryFound
+local screenw,screenh = term.getSize()
+mynaptic.screenw = screenw
+mynaptic.screenh = screenh
+
+--Write lang
+lang = {}
+lang.keyContinue = "Press any Key to continue"
+lang.search = "Search:"
+lang.shell = "Shell:"
+lang.noCommand = "Command not found"
+lang.packNotFound = "Package not found"
+lang.cancel = "Cancel"
+lang.ok = "OK"
+lang.apply = "Apply"
+lang.fetch = "Fetch"
+lang.update = "Update"
+lang.config = "Config"
+lang.menu = "Menu"
+lang.help = "Help"
+lang.yes = "Yes"
+lang.no = "No"
+lang.name = "Name:"
+lang.installed = "Installed:"
+lang.updateAviable = "Update aviable:"
+lang.filename = "Filename:"
+lang.target = "Target:"
+lang.typ = "Type:"
+lang.url = "URL:"
+lang.size = "Size:"
+lang.version = "Version:"
+lang.category = "Category:"
+lang.dependencies = "Dependencies:"
+lang.description = "Description:"
+lang.none = "None"
+lang.installPack = "These Packages will be installed:"
+lang.removePack = "These Packages will be removed:"
+lang.updatePack = "These Packages will be updated:"
+lang.install = "Install "
+lang.remove = "Remove "
+lang.youEdit = "You Edit:"
+lang.old = "Old:"
+lang.needRestart = "Needs Restart"
+lang.selectColour = "Please select a Colour"
+lang.newEntry = "New Entry:"
+lang.newEntryText = "Please enter new Entry"
+lang.boolEntry = "Please choose new Entry"
+lang.keyEntry = "Please choose a new Key"
+lang.back = "Back"
+lang.history = "History"
+lang.clear = "Clear"
+lang.exitText = "Thank you for using Mynaptic!"
+--Start Help
+local tmpta = {}
+
+helpta = {}
+
+tmpta.titel = "What is Packman and Mynaptic"
+tmpta.con = [[Packman is a package manager like apt made by Lyqyd. It allows you to easy install,remove and update programs.
+
+Mynaptic is a GUI for Packman made by Wilma456]]
+
+table.insert(helpta,tmpta)
+ 
+tmpta = {}
+tmpta["titel"] = "Navigate"
+tmpta["con"] = [[Use the mousewhell or the arrow keys to scroll. You can mark packages by leftclicking it.
+
+Exit Mynaptic by clicking to "X" in to right up corner
+To use the search, just write your text
+
+You can scroll in many menus.
+]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Install Software"
+tmpta["con"] = [[The white software are not installed. Click on it to mark it to install.
+
+If you have choose your software, just click "Apply"
+]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Remove Software"
+tmpta["con"] = [[The red software are installed. Click on it to mark it to remove.
+
+If you have choose your software, just click "Apply"
+]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Get more Information"
+tmpta["con"] = "If you want more information about a package, just rightclick it"
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "What is Apply"
+tmpta.con = 'With "Apply" you can install all Packages that you have marked to install and remove all Packages that you have marked to remove.'
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "What is Fetch"
+tmpta.con = 'The List with all Packages is saved on your Computer. Whith "Fetch" you can update this list. You need to restart Mynaptic to see the changes.'
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Update your Programs"
+tmpta.con = 'With "Update" you can Update your Programs. Mynaptic will see, what Programs can be updated.'
+
+tmpta = {}
+tmpta["titel"] = "Use History"
+tmpta["con"] = [[In the default config, Mynaptic write all changes to the file /var/MynapticHistory.txt. To view the content of the file, use the Historymenu.]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Use Clipboard"
+tmpta.con = [[You can use the system clipboard by pressing Ctrl+V
+
+You can use the clipboard from the clipboard API by pressing the mousewhell
+]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Personalisierte Mynaptic"
+tmpta["con"] = [[You can change the Config with the "config" Menu or by editing /etc/mynaptic
+
+Mynaptic checks every run, if the config correct.
+
+If you get any config errors by runing Mynaptic (maybe after update) and don't want to fix it, just delete /etc/mynaptic. If the config file not exists, Mynaptic will create them by running
+
+Lines in /etc/mynaptic who are started with # are ignored.
+]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Move Items in the Menubar"
+tmpta.con = "You can move Items in the Menubar by drag and drop them with the right Mousebutton. The Position is not saved, so it get lost with closing Mynaptic."
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "On what Devices run Mynaptic"
+tmpta["con"] = [[Mynaptic fully supports Advanced Computers
+
+The Helpmenu doesn't works full on a turle and on a Pocket Computer. Other things work.
+
+Other Devices are not supported]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Using Plugins"
+tmpta["con"] = [[With Plugins you can modify Mynaptic e.g another language or another package system
+
+Simple place Plugins in the pluginFoler (default /usr/share/mynaptic/plugins) and be sure, thet loadPlugins is true
+]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Develop Plugins"
+tmpta.con = "To install the developer Documentation install the Package mynaptic-plugindev and view the help with 'ghv Mynaptic'"
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "Add your Program"
+tmpta.con = "To add your Program to Packman/Mynaptic visit https://github.com/lyqyd/cc-packman and follow the instructions"
+tmpta.url = {{"Click here, to visit the GitHub Page of Packman","https://github.com/lyqyd/cc-packman"}}
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Report Bugs/Feedback"
+tmpta["con"] = [[You can report bugs or left feedback at this sites:
+
+http://www.computercraft.info/forums2/index.php?/topic/27327-mynaptic-a-gui-for-packman/
+
+https://github.com/Wilma456/Computercraft/issues]]
+tmpta.url = {{"Click here to visit the Thread in the CC Forum","http://www.computercraft.info/forums2/index.php?/topic/27327-mynaptic-a-gui-for-packman/"},{"Click here to visit the GitHub Issue Tracker","https://github.com/Wilma456/Computercraft/issues"}}
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "Use Mynaptic in your OS"
+tmpta["con"] = [[If you use packman in your OS, you may want to incluse Mynaptic. You have my permission to do this. If you want to optimize Mynaptic for your OS, just write Wilma456 at the CC Forum a PM.]]
+
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta.titel = "License"
+tmpta.con = 'Mynaptic is licesed under the BSD 2-clause "Simplified" License. For more information look at https://github.com/Wilma456/Computercraft/blob/master/LICENSE'
+tmpta.url = {{"Click here to see the License","https://github.com/Wilma456/Computercraft/blob/master/LICENSE"}}
+table.insert(helpta,tmpta)
+
+tmpta = {}
+tmpta["titel"] = "About"
+tmpta["con"] = "This is Mynaptic Version "..mynaptic.version.." made by Wilma456"
+
+table.insert(helpta,tmpta)
+
+tmpta = nil
+--End Help
+
+--Shellcommands
+shellcom = {}
+
+function shellcom.update()
+  mynaptic.updatemenu()
 end
 
-local function updateFileInfo(fileList, path, version)
-	local entry = findFileEntry(fileList, path)
-	if entry then
-		fileList[entry].path = path
-		fileList[entry].version = version
-	else
-		table.insert(fileList, {path = path, version = version})
-	end
+function shellcom.top()
+  tpos = 0
+  mynaptic.drawMenu()
 end
 
-local transactionQueue = {}
-local currentPackage
+function shellcom.debug()
+  mynaptic.debugmenu()
+end
 
-local Transaction = {
-	writeFile = function(self)
-		local path = fs.combine(minepackapi.installRoot, self.path)
-		if fs.exists(path) then
-			local handle = io.open(path, "r")
-			if handle then
-				self.backup = handle:read("*a")
-				handle:close()
-			end
-		end
-		local handle = io.open(path, "w")
-		if handle then
-			printInformation("Writing file "..path)
-			handle:write(self.contents)
-			handle:close()
-		else
-			return false
-		end
-		return true
-	end,
-	deleteFile = function(self)
-		local path = fs.combine(minepackapi.installRoot, self.path)
-		if fs.exists(path) then
-			local handle = io.open(path, "r")
-			if handle then
-				self.backup = handle:read("*a")
-				handle:close()
-			end
-		end
-		printInformation("Deleting file "..path)
-		fs.delete(path)
-		return not fs.exists(path)
-	end,
-	makeDirectory = function(self)
-		local path = fs.combine(minepackapi.installRoot, self.path)
-		if not fs.exists(path) then
-			printInformation("Creating directory "..path)
-			fs.makeDir(path)
-		end
-		return fs.isDir(path)
-	end,
-	removeDirectory = function(self)
-		local path = fs.combine(minepackapi.installRoot, self.path)
-		if fs.exists(path) and fs.isDir(path) and #(fs.list(path)) == 0 then
-			printInformation("Removing directory "..path)
-			fs.delete(path)
-		end
-		return not fs.exists(path)
-	end,
-	updateInfo = function(self)
-		newLine = self.path..(self.version and ";"..self.version or "")
-		local lineFound = false
-		for i = 1, #self.contents do
-			if self.path == string.match(self.contents[i], "^([^;]+)") then
-				--found the right entry, modify correctly now.
-				lineFound = true
-				self.contents[i] = newLine
-				updateFileInfo(minepackapi.installed[self.pack.fullName].files, self.path, self.version)
-				break
-			end
-		end
-		if not lineFound and newLine then
-			--didn't find a matching line in the loop, add a new line at the end.
-			table.insert(self.contents, newLine)
-		end
-	end,
-	removeInfo = function(self)
-		for i = 1, #self.contents do
-			if self.path == string.match(self.contents[i], "^([^;]+)") then
-				table.remove(self.contents, i)
-				local entry = findFileEntry(minepackapi.installed[self.pack.fullName].files, self.path)
-				if entry then
-					table.remove(minepackapi.installed[self.pack.fullName].files, entry)
-				end
-				break
-			end
-		end
-	end,
+function shellcom.bottom()
+  tpos = packcou - screenh + 2
+  mynaptic.drawMenu()
+end
+
+function shellcom.apply()
+  mynaptic.doChanges()
+end
+
+function shellcom.fetch()
+  mynaptic.reload()
+end
+
+function shellcom.history()
+  mynaptic.history()
+end
+
+function shellcom.about()
+  mynaptic.setShellText("Mynaptic Version "..mynaptic.version.." made by Wilma456")  
+end
+
+function shellcom.menu()
+  mynaptic.showMenulist()
+end
+
+function shellcom.langedit()
+  mynaptic.langScreen()
+end
+--End Shellcommands
+
+function ioread()
+ return "N"
+end
+
+local function nichts()
+end
+
+function shellresolve(ag)
+shell.resolveProgram(ag)
+end
+
+function mynaptic.setShellText(text)
+term.setCursorBlink(false)
+term.setCursorPos(1,screenh)
+term.clearLine()
+write(text)
+end
+
+function mynaptic.setLineColor(text,arrow)
+if type(text) == "string" then
+term.clearLine()
+term.write(text)
+local x,y = term.getCursorPos()
+term.setCursorPos(mynaptic.screenw,y)
+term.write(arrow)
+print()
+end
+end
+
+function mynaptic.drawLine(te,arrow)
+if te == nil then
+  return
+end
+term.setBackgroundColor(colors[config["notinstaledColour"]])
+if statuscheck[te] == "instaled" then
+  term.setBackgroundColor(colors[config["instaledColour"]])
+elseif statuscheck[te] == "install" then
+  term.setBackgroundColor(colors[config["installColour"]])
+elseif statuscheck[te] == "remove" then
+  term.setBackgroundColor(colors[config["removeColour"]])
+end
+ins,teb,ver = te:match("([^ ]+) ([^ ]+) ([^ ]+)")
+if config["showRepository"] == "false" then
+  repo,teb = wilmaapi.splitString(teb,"/")
+end
+if config["showVersion"] == "true" then
+  mynaptic.setLineColor(teb.." "..ver,arrow)
+else
+  mynaptic.setLineColor(teb,arrow)
+end
+checkta[checkcou] = te
+checkcou = checkcou + 1
+end
+
+function mynaptic.drawMenu()
+term.setTextColor(colors[config["textColour"]])
+term.setBackgroundColor(colors[config["backgroundColour"]])
+term.clear()
+term.setCursorPos(1,1)
+checkcou = 1
+term.setBackgroundColor(colors[config["menubarColour"]])
+term.clearLine()
+if config.closeButtonRight == "true" then
+    term.setBackgroundColor(colors[config["closeColour"]])
+    term.write("X")
+    term.setBackgroundColor(colors[config["menubarColour"]])
+end
+local menutext = ""
+for key,menuitem in ipairs(mynaptic.menubar) do
+    menutext = menutext..menuitem.text.." "
+end
+term.write(menutext)
+if config.closeButtonRight == "false" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.setBackgroundColor(colors[config["closeColour"]])
+    term.write("X")
+end
+print()
+if tpos ~= 0 and config.showScrollArrows == "true" then
+   mynaptic.drawLine(textta[tpos+1],"\30")
+else
+    mynaptic.drawLine(textta[tpos+1]," ")
+end
+for i=3,mynaptic.screenh-2 do
+    mynaptic.drawLine(textta[tpos+i-1]," ")
+end
+if tpos+mynaptic.screenh-2 ~= #textta and config.showScrollArrows == "true" then
+   mynaptic.drawLine(textta[tpos+mynaptic.screenh-2],"\31")
+else
+    mynaptic.drawLine(textta[tpos+mynaptic.screenh-2]," ")
+end
+term.setCursorPos(1,mynaptic.screenh)
+term.setBackgroundColor(colors[config["searchColour"]])
+term.clearLine()
+term.setCursorPos(1,mynaptic.screenh)
+if mynaptic.shellmode == true then
+  write(lang.shell..shelltext)
+else
+  write(lang.search..search)
+end
+if config.showCursorBlink == "true" then
+    term.setCursorBlink(true)
+end
+end
+
+helpta["egg"] = {}
+
+function mynaptic.doChanges()
+local packlist = {}
+local installta = {}
+table.insert(packlist,lang.installPack)
+for k,v in pairs(install.check) do
+  local tmpstr = k:sub(3):match("([^ ]+) ([^ ]+)")
+  table.insert(packlist,tmpstr)
+  table.insert(installta,tmpstr)
+end
+local removeta = {}
+table.insert(packlist,lang.removePack)
+for k,v in pairs(remove.check) do
+  local tmpstr = k:sub(3):match("([^ ]+) ([^ ]+)")
+  table.insert(packlist,tmpstr)
+  table.insert(removeta,tmpstr)
+end
+local scrollpos = 0
+while true do
+  term.setBackgroundColor(colors[config.menuBackgroundColour])
+  term.setTextColor(colors[config.menuTextColour])
+  term.clear()
+  term.setCursorPos(1,1)
+  for i=1,mynaptic.screenh-1 do
+    if type(packlist[i+scrollpos]) == "string" then
+      print(packlist[i+scrollpos])
+    end
+  end
+  if scrollpos ~= 0 and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+  end
+  if #packlist ~= scrollpos+mynaptic.screenh-1 and config.showScrollArrows == "true" and #packlist > mynaptic.screenh-1 then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
+  end
+  term.setBackgroundColor(colors[config.bottomBarColour])
+  term.setCursorPos(1,mynaptic.screenh)
+  term.clearLine()
+  write(lang.cancel)
+  term.setCursorPos(mynaptic.screenw-1,mynaptic.screenh)
+  write(lang.ok)
+  local ev,me,x,y = os.pullEvent()
+  if ev == "mouse_scroll" then
+    if me == -1 and scrollpos ~= 0 then
+      scrollpos = scrollpos - 1
+    elseif me == 1 and #packlist ~= scrollpos+mynaptic.screenh-1 and #packlist > mynaptic.screenh-1 then
+      scrollpos = scrollpos + 1
+    end
+  elseif ev == "key" then
+    if me == confid.scrollDownKey and scrollpos ~= 0 then
+      scrollpos = scrollpos - 1
+    elseif me == config.scrollUpKey and #packlist ~= scrollpos+mynaptic.screenh-1 and #packlist > mynaptic.screenh-1 then
+      scrollpos = scrollpos + 1
+    end
+  elseif ev == "term_resize" then
+    mynaptic.screenw,mynaptic.screenh = term.getCursorPos()
+  elseif ev == "mouse_click" then
+    if y == mynaptic.screenh then
+      if x < #lang.cancel+1 then
+        mynaptic.drawMenu()
+        return
+      elseif x > mynaptic.screenw-#lang.ok then
+        break
+      end
+    end
+  end
+end
+io.output(mynaptic.iomute)
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.clear()
+term.setCursorPos(1,1)
+local hisfile = fs.open(config.historyPath,"a")
+for k,v in ipairs(installta) do
+  term.setTextColor(colors[config.textColour])
+  term.setBackgroundColor(colors[config.menuBackgroundColour])
+  print(lang.install..v)
+  for packname,_ in pairs(mynaptic.packapi.findDependencies(v)) do
+    mynaptic.packapi.list[packname]:install(getfenv())
+  end
+  --shell.run(config.packmanPath.." auto install "..v)
+  if config.writeHistory == "true" and not minepackapi then
+    hisfile.writeLine("Installed "..v)
+  end
+  statuscheck["A "..v.." "..mynaptic.packapi.list[v]["version"]] = "instaled"
+end
+install.check = {}
+install.list = {}
+for k,v in ipairs(removeta) do
+  term.setTextColor(colors[config.textColour])
+  term.setBackgroundColor(colors[config.menuBackgroundColour])
+  print(lang.remove..v)
+  mynaptic.packapi.list[v]:remove(getfenv())
+  if config.writeHistory == "true" and not minepackapi then
+    hisfile.writeLine("Removed "..v)
+  end
+  statuscheck["I "..v.." "..mynaptic.packapi.list[v]["version"]] = "notinstaled"
+end
+hisfile.close()
+remove.check = {}
+remove.list = {}
+mynaptic.drawMenu()
+end
+
+helpta["egg"]["con"] = "You found a EasterEgg!"
+
+function mynaptic.printcol(text)
+term.setTextColor(colors.black)
+term.setBackgroundColor(colors.white)
+print(text)
+end
+
+function mynaptic.reload()
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+io.output(mynaptic.iodefault)
+shell.run(config.packmanPath.." fetch")
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+mynaptic.drawMenu()
+end
+
+function mynaptic.updatemenu()
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+io.output(mynaptic.iodefault)
+if config.fetchUpdate == "true" and minepackapi then
+  shell.run(config.packmanPath.." fetch update")
+elseif config.fetchUpdate == "true" then
+  shell.run(config.packmanPath.." auto fetch update")
+elseif minepackapi then
+  shell.run(config.packmanPath.." update")
+else
+  shell.run(config.packmanPath.." auto update")
+end
+print()
+print(lang.keyContinue)
+os.pullEvent("key")
+mynaptic.drawMenu()
+end
+
+function mynaptic.debugmenu()
+term.setBackgroundColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+local debughis = {}
+local running = true
+local tEnv = {
+    ["exit"] = function()
+        running = false
+    end,
 }
-
-function Transaction.finish(self)
-	if Transaction[self.type] then
-		return Transaction[self.type](self)
-	else
-		return false
-	end
+setmetatable( tEnv, { __index = _ENV } )
+print("Call exit() to exit")
+while true do
+if not running then
+  break
+end
+write(">")
+local re = read(nil,debughis)
+  table.insert(debughis,re)
+  local ok,err = pcall(load(re,"Debugmenu","t",tEnv))
+  if not ok then
+    printError(err)
+  end
+end
+mynaptic.drawMenu()
 end
 
-function Transaction.rollback(self)
-	if Transaction[self.type] then
-		if self.type == "writeFile" then
-			if self.backup ~= nil then
-				self.contents = self.backup
-				return Transaction.writeFile(self)
-			else
-				return Transaction.deleteFile(self)
-			end
-		elseif self.type == "deleteFile" then
-			if self.backup ~= nil then
-				self.contents = self.backup
-				return Transaction.writeFile(self)
-			end
-		elseif self.type == "makeDirectory" then
-			return Transaction.removeDirectory(self)
-		elseif self.type == "removeDirectory" then
-			return Transaction.makeDirectory(self)
-		end
-	else
-		return false
-	end
+function mynaptic.getPackInfo(ypos)
+term.setCursorBlink(false)
+term.setBackgroundColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+local getname = textta[tpos+ypos]:sub(3,-1)
+getname = wilmaapi.splitString(getname," ")
+if mynaptic.packapi.list[getname] == nil then
+  print("Error while getting Information")
+  print()
+  print(lang["keyContinue"])
+  os.pullEvent("key_up")
+  mynaptic.drawMenu()
+  return
+end
+local updatetext = lang.no
+local installtest = lang.no
+if string.byte(textta[tpos+ypos],1) == 85 then --U
+  updatetext = lang.yes
+  installtest = lang.yes
+elseif string.byte(textta[tpos+ypos],1) == 73 then
+  installtest = lang.yes
+end
+local getname = textta[tpos+ypos]:sub(3,-1)
+getname = wilmaapi.splitString(getname," ")
+print(lang.name.." "..tostring(getname))
+print(lang.installed.." "..tostring(installtest))
+if mynaptic.packapi.list[getname]["download"]["type"]["type"] ~= "meta" then
+    print(lang.target.." "..mynaptic.packapi.list[getname]["target"])
+    print(lang.filename.." "..tostring(mynaptic.packapi.list[getname]["download"]["type"]["filename"]))
+end
+print(lang.typ.." "..tostring(mynaptic.packapi.list[getname]["download"]["type"]["type"]))
+if mynaptic.packapi.list[getname]["download"]["type"]["type"] ~= "meta" then
+    print(lang.url.." "..tostring(mynaptic.packapi.list[getname]["download"]["type"]["url"]))
+    print(lang.size.." "..tostring(mynaptic.packapi.list[getname]["size"]).." Bytes")
+end
+print(lang.version.." "..tostring(mynaptic.packapi.list[getname]["version"]))
+io.write(lang.category.. " ")
+for cate,_ in pairs(mynaptic.packapi.list[getname]["category"]) do
+	io.write(cate.." ")
+end
+io.write("\n")
+local testdep = false
+local getdep = mynaptic.packapi.list[getname]["dependencies"]
+getdep[getname] = nil
+io.write(lang.dependencies.." ")
+for dep,_ in pairs(getdep) do
+  io.write(dep.." ")
+  testdep = true
+end
+if testdep == false then
+  io.write(lang.none)
+end
+io.write("\n")
+if minepackapi then
+    print(lang.description.." "..mynaptic.packapi.list[getname]["description"])
+end
+print()
+print(lang["keyContinue"])
+os.pullEvent("key_up")
+mynaptic.drawMenu()
 end
 
-local tmeta = {__index = Transaction}
-
-local function newTransaction(pack, path, type, contents, version)
-	local transaction = {
-		pack = pack,
-		path = path,
-		type = type,
-		contents = contents,
-		version = version,
-		backup = nil,
-	}
-
-	setmetatable(transaction, tmeta)
-
-	return transaction
+function mynaptic.configNormal(entry,restart)
+term.clear()
+term.setCursorPos(1,1)
+print(lang.newEntryText)
+print()
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
+print()
+if restart == true then
+    print(lang.needRestart)
+    print()
+end
+write(lang.newEntry)
+local input = read(nil,nil,nil,config[entry])
+if not(input=="") then
+  config[entry] = input
+end
 end
 
-function loadConfig(sPath,sDefault)
-if not fs.exists(sPath) then
-    local writefi = fs.open(sPath,"w")
-    writefi.write(sDefault)
-    writefi.close()
+function mynaptic.configColor(entry,restart)
+term.clear()
+term.setCursorPos(1,1)
+print(lang.selectColour)
+print()
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
+print()
+local colorta = {}
+for ind in pairs(colors) do
+  if type(colors[ind]) == "number" then
+    term.setBackgroundColor(colors[ind])
+    write(" ")
+    table.insert(colorta,ind)
+  end
 end
-local fileh = io.open(sPath,"r")
-for linecon in fileh:lines() do
-    if linecon:find("#") ~= 1 then
-        local sHead, sBody = linecon:match("([^=]+)=([^=]+)")
-        minepackapi.config[sHead] = sBody
+while true do
+ev,me,x,y = os.pullEvent("mouse_click")
+if y == 7 then
+  if type(colorta[x]) == "string" then
+    config[entry] = colorta[x]
+    break
+  end
+end
+end
+end
+
+function mynaptic.configBool(entry,restart)
+term.clear()
+term.setCursorPos(1,1)
+print(lang.boolEntry)
+print()
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
+print()
+term.setTextColor(colors.green)
+write("true ")
+term.setTextColor(colors.red)
+write("false")
+term.setTextColor(colors.black)
+if restart == true then
+    print()
+    print()
+    print(lang.needRestart)
+end
+while true do
+local ev,me,x,y = os.pullEvent("mouse_click")
+if y == 7 then
+  if x < 5 then
+    config[entry] = "true"
+    break
+  elseif x > 5 and x < 11 then
+    config[entry] = "false"
+    break
+  end   
+end
+end
+end
+
+function mynaptic.configKey(entry,restart)
+term.clear()
+term.setCursorPos(1,1)
+print(lang.keyEntry)
+print()
+print(lang.youEdit.." "..entry)
+print()
+print(lang.old.." "..config[entry])
+print()
+local ev,me = os.pullEvent("key_up")
+config[entry] = keys.getName(me)
+end
+
+function mynaptic.configScreen()
+local configpos = 0
+--Configloop
+while true do
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColor(colors[config.menuTextColour])
+term.clear()
+term.setCursorPos(1,1)
+for i=1,mynaptic.screenh-1 do
+  if type(configed[i+configpos]) == "table" then
+    print(configed[i+configpos]["name"])
+  end
+end
+term.setCursorPos(1,mynaptic.screenh)
+term.setBackgroundColor(colors[config.bottomBarColour])
+term.clearLine()
+write("OK")
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+if config.showScrollArrows == "true" then
+  if configpos ~= 0 then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+  end
+  if mynaptic.configcou ~= configpos+mynaptic.screenh-1 then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
+  end
+end
+local ev,me,x,y = os.pullEvent()
+if ev == "mouse_scroll" or ev == "key" then
+  if me == 1 or me == keys[config.scrollDownKey] then
+    if mynaptic.configcou ~= configpos+mynaptic.screenh-1 then
+      configpos = configpos + 1
+    end
+  elseif me == -1 or me == keys[config.scrollUpKey] then
+    if configpos ~= 0 then
+      configpos = configpos - 1
+    end
+  end
+elseif ev == "mouse_click" then
+  if y == mynaptic.screenh then
+    configloop = nil
+    break
+  elseif type(configed[configpos+y]) == "table" then
+    if configed[configpos+y]["contype"] == "col" then
+      mynaptic.configColor(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+    elseif configed[configpos+y]["contype"] == "bool" then
+      mynaptic.configBool(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+    elseif configed[configpos+y]["contype"] == "key" then
+      mynaptic.configKey(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+    else
+      mynaptic.configNormal(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+    end
+  end
+end
+end
+--write config
+local writecon = io.open("/etc/mynaptic","w")
+for ind,con in pairs(config) do
+  writecon:write(ind.." "..con.."\n")
+end
+writecon:close()
+mynaptic.drawMenu()
+end
+
+function mynaptic.helpList()
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColor(colors[config.menuTextColour])
+term.clear()
+term.setCursorPos(1,1)
+for i=1,mynaptic.screenh-1 do
+    if type(helpta[i+mynaptic.helpos]) == "table" then
+        print(helpta[i+mynaptic.helpos]["titel"])
     end
 end
-fileh:close()
+if mynaptic.helpos ~= 0 and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+end
+if mynaptic.helpos+mynaptic.screenh-1 < #helpta and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
+end
+term.setCursorPos(1,screenh)
+term.setBackgroundColor(colors[config.bottomBarColour])
+term.clearLine()
+write("OK")
+term.setBackgroundColor(colors[config.menuBackgroundColour])
 end
 
-local TransQueue = {
-	addFile = function(self, path, contents, version)
-		table.insert(self.transactions, newTransaction(self.pack, path, "writeFile", contents, version))
-	end,
-	removeFile = function(self, path)
-		table.insert(self.transactions, newTransaction(self.pack, path, "deleteFile"))
-	end,
-	makeDir = function(self, path)
-		if string.match(path, "(.-)/[^/]+$") and not fs.exists(fs.combine(minepackapi.installRoot, string.match(path, "(.-)/[^/]+$"))) then
-			self:makeDir(string.match(path, "(.-)/[^/]+$"))
-		end
-		if not fs.exists(fs.combine(minepackapi.installRoot, path)) then
-			table.insert(self.transactions, newTransaction(self.pack, path, "makeDirectory"))
-		end
-	end,
-	removeDir = function(self, path)
-		table.insert(self.transactions, newTransaction(self.pack, path, "removeDirectory"))
-	end,
-	env = function(self)
-		return {
-			addFile = function(path, contents, version)
-				self:addFile(path, contents, version)
-			end,
-			removeFile = function(path)
-				self:removeFile(path)
-			end,
-			makeDir = function(path)
-				self:makeDir(path)
-			end,
-			removeDir = function(path)
-				self:removeDir(path)
-			end,
-		}
-	end,
-	finish = function(self)
-		local installedFile = fs.combine(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"), self.pack.fullName..".txt")
-		local installedData = {}
-		if installed[self.pack.fullName] and fs.exists(installedFile) then
-			local handle = io.open(installedFile, "r")
-			if handle then
-				for line in handle:lines() do
-					table.insert(installedData, line)
-				end
-				handle:close()
-
-				--strip version number if present
-				if #installedData >= 1 then
-					table.remove(installedData, 1)
-				end
-			end
-		end
-
-		--ensure installed table entry exists
-		if not minepackapi.installed[self.pack.fullName] then
-			minepackapi.installed[self.pack.fullName] = {
-				version = self.pack.version,
-				files = {},
-			}
-			if not minepackapi.installed[self.pack.name] then minepackapi.installed[self.pack.name] = {[self.pack.repo] = minepackapi.installed[self.pack.fullName]} end
-		end
-
-		local fileInfoUpdates = {}
-
-		local lastTransaction = false
-
-		for i = 1, #self.transactions do
-			if not self.transactions[i]:finish() then
-				--clean up already-processed transactions and exit
-				printWarning("Transaction failed! Rolling back...")
-				for j = i, 1, -1 do
-					self.transactions[i]:rollback()
-					return false
-				end
-			end
-			--construct new line (or nil to remove entry, if present)
-			local newLine
-			if self.transactions[i].type == "writeFile" then
-				table.insert(fileInfoUpdates, newTransaction(self.pack, self.transactions[i].path, "updateInfo", installedData, self.transactions[i].version))
-			elseif self.transactions[i].type == "makeDirectory" then
-				table.insert(fileInfoUpdates, newTransaction(self.pack, self.transactions[i].path, "updateInfo", installedData))
-			elseif self.transactions[i].type == "deleteFile" or self.transactions[i].type == "removeDirectory" then
-				table.insert(fileInfoUpdates, newTransaction(self.pack, self.transactions[i].path, "removeInfo", installedData))
-			end
-		end
-
-		--modify installed data to match the transactions succesfully executed.
-		printInformation("Updating Database")
-		for i = 1, #fileInfoUpdates do
-			fileInfoUpdates[i]:finish()
-		end
-
-		if self.removing and #installedData == 0 then
-			fs.delete(installedFile)
-
-			--remove entries from installed packages table if removing minepackapi.
-			minepackapi.installed[self.pack.name][self.pack.repo] = nil
-			local othersWithName = false
-			for k, v in pairs(minepackapi.installed[self.pack.name]) do
-				if v then
-					othersWithName = true
-					break
-				end
-			end
-			if not othersWithName then
-				minepackapi.installed[self.pack.name] = nil
-			end
-			minepackapi.installed[self.pack.fullName] = nil
-		else
-			--write out file again, if any content exists for it.
-			table.insert(installedData, 1, tostring(self.pack.version))
-			if not fs.exists(fs.combine(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"), self.pack.repo..".txt")) then fs.makeDir(fs.combine(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"), self.pack.repo..".txt")) end
-			local handle = io.open(installedFile, "w")
-			if handle then
-				for k, v in ipairs(installedData) do
-					handle:write(v.."\n")
-				end
-				handle:close()
-			end
-		end
-		return true
-	end,
-}
-
-local queueMeta = {__index = TransQueue}
-
-function newTransactionQueue(packName, removing)
-	local pack
-	if minepackapi.list[packName] and minepackapi.list[packName].version then pack = minepackapi.list[packName] else return nil, "No such package!" end
-	local queue = {
-		pack = pack,
-		removing = removing,
-		transactions = {},
-	}
-
-	setmetatable(queue, queueMeta)
-
-	return queue
+function mynaptic.showHelp(num)
+term.clear()
+term.setCursorPos(1,1)
+print(helpta[num]["con"])
+print()
+print(lang["keyContinue"])
+if type(helpta[num]["url"]) == "table" and commands and config.helpChatURL == "true" then
+    for k,v in ipairs(helpta[num]["url"]) do
+        commands.execAsync('tellraw @p ["",{"text":"'..v[1]..'","color":"blue","clickEvent":{"action":"open_url","value":"'..v[2]..'"},"hoverEvent":{"action":"show_text","value":{"text":"","extra":[{"text":"'..v[2]..'"}]}}}]')
+    end
+end
 end
 
-local downloadTypes = {
-	github = {
-		author = true,
-		repository = true,
-		branch = true,
-	},
-	bitbucket = {
-		author = true,
-		repository = true,
-		branch = true,
-	},
-	pastebin = {
-		url = true,
-		filename = true,
-	},
-	raw = {
-		url = true,
-		filename = true,
-	},
-	multi = {},
-	grin = {
-		author = true,
-		repository = true,
-	},
-	meta = {},
-}
-
-local updateTypes = {
-	github = "incremental",
-	bitbucket = "incremental",
-	grin = "replace",
-	raw = "overwrite",
-	multi = "overwrite",
-	pastebin = "overwrite",
-	meta = "overwrite",
-}
-
-local lookupFunctions = {}
-
-lookupFunctions.github = function(info)
-	local function getDirectoryContents(path)
-		local fType, fPath, fVer = {}, {}, {}
-		local response = http.get("https://api.github.com/repos/"..info.author.."/"..info.repository.."/contents/"..path.."?ref="..info.branch)
-		if response then
-			response = response.readAll()
-			if response ~= nil then
-				for str in response:gmatch('"type":%s*"(%w+)",') do table.insert(fType, str) end
-				for str in response:gmatch('"path":%s*"([^\"]+)",') do table.insert(fPath, str) end
-				for str in response:gmatch('"sha":%s*"([^\"]+)",') do table.insert(fVer, str) end
-			end
-		else
-			printWarning("Can't fetch repository information")
-			return nil
-		end
-		local directoryContents = {}
-		for i=1, #fType do
-			directoryContents[i] = {type = fType[i], path = fPath[i], version = fVer[i]}
-		end
-		return directoryContents
-	end
-	local function addDirectoryContents(path, contentsTable)
-		local contents = getDirectoryContents(path)
-		if not contents then return nil, "no contents" end
-		for n, file in ipairs(contents) do
-			if file.type == "dir" then
-				addDirectoryContents(file.path, contentsTable)
-			else
-				table.insert(contentsTable, {path = file.path, version = file.version})
-			end
-		end
-		return contentsTable
-	end
-	return addDirectoryContents("", {})
-end
-
-lookupFunctions.bitbucket = function(info)
-	local function getDirectoryContents(path)
-		local directoryContents = {}
-		local response = http.get("https://api.bitbucket.org/1.0/repositories/"..info.author.."/"..info.repository.."/src/"..info.branch..path)
-		if response then
-			response = response.readAll()
-			if response ~= nil then
-				for str in string.gmatch(string.match(response, '"directories": %[(.-)%]'), '"([^,\"]+)"') do table.insert(directoryContents, {type = "dir", path = str}) end
-				for str, ver in string.gmatch(string.match(response, '"files": %[(.-)%]'), '"path": "([^\"]+)".-"revision": "([^\"]+)"') do table.insert(directoryContents, {type = "file", path = str, version = ver}) end
-			end
-		else
-			printWarning("Can't fetch repository information")
-			return nil
-		end
-		return directoryContents
-	end
-	local function addDirectoryContents(path, contentsTable)
-		local contents = getDirectoryContents(path)
-		for n, file in ipairs(contents) do
-			if file.type == "dir" then
-				addDirectoryContents(path..file.path.."/", contentsTable)
-			else
-				table.insert(contentsTable, {path = file.path, version = file.version})
-			end
-		end
-		return contentsTable
-	end
-	return addDirectoryContents("/", {})
-end
-
--- Local function to download a url raw
-local function raw(url)
-	printInformation("Fetching: "..url)
-	http.request(url)
-	while true do
-		local event = {os.pullEvent()}
-		if event[1] == "http_success" then
-			printInformation("Done!")
-			return event[3].readAll()
-		elseif event[1] == "http_failure" then
-			printWarning("Unable to fetch file "..event[2])
-			return false
-		end
-	end
-end
-
-local downloadFunctions = {}
-
-downloadFunctions.raw = function(pack, env, queue, info)
-	-- Delegate to local raw
-	local path = fs.combine(pack.target, info.filename)
-
-	if string.match(path, "(.-)/[^/]+$") then
-		queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-	end
-	local content = raw(info.url)
-	if content then
-		queue:addFile(path, content)
-		return true
-	else
-		return false
-	end
-end
-
-downloadFunctions.multi = function(pack, env, queue, info)
-	local files = info.files
-	for i = 1, #files do
-		local path = fs.combine(pack.target, files[i].name)
-
-		if string.match(path, "(.-)/[^/]+$") then
-			queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-		end
-		local content = raw(files[i].url)
-		if content then
-			queue:addFile(path, content)
-		else
-			return false
-		end
-	end
-	return true
-end
-
-downloadFunctions.github = function(pack, env, queue, info)
-	local contents = lookupFunctions.github(info)
-	if not contents then return nil, "content fetch failure" end
-	local localTarget = pack.target or ""
-	for num, file in ipairs(contents) do
-		local path = fs.combine(localTarget, file.path)
-		if string.match(path, "(.-)/[^/]+$") then
-			queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-		end
-		local content = raw("https://raw.github.com/"..info.author.."/"..info.repository.."/"..info.branch.."/"..file.path)
-		if content then
-			queue:addFile(path, content, file.version)
-		else
-			return false
-		end
-	end
-	return true
-end
-
-downloadFunctions.bitbucket = function(pack, env, queue, info)
-	local contents = lookupFunctions.bitbucket(info)
-	local localTarget = pack.target or ""
-	for num, file in ipairs(contents) do
-		local path = fs.combine(localTarget, file.path)
-		if string.match(path, "(.-)/[^/]+$") then
-			queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-		end
-		local content = raw("https://bitbucket.org/"..info.author.."/"..info.repository.."/raw/"..info.branch.."/"..file.path)
-		if content then
-			queue:addFile(path, content, file.version)
-		else
-			return false
-		end
-	end
-	return true
-end
-
-downloadFunctions.pastebin = function(pack, env, queue, info)
-	local path = fs.combine(pack.target, info.filename) 
-
-	if string.match(path, "(.-)/[^/]+$") then
-		queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-	end
-	local content = raw("http://pastebin.com/raw.php?i="..info.url)
-	if content then
-		queue:addFile(path, content)
-		return true
-	else
-		return false
-	end
-end
-
-downloadFunctions.grin = function(pack, env, queue, info)
-	local fullName = pack.repo.."/"..pack.name
-	local status
-	parallel.waitForAny(function()
-		status = env.shell.run("pastebin run VuBNx3va -e -u", info.author, "-r", info.repository, fs.combine(fs.combine(minepackapi.installRoot, pack.target), pack.name))
-	end, function()
-		while true do
-			local e, msg = os.pullEvent("grin_install_status")
-			printInformation(msg)
-		end
-	end)
-	return status
-end
-
-downloadFunctions.meta = function(pack, env, queue)
-	return true
-end
-
-local function findInstalledVersionByPath(packName, path)
-	for i, file in ipairs(minepackapi.installed[packName].files) do
-		if file.path == path then return file.version end
-	end
-end
-
-local new_fs = {}
-
-local Package = {
-	install = function(self, env)
-		local queue
-		if downloadFunctions[self.download.type.type] then
-			queue = newTransactionQueue(self.fullName)
-			if not downloadFunctions[self.download.type.type](self, env, queue, self.download.type) then return false end
-		else
-			return false
-		end
-
-		if not queue:finish() then return false end
-
-		--execute startup script, if present.
-		if self.setup then
-			local queue = newTransactionQueue(self.fullName)
-			--packman key included solely for backwards compatibility, usage is deprecated in favor of pack.
-			local setupArgs = {}
-			for match in string.gmatch(self.setup, "(%S+)") do
-				table.insert(setupArgs, match)
-			end
-			setupArgs[1] = fs.combine(fs.combine(minepackapi.installRoot, self.target), setupArgs[1])
-			local envQueue = queue:env()
-			if not os.run({shell = env.shell, packman = envQueue, pack = envQueue, fs = new_fs}, unpack(setupArgs)) then
-				--setup script threw an error.
-				printWarning("Package "..self.fullName.." failed to install, removing")
-				return self:remove(env)
-			end
-
-			--this must be done a second time to finalize any changes made by the install script.
-			return queue:finish()
-		end
-
-        if self.man then
-            local helph = http.get(self.man)
-            if helph then
-                local writeh = fs.open(minepackapi.config.helpPath..self.name,"w")
-                writeh.write(helph.readAll())
-                writeh.close()
-                helph.close()
-            end
+function mynaptic.helpMenu()
+mynaptic.helpos = 0
+mynaptic.helpList()
+while true do
+local ev,me,x,y = os.pullEvent()
+if ev == "mouse_click" then
+  if y == screenh then
+    mynaptic.drawMenu()
+    break
+  elseif type(helpta[mynaptic.helpos+y]) == "table" then
+    mynaptic.showHelp(mynaptic.helpos+y)
+    os.pullEvent("key_up")
+    mynaptic.helpList()
+  end
+elseif ev == "mouse_scroll" then
+    if me == 1 then
+        if mynaptic.helpos+mynaptic.screenh-1 < #helpta then
+            mynaptic.helpos = mynaptic.helpos + 1
+            mynaptic.helpList()
         end
-
-        if minepackapi.config.writeLog == "true" then
-            local logh = fs.open(minepackapi.config.minepackDirectory.."/log.txt","a")
-            logh.write("Installed "..self.fullName.."\n")
-            logh.close()
+    elseif me == -1 then
+        if mynaptic.helpos ~= 0 then
+            mynaptic.helpos = mynaptic.helpos - 1
+            mynaptic.helpList()
         end
-
-		return true
-	end,
-	remove = function(self, env)
-		if not minepackapi.installed[self.fullName] then return false end
-		local queue = newTransactionQueue(self.fullName, true)
-
-		if self.cleanup then
-			local queue = newTransactionQueue(self.fullName, true)
-			local cleanupArgs = {}
-			for match in string.gmatch(self.cleanup, "(%S+)") do
-				table.insert(cleanupArgs, match)
-			end
-			cleanupArgs[1] = fs.combine(fs.combine(minepackapi.installRoot, self.target), cleanupArgs[1])
-			local envQueue = queue:env()
-			os.run({shell = env.shell, packman = envQueue, pack = envQueue, fs = new_fs}, unpack(cleanupArgs))
-			if not queue:finish() then return false end
-		end
-
-		local fileList = minepackapi.installed[self.fullName].files
-		for i = #fileList, 1, -1 do
-			if fs.exists(fs.combine(minepackapi.installRoot, fileList[i].path)) and fs.isDir(fs.combine(minepackapi.installRoot, fileList[i].path)) then
-				queue:removeDir(fileList[i].path)
-			else
-				queue:removeFile(fileList[i].path)
-			end
-
-		end
-        
-        if fs.exists(minepackapi.config.helpPath..self.name) then
-            fs.delete(minepackapi.config.helpPath..self.name)
-        end
-        
-        if minepackapi.config.writeLog == "true" then
-            local logh = fs.open(minepackapi.config.minepackDirectory.."/log.txt","a")
-            logh.write("Removed "..self.fullName.."\n")
-            logh.close()
-        end
-
-		return queue:finish()
-	end,
-	upgrade = function(self, env)
-		if not minepackapi.installed[self.fullName] then return false end
-		local queue = newTransactionQueue(self.fullName)
-        if minepackapi.config.writeLog == "true" then
-            local logh = fs.open(minepackapi.config.minepackDirectory.."/log.txt","a")
-            logh.write("Updated "..self.fullName.."\n")
-            logh.close()
-        end
-		if updateTypes[self.download.type.type] == "incremental" then
-			local updatedFiles = {}
-			local contents = lookupFunctions[self.download.type.type](self.download.type)
-			for num, file in ipairs(contents) do
-				local path = fs.combine(self.target, file.path)
-				if file.version ~= findInstalledVersionByPath(self.fullName, path) then
-					if string.match(path, "(.-)/[^/]+$") then
-						queue:makeDir(string.match(path, "(.-)/[^/]+$"))
-					end
-					if self.download.type.type == "github" then
-						local content = raw("https://raw.github.com/"..self.download.type.author.."/"..self.download.type.repository.."/"..self.download.type.branch.."/"..file.path)
-						if content then
-							queue:addFile(path, content, file.version)
-						else
-							return false
-						end
-					elseif self.download.type.type == "bitbucket" then
-						local content = raw("https://bitbucket.org/"..self.download.type.author.."/"..self.download.type.repository.."/raw/"..self.download.type.branch.."/"..file.path)
-						if content then
-							queue:addFile(path, content, file.version)
-						else
-							return false
-						end
-					end
-				end
-				updatedFiles[path] = true
-			end
-
-			for i, fileInfo in ipairs(minepackapi.installed[self.fullName].files) do
-				if not updatedFiles[fileInfo.path] and fileInfo.version ~= minepackapi.installed[self.fullName].version then
-					if not fs.isDir(fs.combine(minepackapi.installRoot, fileInfo.path)) or (fs.isDir(fs.combine(minepackapi.installRoot, fileInfo.path)) and #(fs.list(fs.combine(minepackapi.installRoot, fileInfo.path))) == 0) then
-						queue:removeFile(fileInfo.path)
-					end
-				end
-			end
-
-			
-			return queue:finish()
-		elseif updateTypes[self.download.type.type] == "overwrite" then
-			if not downloadFunctions[self.download.type.type](self, env, queue, self.download.type) then return false end
-			return queue:finish()
-		elseif updateTypes[self.download.type.type] == "replace" then
-			return self:remove(env) and self:install(env)
-		end
-	end,
-}
-
-local pmetatable = {__index = Package}
-
-function new(name, repo)
-	local p = {
-		name = name,
-		repo = repo,
-		fullName = repo.."/"..name,
-		version = "",
-		size = 0,
-		category = {},
-		dependencies = {},
-		--installation folder target
-		target = minepackapi.config.defaultTarget,
-		setup = nil,
-		remove = nil,
-        man = nil,
-        description = "None",
-		download = {}
-	}
-
-	setmetatable(p, pmetatable)
-
-	return p
+    end
+elseif ev == "key_up" then
+  if me == keys.backspace then
+    mynaptic.drawMenu()
+    break
+  elseif me == keys.e then
+    mynaptic.showHelp("egg")
+    os.pullEvent("key_up")
+    mynaptic.helpList()
+  end  
+end
+end
 end
 
-function findDependencies(packageName, _dependencyTable)
-	local dependencyTable = _dependencyTable or {}
-	if minepackapi.list[packageName] then
-		dependencyTable[packageName] = true
-		for packName in pairs(minepackapi.list[packageName].dependencies) do
-			packName = packName:lower()
-			if packName ~= "none" and not dependencyTable[packName] then
-				dependencyTable, errmsg = minepackapi.findDependencies(packName, dependencyTable)
-				if not dependencyTable then return nil, errmsg end
-			end
-		end
-	else
-		return nil, packageName
-	end
-	return dependencyTable
+function mynaptic.history()
+term.setTextColor(colors[config.menuTextColour])
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.clear()
+term.setCursorPos(1,1)
+local hiscon = {}
+local hiscou = 0
+if fs.exists(config.historyPath) == true then
+  local readhis = io.open(config.historyPath,"r")
+  for linecon in readhis:lines() do
+    table.insert(hiscon,linecon)
+    hiscou = hiscou + 1
+  end
+  readhis:close()
+else
+  table.insert(hiscon,"History not found")
+  hiscou = 1
+end
+local hispos = 0
+while true do
+  term.clear()
+  term.setCursorPos(1,1)
+  for i=1,mynaptic.screenh-1 do
+    if type(hiscon[hispos+i]) == "string" then
+      print(hiscon[hispos+i])
+    end
+  end
+  if hispos ~= 0 and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+  end
+  if hiscou ~= hispos+mynaptic.screenh-1 and hiscou > mynaptic.screenh and config.showScrollArrows == "true" then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
+  end
+  term.setCursorPos(1,mynaptic.screenh)
+  term.setBackgroundColor(colors[config.bottomBarColour])
+  term.clearLine()
+  write(lang.back)
+  term.setCursorPos(mynaptic.screenw-#lang.clear+1,mynaptic.screenh)
+  write(lang.clear)
+  term.setBackgroundColor(colors[config.menuBackgroundColour])
+  local ev,me,x,y = os.pullEvent()
+  if ev == "mouse_scroll" or ev == "key" then
+    if me == -1 or me == keys[config.scrollUpKey] then
+      if hispos > 0 then
+        hispos = hispos - 1
+      end
+    elseif me == 1 or me == keys[config.scrollDownKey] then
+      if hispos+mynaptic.screenh-1 < hiscou then
+        hispos = hispos + 1
+      end
+    end
+  elseif ev == "mouse_click" then
+    if y == mynaptic.screenh then
+      if x < #lang.back+1 then
+        mynaptic.drawMenu()
+        return
+      elseif x > mynaptic.screenw-#lang.clear then
+        hiscou = 1
+        hispos = 0
+        hiscon = {"History cleared"}
+        fs.delete(config.historyPath)
+      end
+    end
+  end
+end
 end
 
-if not fs.exists("/usr/bin") then fs.makeDir("/usr/bin") end
---process package list
-local function addPacks(file)
-    --fs,getName(file).sub(1,-5) doesn't work
-    local tmpstr = fs.getName(file)
-	local packName = tmpstr:sub(1,-5)
-	local state = ""
-	local typeState = nil
-	local listHandle = io.open(file, "r")
-	local entryTable
-	local lineCount = 1
-	if listHandle then
-		for line in listHandle:lines() do
-			if state == "type" or state == "help" then
-				local allAttributes = true
-				for attribute in pairs(downloadTypes[entryTable.download[state].type]) do
-					if not entryTable.download[state][attribute] then
-						allAttributes = false
-						break
-					end
-				end
-				if allAttributes then
-					state = "main"
-				end
-			end
-			local property,hasValue,value = string.match(line, "^%s*([^=%s]+)%s*(=?)%s*(.-)%s*$")
-			if typeState and property ~= "file" then typeState = nil end
-			hasValue=hasValue~="" or nil
-			if property == "name" and state == "" then
-				if state == "" then
-					entryTable = new(string.lower(value), packName)
-					entryTable.target = minepackapi.config.defaultTarget
-					state = "main"
-				else
-					if state ~= "dirty" then
-						printWarning("Unexpected 'name' at line "..lineCount.." in "..file)
-						state = "dirty"
-					end
-				end
-			elseif property == "type" or property == "help" then
-				if state == "main" then
-					entryTable.download[property] = {type = string.match(value, "^(%S*)$")}
-					if downloadFunctions[entryTable.download[property].type] then
-						if entryTable.download[property].type == "multi" then
-							entryTable.download[property].files = {}
-							typeState = property
-							state = "main"
-						else
-							state = property
-						end
-					else
-						if state ~= "dirty" then
-							printWarning("Unknown Repository Format at line "..lineCount.." in "..file)
-							state = "dirty"
-						end
-					end
-				else
-					if state ~= "dirty" then
-						printWarning("Unexpected 'type' at line "..lineCount.." in "..file)
-						state = "dirty"
-					end
-				end
-			elseif property == "file" then
-				if typeState then
-					local fileTable = entryTable.download[typeState].files 
-					local name, url = string.match(value, "(%S+)%s+(.*)")
-					fileTable[#fileTable + 1] = {name = name, url = url}
-				else
-					printWarning("Unexpected "..property.." at line "..lineCount.." in "..file)
-					state = "dirty"
-				end
-			elseif property == "target" or property == "setup" or property == "update" or property == "cleanup" or property == "version" or property == "size" or property == "man" or property == "description" then
-				if state == "main" then
-					entryTable[property] = value
-				else
-					if state ~= "dirty" then
-						printWarning("Unexpected "..property.." at line "..lineCount.." in "..file)
-						state = "dirty"
-					end
-				end
-			elseif property == "dependencies" or property == "category" then
-				if state == "main" then
-					for str in string.gmatch(value, "(%S+)") do
-						entryTable[property][str] = true
-					end
-				else
-					if state ~= "dirty" then
-						printWarning("Unexpected "..property.." at line "..lineCount.." in "..file)
-						state = "dirty"
-					end
-				end
-			elseif property == "end" then
-				if state == "dirty" then
-					state = ""
-				elseif state == "type" then
-					printWarning("Unexpected end at line "..lineCount.." in "..file)
-					state = ""
-				elseif state == "main" then
-					--this line is the required entries for a valid repolist entry.
-					if entryTable.download.type and (#entryTable.version > 0 and (tonumber(entryTable.size) > 0 or entryTable.download.type.type == "meta")) then
-						local i
-						for name in pairs(entryTable.dependencies) do
-							i = true
-							break
-						end
-						if i then
-							list[packName.."/"..entryTable.name] = entryTable
-							if list[entryTable.name] then
-								list[entryTable.name][packName] = entryTable
-							else
-								list[entryTable.name] = {[packName] = entryTable}
-							end
-						end
-					else
-						entryTable = nil
-					end
-					state = ""
-				end
-			elseif state == "type" or state == "help" then
-				local propertyFound = false
-				for prop in pairs(downloadTypes[entryTable.download[state].type]) do
-					if property == prop then
-						propertyFound = true
-						break
-					end
-				end
-				if propertyFound then
-					entryTable.download[state][property] = value
-				else
-					printWarning("Unexpected "..property.." at line "..lineCount.." in "..file)
-					state = "dirty"
-				end
-			end
-			lineCount = lineCount + 1
-		end
-		if state ~= "" then
-			printWarning("Expected 'end' at line "..lineCount.." in "..file)
-		end
-		listHandle:close()
-	else
-		printError("Could not open repository list!")
-	end
+function mynaptic.showMenulist()
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColour(colors[config.menuTextColour])
+term.clear()
+term.setCursorPos(1,1)
+for _,v in pairs(mynaptic.menulist) do
+  print(v.text)
+end
+term.setCursorPos(1,mynaptic.screenh)
+term.setBackgroundColor(colors[config.menubarColour])
+term.clearLine()
+term.setCursorPos(1,mynaptic.screenh)
+term.write(lang.back)
+while true do
+local ev,me,x,y = os.pullEvent()
+  if ev == "mouse_click" then
+    if y == mynaptic.screenh then
+      break
+    elseif type(mynaptic.menulist[y]) == "table" then
+      mynaptic.menulist[y]["func"]()
+      break
+    end
+  end
+end
+mynaptic.drawMenu()
 end
 
-function load()
-	for k, v in pairs(minepackapi.list) do
-		minepackapi.list[k] = nil
-	end
-	if fs.exists(minepackapi.config.minepackDirectory.."/repositories") then
-		for _, file in ipairs(fs.list(minepackapi.config.minepackDirectory.."/repositories")) do
-			addPacks(minepackapi.config.minepackDirectory.."/repositories/"..file)
-		end
-	end
-
-	for k, v in pairs(minepackapi.installed) do
-		minepackapi.installed[k] = nil
-	end
-	if fs.exists(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed")) and fs.isDir(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed")) then
-		for _, repo in ipairs(fs.list(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"))) do
-			for _, file in ipairs(fs.list(fs.combine(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"), repo))) do
-				local name = repo.."/"..file:sub(1,-5)
-				local handle = io.open(fs.combine(fs.combine(fs.combine(minepackapi.installRoot, minepackapi.config.minepackDirectory.."/installed"), repo), file), "r")
-				if handle then
-					installed[name] = {files = {}}
-					local packVersion
-					for line in handle:lines() do
-						if not packVersion then
-							packVersion = line
-							installed[name].version = packVersion
-						else
-							local path, version = string.match(line, "([^;]+);(.*)")
-							if path and version then
-								installed[name].files[#installed[name].files + 1] = {path = path, version = version}
-							else
-								installed[name].files[#installed[name].files + 1] = {path = line, version = packVersion}
-							end
-						end
-					end
-					handle:close()
-					if installed[file:sub(1,-5)] then
-						installed[file:sub(1,-5)][repo] = installed[name]
-					else
-						installed[file:sub(1,-5)] = {[repo] = installed[name]}
-					end
-				else
-					printWarning("Couldn't open package db file: "..file)
-				end
-			end
-		end
-	end
-
-	for k, v in pairs(new_fs) do
-		new_fs[k] = nil
-	end
-	do
-		local root = minepackapi.installRoot
-		--override fs api to use installRoot, recreated when loading to accomodate installRoot changes.
-		local function fsWrap(name,f,n)
-			return function(...)
-				local args = { ... }
-				for k,v in ipairs(args) do
-					if n == nil or k <= n then
-						args[k] = fs.combine(root, v)
-					end
-				end
-				return f(unpack(args))
-			end
-		end
-		for k,v in pairs(fs) do
-			new_fs[k] = fsWrap(k,v,nil)
-		end
-		new_fs.open = fsWrap("open",fs.open,1)
-		new_fs.combine = fs.combine
-		new_fs.getName = fs.getName
-		new_fs.getDir = fs.getDir
-	end
+function mynaptic.editLang(key)
+term.clear()
+term.setCursorPos(1,1)
+print(lang.newEntryText)
+print()
+print(lang.youEdit.." "..key)
+print()
+print(lang.old.." "..lang[key])
+print()
+write(lang.newEntry)
+local input = read(nil,nil,nil,lang[key])
+if not(input=="") then
+  lang[key] = input
 end
+end
+
+function mynaptic.langScreen()
+local langpos = 0
+--Langloop
+local langta = {}
+for key,value in pairs(lang) do
+  table.insert(langta,key)
+end
+while true do
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColor(colors[config.menuTextColour])
+term.clear()
+term.setCursorPos(1,1)
+for i=1,mynaptic.screenh-1 do
+  if type(langta[i+langpos]) == "string" then
+    print(langta[i+langpos])
+  end
+end
+term.setCursorPos(1,mynaptic.screenh)
+term.setBackgroundColor(colors[config.bottomBarColour])
+term.clearLine()
+write("OK")
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+if config.showScrollArrows == "true" then
+  if langpos ~= 0 then
+    term.setCursorPos(mynaptic.screenw,1)
+    term.write("\30")
+  end
+  if #langta ~= langpos+mynaptic.screenh-1 then
+    term.setCursorPos(mynaptic.screenw,mynaptic.screenh-1)
+    term.write("\31")
+  end
+end
+local ev,me,x,y = os.pullEvent()
+if ev == "mouse_scroll" or ev == "key" then
+  if me == 1 or me == keys[config.scrollDownKey] then
+    if #langta ~= langpos+mynaptic.screenh-1 then
+      langpos = langpos + 1
+    end
+  elseif me == -1 or me == keys[config.scrollUpKey] then
+    if langpos ~= 0 then
+      langpos = langpos - 1
+    end
+  end
+elseif ev == "mouse_click" then
+  if y == mynaptic.screenh then
+    configloop = nil
+    break
+  elseif type(langta[langpos+y]) == "string" then
+    mynaptic.editLang(langta[langpos+y])
+  end
+end
+end
+mynaptic.drawMenu()
+end
+
+function mynaptic.writeSearch()
+textta = {}
+packcouba = packcou
+packcou = 0
+for _,sete in ipairs(backupta) do
+  if not(sete:find(search)==nil) then
+    table.insert(textta,sete)
+    packcou = packcou + 1
+  end
+end
+end
+
+function mynaptic.testConfig(name,contype,restart)
+if not(type(config[name]) == "string") then
+print("There is no config entry for "..name) 
+configstatus = false
+elseif contype == "bool" then
+  if not(config[name] == "true" or config[name] == "false") then
+  print("The config entry for "..name.." is not true/false")
+  configstatus = false
+  end 
+elseif contype == "col" then
+  if not(type(colors[config[name]]) == "number") then
+    print("There is no existing Colour in the config entry for "..name)
+    configstatus = false
+  end
+elseif contype == "key" then
+  if type(keys[config[name]]) ~= "number" then
+    print("The config entry for "..name.." is not a key")
+    configstatus = false
+  end
+end
+local tmpta = {}
+tmpta.contype = contype
+tmpta.name = name
+tmpta.con = config[name]
+tmpta.restart = restart
+table.insert(configed,tmpta)
+mynaptic.configcou = mynaptic.configcou + 1
+end
+
+function mynaptic.deleteVars()
+textta = nil
+statuscheck = nil
+remove = nil
+install = nil
+checkta = nil
+config = nil
+search = nil
+searchch = nil
+configstatus = nil
+configed = nil
+configloop = nil
+configScreen = nil
+mynaptic = nil
+shelltext = nil
+end
+
+textta = {}
+statuscheck = {}
+remove = {}
+install = {}
+checkta = {}
+config = {}
+configed = {}
+install["list"] = {}
+install["check"] = {}
+install.pack = {}
+remove["list"] = {}
+remove["check"] = {}
+remove.pack = {}
+searchch = false
+search = ""
+shelltext = ""
+configstatus = true
+updateta = {}
+mynaptic.configcou = 0
+
+--Read Config
+if fs.exists("/etc/mynaptic") == true then
+confile = fs.open("/etc/mynaptic","r")
+local loop = true
+while loop == true do
+  text = confile.readLine()
+  if text == nil then
+    loop = nil
+  elseif not(text:find("#") == 1) then
+    head,cont = wilmaapi.splitString(text," ")
+    if type(head) == "string" then
+      config[head] = cont
+    end
+  end
+end
+else
+confile = fs.open("/etc/mynaptic","w")
+confile.writeLine("showVersion false")
+confile.writeLine("showRepository true")
+confile.writeLine("writeHistory true")
+confile.writeLine("sortAlphabetically false")
+confile.writeLine("loadPlugins true")
+confile.writeLine("showExitText true")
+confile.writeLine("showScrollArrows true")
+confile.writeLine("closeButtonRight false")
+confile.writeLine("showCursorBlink true")
+confile.writeLine("helpChatURL true")
+confile.writeLine("fetchUpdate false")
+confile.writeLine("pluginPath /usr/share/mynaptic/plugins")
+confile.writeLine("textColour black")
+confile.writeLine("backgroundColour gray")
+confile.writeLine("menubarColour blue")
+confile.writeLine("closeColour red")
+confile.writeLine("notinstaledColour white")
+confile.writeLine("instaledColour green")
+confile.writeLine("installColour orange")
+confile.writeLine("removeColour red")
+confile.writeLine("searchColour brown")
+confile.writeLine("bottomBarColour blue")
+confile.writeLine("menuBackgroundColour white")
+confile.writeLine("menuTextColour black")
+confile.writeLine("scrollUpKey up")
+confile.writeLine("scrollDownKey down")
+confile.writeLine("deleteKey backspace")
+confile.writeLine("debugKey rightAlt")
+confile.writeLine("shellSwitchKey leftCtrl")
+confile.writeLine("completeKey tab")
+confile.writeLine("shellRunKey enter")
+confile.writeLine("deleteAllKey delete")
+if minepackapi then
+  confile.writeLine("writeHistory false")
+  confile.writeLine("historyPath "..fs.combine(minepackapi.config.minepackDirectory,"log.txt"))
+  confile.writeLine("packmanPath /usr/bin/minepack.lua")
+else
+  confile.writeLine("writeHistory true")
+  confile.writeLine("historyPath /var/MynapticHistory.txt")
+  confile.writeLine("packmanPath /usr/bin/packman")
+end
+confile.close()
+config["showVersion"] = "false"
+config["showRepository"] = "true"
+config["loadPlugins"] = "true"
+config["sortAlphabetically"] = "false"
+config["showExitText"] = "true"
+config.showScrollArrows = "true"
+config.closeButtonRight = "false"
+config.showCursorBlink = "true"
+config.helpChatURL = "true"
+config.fetchUpdate = "false"
+config["pluginPath"] = "/usr/share/mynaptic/plugins"
+config["packmanPath"] = "/usr/bin/packman"
+config["backgroundColour"] = "gray"
+config["menubarColour"] = "blue"
+config["closeColour"] = "red"
+config["notinstaledColour"] = "white"
+config["instaledColour"] = "green"
+config["installColour"] = "orange"
+config["removeColour"] = "red"
+config["textColour"] = "black"
+config["searchColour"] = "brown"
+config["bottomBarColour"] = "blue"
+config.menuBackgroundColour = "white"
+config.menuTextColour = "black"
+config["scrollUpKey"] = "up"
+config["scrollDownKey"] = "down"
+config["deleteKey"] = "backspace"
+config["debugKey"] = "rightAlt"
+config["shellSwitchKey"] = "leftCtrl"
+config["completeKey"] = "tab"
+config["shellRunKey"] = "enter"
+config.deleteAllKey = "delete"
+if minepackapi then
+  config["writeHistory"] = "false"
+  config["historyPath"] = fs.combine(minepackapi.config.minepackDirectory,"log.txt")
+  config["packmanPath"] = "/usr/bin/minepack.lua"
+else
+  config["writeHistory"] = "true"
+  config["historyPath"] = "/var/MynapticHistory.txt"
+  config["packmanPath"] = "/usr/bin/packman"
+end
+end
+
+term.setTextColor(colors.red)
+mynaptic.testConfig("showVersion","bool") 
+mynaptic.testConfig("showRepository","bool")
+mynaptic.testConfig("writeHistory","bool")
+mynaptic.testConfig("sortAlphabetically","bool",true)
+mynaptic.testConfig("loadPlugins","bool",true)
+mynaptic.testConfig("showExitText","bool")
+mynaptic.testConfig("showScrollArrows","bool")
+mynaptic.testConfig("closeButtonRight","bool")
+mynaptic.testConfig("showCursorBlink","bool")
+mynaptic.testConfig("pluginPath",nil,true)
+mynaptic.testConfig("helpChatURL","bool")
+mynaptic.testConfig("fetchUpdate","bool")
+mynaptic.testConfig("historyPath")
+mynaptic.testConfig("packmanPath")
+mynaptic.testConfig("backgroundColour","col")
+mynaptic.testConfig("menubarColour","col")
+mynaptic.testConfig("closeColour","col")
+mynaptic.testConfig("notinstaledColour","col")
+mynaptic.testConfig("instaledColour","col")
+mynaptic.testConfig("installColour","col")
+mynaptic.testConfig("removeColour","col")
+mynaptic.testConfig("textColour","col")
+mynaptic.testConfig("searchColour","col")
+mynaptic.testConfig("bottomBarColour","col")
+mynaptic.testConfig("menuBackgroundColour","col")
+mynaptic.testConfig("menuTextColour","col")
+mynaptic.testConfig("scrollUpKey","key")
+mynaptic.testConfig("scrollDownKey","key")
+mynaptic.testConfig("deleteKey","key")
+mynaptic.testConfig("debugKey","key")
+mynaptic.testConfig("shellSwitchKey","key")
+mynaptic.testConfig("completeKey","key")
+mynaptic.testConfig("shellRunKey","key")
+mynaptic.testConfig("deleteAllKey","key")
+term.setTextColor(colors.white)
+
+
+if configstatus == false then
+print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run 'rm /etc/mynaptic' and the the config will be rebuild by the next start.")
+mynaptic.deleteVars()
+return 4
+end
+
+--[[
+if fs.exists(config["packmanPath"]) == false then
+  term.setTextColor(colors.red)
+  printError("Can't found Packman. If packman are installed, please change the Path in /etc/mynaptic")
+  return 5
+end
+--]]
+
+--Add Menuitems
+mynaptic.menubar = {}
+if pocket then
+  table.insert(mynaptic.menubar,{text = lang.menu,func = function() mynaptic.showMenulist() end})
+else
+  table.insert(mynaptic.menubar,{text = lang.apply,func = function() mynaptic.doChanges() end})
+  table.insert(mynaptic.menubar,{text = lang.fetch,func = function() mynaptic.reload() end})
+  table.insert(mynaptic.menubar,{text = lang.update,func = function() mynaptic.updatemenu() end})
+  table.insert(mynaptic.menubar,{text = lang.config,func = function() mynaptic.configScreen() end})
+  table.insert(mynaptic.menubar,{text = lang.help,func = function() mynaptic.helpMenu() end})
+  table.insert(mynaptic.menubar,{text = lang.history,func = function() mynaptic.history() end})
+end
+mynaptic.menulist = {}
+table.insert(mynaptic.menulist,{text = lang.apply,func = function() mynaptic.doChanges() end})
+table.insert(mynaptic.menulist,{text = lang.fetch,func = function() mynaptic.reload() end})
+table.insert(mynaptic.menulist,{text = lang.update,func = function() mynaptic.updatemenu() end})
+table.insert(mynaptic.menulist,{text = lang.config,func = function() mynaptic.configScreen() end})
+table.insert(mynaptic.menulist,{text = lang.help,func = function() mynaptic.helpMenu() end})
+table.insert(mynaptic.menulist,{text = lang.history,func = function() mynaptic.history() end})
+
+textta = {}
+packcou = 0
+mynaptic.iodefault = io.output()
+mynaptic.iomute = {write = function() end}
+io.output(mynaptic.iomute)
+--shell.run(config.packmanPath.." install")
+mynaptic.packapi.load()
+for name,con in pairs(mynaptic.packapi.list) do
+  if type(con.version) == "string" then
+    if type(mynaptic.packapi.installed[name]) == "table" then
+      table.insert(textta,"I "..name.." "..con.version)
+      statuscheck["I "..name.." "..con.version] = "instaled"
+    else
+      table.insert(textta,"A "..name.." "..con.version)--" "..con.version)
+    end
+    packcou = packcou + 1
+  end
+end
+
+if config["sortAlphabetically"] == "true" then
+  table.sort(textta)
+end
+
+backupta = textta
+
+tpos = 0
+
+function mynaptic.mainMenu()
+local mainloop = true
+while mainloop == true do
+  ev,me,x,y = os.pullEvent()
+  if ev == "mouse_drag" then
+    if me == 2 then
+      mynaptic.dragx = x
+      mynaptic.dragy = y
+    end
+  elseif mynaptic.dragmode == true then
+    if type(mynaptic.dragx) == "number" then
+    if y == y then
+      local coustr = 0
+      if config.closeButtonRight == "true" then
+        coustr = 1
+      end
+      for cou,con in ipairs(mynaptic.menubar) do
+        local tmpta = con
+        if mynaptic.dragx > coustr then
+          if mynaptic.dragx < con.text:len()+coustr+1 then
+            mynaptic.menubar[cou] = mynaptic.menubar[mynaptic.menuitem]
+            mynaptic.menubar[mynaptic.menuitem] = tmpta
+            mynaptic.drawMenu()
+          end
+        end
+        coustr = con.text:len()+coustr+1
+      end
+     end
+     mynaptic.dragmode = false
+     end
+  elseif ev == "mouse_scroll" then
+    if me == 1 then
+        if tpos+mynaptic.screenh-2 ~= #textta then
+          tpos = tpos + 1
+          mynaptic.drawMenu()
+        end
+    elseif me == -1 then
+       if tpos ~= 0 then
+         tpos = tpos - 1
+         mynaptic.drawMenu()
+       end
+    end
+  elseif ev == "mouse_click" then
+  --Mousewheel
+  if me == 3 then
+    if mynaptic.shellmode == true then
+      shelltext = shelltext..clipboard.getTextLine()
+      mynaptic.drawMenu()
+    else
+      if clipboard.getTextLine() ~= "" then
+        searchch = true
+        search = search..clipboard.getTextLine()
+        mynaptic.writeSearch()
+        tpos = 0
+        mynaptic.drawMenu()
+      end
+    end
+  --Leftclick
+  elseif me == 1 then
+  if y == 1 then
+    if (x == mynaptic.screenw and config.closeButtonRight == "false") or (x == 1 and config.closeButtonRight == "true") then
+      mainloop = nil
+      term.setBackgroundColor(colors.black)
+      term.setTextColor(colors.white)
+      term.clear()
+      term.setCursorPos(1,1)
+      if config["showExitText"] == "true" then
+        print(lang.exitText)
+      end
+    end
+    local menupos = 0
+    if config.closeButtonRight == "true" then
+        menupos = 1
+    end
+    for key,menuitem in ipairs(mynaptic.menubar) do
+      if x > menupos and x < menuitem.text:len()+menupos+1 then
+        term.setCursorBlink(false)
+        menuitem.func()
+        break 
+      else
+        menupos = menupos+menuitem.text:len()+1
+      end
+    end
+  elseif y == mynaptic.screenh then
+    if mynaptic.shellmode == true and shelltext ~= "" then
+      shelltext = ""
+      mynaptic.drawMenu()
+    elseif mynaptic.shellmode == false and search ~= "" then
+      search = ""
+      searchch = false
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
+  else
+    clickpos = y-1
+    local strte = checkta[clickpos]
+    if statuscheck[strte] == "instaled" then
+      statuscheck[strte] = "remove"
+      table.insert(remove["list"],strte)
+      remove["check"][strte] = true
+    elseif statuscheck[strte] == "remove" then
+      statuscheck[strte] = "instaled"
+      remove["check"][strte] = nil
+    elseif statuscheck[strte] == "install" then
+      statuscheck[strte] = "notinstaled"
+      install["check"][strte] = nil
+    else
+      statuscheck[strte] = "install"
+      table.insert(install["list"],strte)
+      install["check"][strte] = true
+    end
+    mynaptic.drawMenu()
+  end
+  elseif me == 2 then
+    if y == 1 then
+      local coustr = 0
+      if config.closeButtonRight == "true" then
+        coustr = 1
+      end
+      for cou,con in ipairs(mynaptic.menubar) do
+        if x > coustr then
+          if x < con.text:len()+coustr+1 then
+            mynaptic.menuitem = cou
+            mynaptic.dragmode = true
+          end
+        end
+        coustr = con.text:len()+coustr+1
+      end
+    elseif y == screenh then
+      mynaptic.completemode = false
+      if mynaptic.shellmode == true then
+        shelltext = ""
+        mynaptic.drawMenu()
+      else
+        searchch = false
+        search = ""
+        packcou = packcouba
+        textta = backupta
+        mynaptic.drawMenu()
+      end
+    else
+      mynaptic.getPackInfo(y-1)
+    end
+  end
+  elseif ev == "term_resize" then
+    mynaptic.screenw,mynaptic.screenh = term.getSize()
+    mynaptic.drawMenu()
+  elseif ev == "char" then
+    if mynaptic.shellmode == true then
+	  mynaptic.completemode = false
+      shelltext = shelltext..me
+      mynaptic.drawMenu()
+    else
+      searchch = true
+      search = search..me
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
+  elseif ev == "paste" then
+    if mynaptic.shellmode == true then
+	  mynaptic.completemode = false
+      shelltext = shelltext..me
+      mynaptic.drawMenu()
+    else
+      searchch = true
+      search = search..me
+      mynaptic.writeSearch()
+      tpos = 0
+      mynaptic.drawMenu()
+    end
+  elseif ev == "key" then
+	if me == keys[config.scrollDownKey] then
+      if tpos+mynaptic.screenh-2 ~= #textta then
+        tpos = tpos + 1
+        mynaptic.drawMenu()
+      end
+    elseif me == keys[config.scrollUpKey] then
+       if tpos ~= 0 then
+         tpos = tpos - 1
+         mynaptic.drawMenu()
+       end
+    end
+  elseif ev == "key_up" then
+    if me == keys[config.deleteKey] then
+      if mynaptic.shellmode == true then
+        mynaptic.completemode = false
+        shelltext = shelltext:sub(1,-2)
+      else
+        search = string.sub(search,1,-2)
+        if search:len() == 0 then
+          textta = backupta
+        else
+          mynaptic.writeSearch()
+        end
+        tpos = 0
+      end
+      mynaptic.drawMenu()
+    elseif me == keys[config.debugKey] then
+      mynaptic.debugmenu()
+    elseif me == keys[config.shellSwitchKey] then
+      if mynaptic.shellmode == true then
+        mynaptic.shellmode = false
+      else
+        mynaptic.shellmode = true
+      end
+      mynaptic.drawMenu()
+    elseif me == keys[config.completeKey] then
+      if mynaptic.shellmode == true then
+      if mynaptic.completemode == true then
+        if not(type(mynaptic.compl[mynaptic.comcou]) == "string") then
+          mynaptic.comcou = 1
+        end
+        shelltext = mynaptic.oldshtext..mynaptic.compl[mynaptic.comcou]:sub(1,-2)
+        mynaptic.comcou = mynaptic.comcou + 1
+        mynaptic.drawMenu()
+      else
+        mynaptic.compl = textutils.complete(shelltext,shellcom)
+        if type(mynaptic.compl[1]) == "string" then
+          mynaptic.oldshtext = shelltext
+          shelltext = shelltext..mynaptic.compl[1]:sub(1,-2)
+          mynaptic.completemode = true
+          mynaptic.comcou = 2
+          mynaptic.drawMenu()
+        end
+      end
+      end
+    elseif me == keys[config.deleteAllKey] then
+      if mynaptic.shellmode == true and shelltext ~= "" then
+        shelltext = ""
+        mynaptic.drawMenu()
+      elseif mynaptic.shellmode == false and search ~= "" then
+        search = ""
+        searchch = false
+        mynaptic.writeSearch()
+        tpos = 0
+        mynaptic.drawMenu()
+      end
+    elseif me == keys[config.shellRunKey] then
+      if mynaptic.shellmode == true then
+        local runstr,runargs
+        if shelltext:find(" ") == nil then
+          runstr = shelltext
+        else
+          runstr,runargs = wilmaapi.splitString(shelltext," ")
+        end
+        shelltext = ""
+        if type(shellcom[runstr]) == "function" then
+          shellcom[runstr](runargs)
+        else
+          term.setCursorPos(1,screenh)
+          term.clearLine()
+          write(lang.noCommand)
+        end
+      end
+    end
+  end
+end
+end
+
+--Load Plugins
+local plugintest
+if config["loadPlugins"] == "true" then
+  if fs.isDir(config.pluginPath) == true then
+    local pluginlist = fs.list(config.pluginPath)
+    for _,plugname in ipairs(pluginlist) do
+      if shell.run(config.pluginPath.."/"..plugname) == false then
+        plugintest = false
+      end
+      --shell.run(config.pluginPath.."/"..plugname)
+    end
+  end
+end
+
+if plugintest == false then
+  print(lang.keyContinue)
+  os.pullEvent("key")
+end
+
+mynaptic.drawMenu()
+mynaptic.mainMenu()
+io.output(mynaptic.iodefault)
+mynaptic.deleteVars()
+
+return 0
+--Thanks for using this Programm and reading the
+--source code
