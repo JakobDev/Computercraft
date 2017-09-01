@@ -577,3 +577,15 @@ name = dirname
   size = 128
   description = Extract the directory from a path
 end
+
+name = virtualos
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Programs/virtualos.lua
+   filename = virtualos.lua
+  category = programs
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 4896
+  description = Run CraftOS in a virtual Machine
+end
