@@ -1,5 +1,7 @@
 local Arg = {...}
 
+shell.setCompletionFunction(shell.getRunningProgram(),function(shell,nIndex,sText) if nIndex == 1 then return fs.complete(sText, shell.dir(), true, true) end end)
+
 if Arg[1] == nil then
   print("Usage: size <path>")
   return 1
