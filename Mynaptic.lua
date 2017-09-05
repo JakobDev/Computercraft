@@ -51,12 +51,11 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 10.0
+mynaptic.version = 10.1
 
 mynaptic.shellmode = false
 
 if minepackapi then
-    minepackapi.loadConfig("/etc/minepack/config.conf")
     mynaptic.packapi = minepackapi
 elseif backpack then
     mynaptic.packapi = backpack
