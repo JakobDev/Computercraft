@@ -525,8 +525,8 @@ name = minepack
   category = minepack
   dependencies = wilma456/minepackapi
   target = /usr/bin
-  version = 1.1
-  size = 7765
+  version = 2.0
+  size = 9211
   description = A Package Manager
 end
 
@@ -537,8 +537,8 @@ name = minepackapi
   category = minepack
   dependencies = none
   target = /usr/apis
-  version = 1.0
-  size = 31096
+  version = 2.0
+  size = 31635
   description = The API for Minepack
 end
 
@@ -549,9 +549,23 @@ name = packshell
   category = minepack
   dependencies = none
   target = /startup
-  version = 1.1
-  size = 976
+  version = 2.0
+  size = 1687
+  setup = packshell.lua
   description = Easy-Shell for Minepack
+end
+
+name = packshell-old
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Minepack/master/packshell.lua
+   filename = startup
+  category = minepack
+  dependencies = none
+  target = /
+  version = 2.0
+  size = 1687
+  setup = startup
+  description = Packshell for CraftOS 1.7 and older
 end
 
 name = basename
