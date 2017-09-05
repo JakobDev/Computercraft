@@ -36,8 +36,8 @@ name = mynaptic
   category = packman mynaptic
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 10.0
-  size = 47675
+  version = 10.1
+  size = 47619
   description = A GUI for Packman
 end
 
@@ -95,8 +95,9 @@ name = size
   category = shell
   dependencies = wilma456/wilmaapi
   target = /usr/bin
-  version = 2.1
-  size = 549
+  version = 3.0
+  size = 713
+  description = Show the size of a file or a folder
 end
 
 name = owncloudfile
