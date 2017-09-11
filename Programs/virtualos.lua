@@ -3,7 +3,7 @@ local args = {}
 local options = {}
 for key,data in ipairs(params) do
 if type(data) == "string" then
-  if data:find("--",1,true) == 1 then
+  if data:find("--") == 1 then
     data = data:sub(3,-1)
     local head,body = data:match("([^=]+)=([^=]+)")
     if body ~= nil then
@@ -42,33 +42,22 @@ end
 local sBiosPath = fs.combine(ops.biosPath,"")
 local sRomPath = fs.combine(ops.romPath,"")
 local sRootPath = fs.combine(ops.rootPath,"")
-local bShutdown = true
 local bReeboot = false
+local nVirtualID = math.random(1,1000)
 
-function parseArgs(params)
-local args = {}
-local options = {}
-for key,data in ipairs(params) do
-if type(data) == "string" then
-  if data:find("--",1,true) == 1 then
-    data = data:sub(3,-1)
-    local head,body = data:match("([^=]+)=([^=]+)")
-    if body ~= nil then
-      options[head] = body
-    else
-      options[data] = true
-    end
- elseif data:find("-") == 1 then
-    data = data:sub(2,-1)
-    for i=1,#data do
-      options[data:sub(i,i)] = true
-    end
-  else
-    table.insert(args,data)
-  end
+if not fs.exists(sBiosPath) then
+    printError("Bios not found")
+    return
 end
+
+if not fs.isDir(sRomPath) then
+    printError("Rom not found")
+    return
 end
-return args,options
+
+if not fs.isDir(sRootPath) then
+    printError("Rootfolder not found")
+    return
 end
 
 local tFs = {}
@@ -92,6 +81,7 @@ function tFs.list(sPath)
     if sPath == sRootPath then
         table.insert(tList,"rom")
     end
+    table.sort(tList)
     return tList
 end
 
@@ -141,34 +131,73 @@ function tFs.getSize(sPath)
     return fs.getSize(sPath)
 end
 
+--For Pre 1.8 User
+local tPalette = {
+	[1] = {240, 240, 240},
+	[2] = {242, 178, 51},
+	[4] = {229, 127, 216},
+	[8] = {153, 178, 242},
+	[16] = {222, 222, 108},
+	[32] = {127, 204, 25},
+	[64] = {242, 178, 204},
+	[128] = {76, 76, 76},
+	[256] = {153, 153, 153},
+	[512] = {76, 153, 178},
+	[1024] = {178, 102, 229},
+	[2048] = {51, 102, 204},
+	[4096] = {127, 102, 76},
+	[8192] = {87, 166, 78},
+	[16384] = {204, 76, 76},
+	[32768] = {25, 25, 25},
+}
 local tTerm = {}
 for k,v in pairs(term.current()) do
     tTerm[k] = v
 end
-function tTerm.native()
-    return term.current()
+tTerm.setPaletteColor = tTerm.setPaletteColor or function(col,a,b,c) tPalette[col][1] = a*255 tPalette[col][2] = b*255 tPalette[col][3] = c*255 end
+tTerm.setPaletteColour = tTerm.setPaletteColour or function(col,a,b,c) tPalette[col][1] = a*255 tPalette[col][2] = b*255 tPalette[col][3] = c*255 end
+tTerm.getPaletteColor = tTerm.getPaletteColor or function(color) return tPalette[color][1]/255,tPalette[color][3]/255,tPalette[color][3]/255 end
+tTerm.getPaletteColour = tTerm.getPaletteColour or function(color) return tPalette[color][1]/255,tPalette[color][3]/255,tPalette[color][3]/255 end
+if ops.oldnative then
+    tTerm.native = tTerm
+else
+    tTerm.native = function() return tTerm end
 end
 
 local nStarttime = os.clock()
 local tOs = {}
-local sLabel
+local sLabel = ops.label
 local tTimer
 tOs.startTimer = os.startTimer
-tOs.shutdown = function() bShutdown = false end
-tOs.reboot = function() bReeboot = true bShutdown = false end
+tOs.shutdown = function() os.queueEvent("VirtualOS_shutdown:"..nVirtualID) end
+tOs.reboot = function() bReeboot = true os.queueEvent("VirtualOS_shutdown:"..nVirtualID) end
 tOs.clock = function() return os.clock()-nStarttime end
-tOs.getComputerID = function() return 0 end
+tOs.getComputerID = function() return tonumber(ops.id) or 0 end
 tOs.getComputerLabel = function() return sLabel end
 tOs.setComputerLabel = function(label) sLabel = label end
+tOs.queueEvent = os.queueEvent
 tOs.cancelTimer = os.cancelTimer
-tOs.time = os.time
-tOs.day = os.day
-tOs.epoch = os.epoch
+function tOs.time(source)
+    if ops.notime then
+        return 7
+    else
+        return os.time(source)
+    end
+end
+function tOs.day(source)
+    if ops.noday then
+        return 1
+    else
+        return os.day(source)
+    end
+end
+tOs.epoch = os.epoch or function() return tOs.day() * 86400000 + (tOs.time() * 3600000) end
 
 local tEnv = {}
 tEnv.ipairs = ipairs
 tEnv.type = type
 tEnv.rawget = rawget
+tEnv.rawequal = rawequal
 tEnv.setmetatable = setmetatable
 tEnv.getmetatable = getmetatable
 tEnv.loadstring = loadstring
@@ -198,8 +227,12 @@ tEnv.coroutine = coroutine
 tEnv.string = string
 tEnv.turtle = turtle
 tEnv.pocket = pocket
-tEnv.http = http
-tEnv._HOST = "VirtualOS 1.0"
+if not ops.nohttp then
+    tEnv.http = http
+end
+tEnv._HOST = ops.host or "VirtualOS 2.0"
+tEnv._CC_VERSION = ops.ccversion
+tEnv._MC_VERSION = ops.mcversion
 tEnv._VERSION = _VERSION
 tEnv._G = tEnv
 
@@ -207,16 +240,26 @@ local fn,err = loadfile(sBiosPath)
 setfenv(fn,tEnv)
 
 local function shutdownLoop()
-    while bShutdown do
-        sleep(0.1)
-    end
+    os.pullEvent("VirtualOS_shutdown:"..nVirtualID)
 end
-   
+
+if multishell then
+    multishell.setTitle(multishell.getCurrent(),ops.title or "CraftOS")
+end
+
+term.setTextColor(colors.white)
+term.setBackgroundColor(colors.black)
+term.clear()
+term.setCursorPos(1,1)
+
 while true do     
     parallel.waitForAny(fn,shutdownLoop)
     if bReeboot == true then
-        bShutdown = true
         bReeboot = false
+        term.setTextColor(colors.white)
+        term.setBackgroundColor(color.black)
+        term.clear()
+        term.setCursorPos(1,1)
     else
         break
     end
