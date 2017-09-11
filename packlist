@@ -600,7 +600,19 @@ name = virtualos
   category = programs
   dependencies = none
   target = /usr/bin
-  version = 1.0
-  size = 4896
+  version = 2.0
+  size = 6530
   description = Run CraftOS in a virtual Machine
+end
+
+name = virtualos-manager
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Programs/virtualos-manager.lua
+   filename = virtualos-manager.lua
+  category = programs
+  dependencies = wilma456/virtualos
+  target = /usr/bin
+  version = 1.0
+  size = 6463
+  description = A GUI for VirtualOS
 end
