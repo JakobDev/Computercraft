@@ -600,8 +600,8 @@ name = virtualos
   category = programs
   dependencies = none
   target = /usr/bin
-  version = 2.0
-  size = 6530
+  version = 3.0
+  size = 9304
   description = Run CraftOS in a virtual Machine
 end
 
@@ -612,7 +612,7 @@ name = virtualos-manager
   category = programs
   dependencies = wilma456/virtualos
   target = /usr/bin
-  version = 1.0
-  size = 6463
+  version = 2.0
+  size = 8539
   description = A GUI for VirtualOS
 end
