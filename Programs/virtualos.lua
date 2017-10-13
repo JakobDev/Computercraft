@@ -58,6 +58,20 @@ local sSharePath
 if ops.sharePath ~= nil then
     sSharePath = fs.combine(ops.sharePath,"")
 end
+local tDisk = {}
+
+local function addDisk()
+    tDisk = {}
+    for n,sName in pairs( peripheral.getNames() ) do
+        if disk.isPresent(sName) and disk.hasData(sName) then
+            table.insert( tDisk, disk.getMountPath(sName) )
+        end
+    end
+end
+
+if ops.diskmount then
+    addDisk()
+end
 
 local tFs = {}
 for k,v in pairs(fs) do
@@ -73,6 +87,12 @@ local function getRealPath(sPath)
         sPath = sPath:sub(#sShareName+1)
         return fs.combine(sSharePath,sPath)
     end
+    for k,v in ipairs(tDisk) do
+        if sPath:find(v) == 1 then
+            sPath = sPath:sub(#v+1)
+            return fs.combine(v,sPath)
+        end
+    end
     local sNewPath = fs.combine(sRootPath,sPath)
     return sNewPath
 end
@@ -84,6 +104,9 @@ function tFs.list(sPath)
         table.insert(tList,"rom")
         if ops.sharePath then
             table.insert(tList,sShareName)
+        end
+        for k,v in ipairs(tDisk) do
+            table.insert(tList,v)
         end
     end
     table.sort(tList)
@@ -173,32 +196,63 @@ local nStarttime = os.clock()
 local tOs = {}
 local sLabel = ops.label
 local tTimer = {}
+local tTimerID = {}
+local nTimerCount = 0
 local tAlarm = {}
-tOs.startTimer = function(nTime) local nID = os.startTimer(nTime) tTimer[nID] = true return nID end
-tOs.setAlarm = function(nTime) local nID = os.setAlarm(nTime) tAlarm[nID] = true return nID end
+local tAlarmID = {}
+local nAlarmCount = 0
+function tOs.startTimer(nTime)
+    local nID = os.startTimer(nTime) 
+    tTimer[nID] = true 
+    tTimerID[nTimerCount] = nID 
+    nTimerCount = nTimerCount + 1
+    return nTimerCount - 1
+end
+function tOs.setAlarm(nTime)
+    local nID = os.setAlarm(nTime) 
+    tAlarm[nID] = true 
+    tAlarmID[nAlarmCount] = nID 
+    nAlarmCount = nAlarmCount + 1
+    return nAlarmCount - 1
+end
 tOs.shutdown = function() bShutdown = true end
 tOs.reboot = function() bReeboot = true bShutdown = true end
 tOs.clock = function() return os.clock()-nStarttime end
-tOs.getComputerID = function() return tonumber(ops.id) or 0 end
+tOs.getComputerID = function() return math.floor(tonumber(ops.id)) or 0 end
 tOs.getComputerLabel = function() return sLabel end
 tOs.setComputerLabel = function(label) sLabel = label end
 tOs.queueEvent = function(...) os.queueEvent("VirtualOS_"..sVirtualID,...) end
-tOs.cancelTimer = os.cancelTimer
-function tOs.time(source)
-    if ops.notime then
-        return 7
-    else
-        return os.time(source)
+function tOs.cancelTimer(nID)
+    for i=0, #tTimerID do
+        if tTimerID[i] == nID then
+            nID = i
+        end
     end
+    return os.cancelTimer(nID)
 end
-function tOs.day(source)
-    if ops.noday then
-        return 1
-    else
-        return os.day(source)
+function tOs.cancelAlarm(nID)
+    for i=0, #tAlarmID do
+        if tAlarmID[i] == nID then
+            nID = i
+        end
     end
+    return os.cancelAlarm(nID)
 end
-tOs.epoch = os.epoch or function() return tOs.day() * 86400000 + (tOs.time() * 3600000) end
+if ops.notime then
+    tOs.time = function() return 7 end
+else
+    tOs.time = os.time
+end
+if ops.noday then
+    tOs.day = function() return 1 end
+else
+    tOs.day = os.day
+end
+if ops.noepoch then
+    tOs.epoch = function() return 111600000 end
+else
+    tOs.epoch = os.epoch or function() return tOs.day() * 86400000 + (tOs.time() * 3600000) end
+end
 
 local tHttp = {}
 tUrl = {}
@@ -213,6 +267,19 @@ function tHttp.checkURL(sUrl)
     local ok,err = http.checkURL(sUrl)
     os.queueEvent("http_check",sUrl,ok,err)
     return http.checkURL(sUrl)
+end
+
+local tPer = {}
+if ops.noper then
+    function tPer.isPresent() return false end
+    function tPer.call() error("No peripheral attached",2) end
+    function tPer.getType() return nil end
+    function tPer.getMethods() return nil end
+else
+    tPer.isPresent = peripheral.isPresent
+    tPer.call = peripheral.call
+    tPer.getType = peripheral.getType
+    tPer.getMethods = peripheral.getMethods
 end
 
 local tEnv = {}
@@ -241,7 +308,7 @@ tEnv.assert = assert
 tEnv.dofile = dofile
 tEnv.loadstring = loadstring
 tEnv.loadfile = loadfile
-tEnv.peripheral = tablecopy(peripheral)
+tEnv.peripheral = tPer
 tEnv.table = tablecopy(table)
 tEnv.math = tablecopy(math)
 tEnv.bit = tablecopy(bit)
@@ -252,11 +319,14 @@ tEnv.term = tTerm
 tEnv.os = tOs
 tEnv.coroutine = tablecopy(coroutine)
 tEnv.string = tablecopy(string)
-if turtle then
+if turtle and not(ops.noturtle) then
     tEnv.turtle = tablecopy(turtle)
 end
-if pocket then
+if pocket and not(ops.nopocket) then
     tEnv.pocket = tablecopy(pocket)
+end
+if commands and not(ops.nocomand) then
+    tEnv.commands = tablecopy(commands)
 end
 if not ops.nohttp then
     tEnv.http = tHttp
@@ -264,10 +334,11 @@ end
 if ops.diskapi then
     tEnv.disk = tablecopy(disk)
 end
-tEnv._HOST = ops.host or "VirtualOS 3.0"
+tEnv._HOST = ops.host or "VirtualOS 4.0"
 tEnv._CC_VERSION = ops.ccversion
 tEnv._MC_VERSION = ops.mcversion
 tEnv._VERSION = _VERSION
+tEnv._CC_DEFAULT_SETTINGS = ops.settings or ""
 tEnv._G = tEnv
 
 local file = fs.open(sBiosPath,"r")
@@ -291,6 +362,10 @@ term.setCursorBlink(false)
 local tWhitelist = {key=true,key_up=true,char=true,mouse_click=true,mouse_scroll=true,mouse_drag=true,mouse_up=true,paste=true,monitor_touch=true,
 terminate=true,term_resize=true,modem_message=true,turtle_inventory=true,redstone=true}
 local tHttpEvent = {http_success=true,http_failure=true,http_check=true}
+if not ops.noper then
+    tWhitelist.peripheral = true
+    tWhitelist.peripheral_detach = true
+end
 
 local function start()
 local cor = coroutine.create(fn)
@@ -304,9 +379,22 @@ while true do
         ok,sFilter = coroutine.resume(cor,table.unpack(tEventData))
     elseif tEventData[1] == "timer" and (tEventData[1] == sFilter or sFilter == nil) and tTimer[tEventData[2]] == true then
         tTimer[tEventData[2]] = nil
+        for i=0, #tTimerID do
+            if tTimerID[i] == tEventData[2] then
+                tEventData[2] = i
+            end
+        end
         ok,sFilter = coroutine.resume(cor,table.unpack(tEventData))
     elseif tEventData[1] == "alarm" and (tEventData[1] == sFilter or sFilter == nil) and tAlarm[tEventData[2]] == true then
         tAlarm[tEventData[2]] = nil
+        for i=0, #tAlarmID do
+            if tAlarmID[i] == tEventData[2] then
+                tEventData[2] = i
+            end
+        end
+        ok,sFilter = coroutine.resume(cor,table.unpack(tEventData))
+    elseif (tEventData[1] == "disk" or tEventData[1] == "disk_eject") and (tEventData[2] == sFilter or sFilter == nil) and ops.diskmount then
+        addDisk()
         ok,sFilter = coroutine.resume(cor,table.unpack(tEventData))
     elseif (tEventData[1] == "VirtualOS_"..sVirtualID or tEventData[1] == "VirtualOS_Event") and (tEventData[2] == sFilter or sFilter == nil) then
         table.remove(tEventData,1)
@@ -320,14 +408,22 @@ end
 
 while true do
     start()
-    term.setTextColor(colors.white)
-    term.setBackgroundColor(colors.black)
-    term.clear()
-    term.setCursorPos(1,1)
-    term.setCursorBlink(false)
+    if not(ops.noclear) or bReeboot then
+        term.setTextColor(colors.white)
+        term.setBackgroundColor(colors.black)
+        term.clear()
+        term.setCursorPos(1,1)
+        term.setCursorBlink(false)
+    end
     if not bReeboot then
         break
     else
+        tTimer = {}
+        tTimerID = {}
+        nTimerCount = 0
+        tAlarm = {}
+        tAlarmID = {}
+        nAlarmCount = 0
         bShutdown = false
         bReeboot = false
     end
