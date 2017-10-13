@@ -612,7 +612,7 @@ name = virtualos-manager
   category = programs
   dependencies = wilma456/virtualos
   target = /usr/bin
-  version = 2.0
+  version = 3.0
   size = 15251
   description = A GUI for VirtualOS
 end
