@@ -334,7 +334,7 @@ end
 if ops.diskapi then
     tEnv.disk = tablecopy(disk)
 end
-tEnv._HOST = ops.host or "VirtualOS 4.0"
+tEnv._HOST = ops.host or "VirtualOS 4.1"
 tEnv._CC_VERSION = ops.ccversion
 tEnv._MC_VERSION = ops.mcversion
 tEnv._VERSION = _VERSION
@@ -360,7 +360,7 @@ term.setCursorPos(1,1)
 term.setCursorBlink(false)
 
 local tWhitelist = {key=true,key_up=true,char=true,mouse_click=true,mouse_scroll=true,mouse_drag=true,mouse_up=true,paste=true,monitor_touch=true,
-terminate=true,term_resize=true,modem_message=true,turtle_inventory=true,redstone=true}
+terminate=true,term_resize=true,modem_message=true,turtle_inventory=true,redstone=true,task_complete=true}
 local tHttpEvent = {http_success=true,http_failure=true,http_check=true}
 if not ops.noper then
     tWhitelist.peripheral = true
