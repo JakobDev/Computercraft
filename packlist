@@ -36,8 +36,8 @@ name = mynaptic
   category = packman mynaptic
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 10.1
-  size = 47619
+  version = 11.0
+  size = 49495
   description = A GUI for Packman
 end
 
@@ -245,7 +245,7 @@ end
 name = shellutils
   type = meta
 	category = shell
-	dependencies = wilma456/which wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat wilma456/basename wilma456/dirname
+	dependencies = wilma456/touch wilma456/which wilma456/pwd wilma456/sleep wilma456/monclear wilma456/wc wilma456/find wilma456/echo wilma456/cowsay wilma456/lsper wilma456/size superaxander/cat wilma456/basename wilma456/dirname
 	version = 1.1
 	size = 0
 end
@@ -615,4 +615,16 @@ name = virtualos-manager
   version = 3.0
   size = 15251
   description = A GUI for VirtualOS
+end
+
+name = touch
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Shell/touch.lua
+   filename = touch.lua
+  category = shell
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 302
+  description = touch for Computercraft
 end
