@@ -51,7 +51,14 @@ end
 
 mynaptic = {}
 
-mynaptic.version = 10.1
+mynaptic.version = "11.0"
+
+--Get Options for Commandline
+mynaptic.ops = {}
+for k,v in ipairs({...}) do
+    local head,body = wilmaapi.splitString(v,"=")
+    mynaptic.ops[head] = body
+end
 
 mynaptic.shellmode = false
 
@@ -107,6 +114,7 @@ lang.install = "Install "
 lang.remove = "Remove "
 lang.youEdit = "You Edit:"
 lang.old = "Old:"
+lang.default = "Default:"
 lang.needRestart = "Needs Restart"
 lang.selectColour = "Please select a Colour"
 lang.newEntry = "New Entry:"
@@ -114,9 +122,12 @@ lang.newEntryText = "Please enter new Entry"
 lang.boolEntry = "Please choose new Entry"
 lang.keyEntry = "Please choose a new Key"
 lang.back = "Back"
+lang.reset = "Reset"
+lang.resetConfig = "Your config has been reseted to the default values"
 lang.history = "History"
 lang.clear = "Clear"
 lang.exitText = "Thank you for using Mynaptic!"
+lang.configerror = "There are Errors in the your Config. You now had to set some Entrys new"
 --Start Help
 local tmpta = {}
 
@@ -225,6 +236,13 @@ Simple place Plugins in the pluginFoler (default /usr/share/mynaptic/plugins) an
 table.insert(helpta,tmpta)
 
 tmpta = {}
+tmpta.titel = "Commandline Arguments"
+tmpta.con = [[You can set the config of Mynaptic with the Commandline. e.g "Mynaptic showVersion=true textColour=red" will start Mynaptic and set showVersion to true and textColour to red.
+
+You can also set the Path to the Config File with configPath=Path]]
+table.insert(helpta,tmpta)
+
+tmpta = {}
 tmpta.titel = "Develop Plugins"
 tmpta.con = "To install the developer Documentation install the Package mynaptic-plugindev and view the help with 'ghv Mynaptic'"
 table.insert(helpta,tmpta)
@@ -330,6 +348,26 @@ term.clearLine()
 write(text)
 end
 
+function mynaptic.showTextWindow(sText)
+  term.setTextColor(colors[config.menuTextColour])
+  while true do
+    term.setBackgroundColor(colors[config.menuBackgroundColour])
+    term.clear()
+    term.setCursorPos(1,1)
+    print(sText)
+    term.setCursorPos(1,mynaptic.screenh)
+    term.setBackgroundColor(colors[config.bottomBarColour])
+    term.clearLine()
+    term.write(lang.ok)
+    local ev,me,x,y = os.pullEvent()
+    if ev == "mouse_click" and y == mynaptic.screenh then
+      return
+    elseif ev == "term_resize" then
+      mynaptic.screenw, mynaptic.screenh = term.getSize()
+    end
+  end
+end
+
 function mynaptic.setLineColor(text,arrow)
 if type(text) == "string" then
 term.clearLine()
@@ -345,9 +383,9 @@ function mynaptic.drawLine(te,arrow)
 if te == nil then
   return
 end
-term.setBackgroundColor(colors[config["notinstaledColour"]])
+term.setBackgroundColor(colors[config["notinstalledColour"]])
 if statuscheck[te] == "instaled" then
-  term.setBackgroundColor(colors[config["instaledColour"]])
+  term.setBackgroundColor(colors[config["installedColour"]])
 elseif statuscheck[te] == "install" then
   term.setBackgroundColor(colors[config["installColour"]])
 elseif statuscheck[te] == "remove" then
@@ -457,9 +495,9 @@ while true do
   term.setBackgroundColor(colors[config.bottomBarColour])
   term.setCursorPos(1,mynaptic.screenh)
   term.clearLine()
-  write(lang.cancel)
-  term.setCursorPos(mynaptic.screenw-1,mynaptic.screenh)
-  write(lang.ok)
+  term.write(lang.cancel)
+  term.setCursorPos(mynaptic.screenw-#lang.ok+1,mynaptic.screenh)
+  term.write(lang.ok)
   local ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" then
     if me == -1 and scrollpos ~= 0 then
@@ -545,8 +583,8 @@ mynaptic.drawMenu()
 end
 
 function mynaptic.updatemenu()
-term.setBackgroundColor(colors.black)
-term.setTextColor(colors.white)
+term.setBackgroundColor(colors[config.menuBackgroundColour])
+term.setTextColor(colors[config.menuTextColour])
 term.clear()
 term.setCursorPos(1,1)
 io.output(mynaptic.iodefault)
@@ -656,7 +694,9 @@ os.pullEvent("key_up")
 mynaptic.drawMenu()
 end
 
-function mynaptic.configNormal(entry,restart)
+function mynaptic.configNormal(entry,restart,default)
+term.setTextColor(colors[config.menuTextColour] or colors.black)
+term.setBackgroundColor(colors[config.menuBackgroundColour] or colors.white)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.newEntryText)
@@ -664,6 +704,8 @@ print()
 print(lang.youEdit.." "..entry)
 print()
 print(lang.old.." "..config[entry])
+print()
+print(lang.default.." "..default)
 print()
 if restart == true then
     print(lang.needRestart)
@@ -676,7 +718,9 @@ if not(input=="") then
 end
 end
 
-function mynaptic.configColor(entry,restart)
+function mynaptic.configColor(entry,restart,default)
+term.setTextColor(colors[config.menuTextColour] or colors.black)
+term.setBackgroundColor(colors[config.menuBackgroundColour] or colors.white)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.selectColour)
@@ -684,6 +728,8 @@ print()
 print(lang.youEdit.." "..entry)
 print()
 print(lang.old.." "..config[entry])
+print()
+print(lang.default.." "..default)
 print()
 local colorta = {}
 for ind in pairs(colors) do
@@ -695,7 +741,7 @@ for ind in pairs(colors) do
 end
 while true do
 ev,me,x,y = os.pullEvent("mouse_click")
-if y == 7 then
+if y == 9 then
   if type(colorta[x]) == "string" then
     config[entry] = colorta[x]
     break
@@ -704,7 +750,9 @@ end
 end
 end
 
-function mynaptic.configBool(entry,restart)
+function mynaptic.configBool(entry,restart,default)
+term.setTextColor(colors[config.menuTextColour] or colors.black)
+term.setBackgroundColor(colors[config.menuBackgroundColour] or colors.white)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.boolEntry)
@@ -712,6 +760,8 @@ print()
 print(lang.youEdit.." "..entry)
 print()
 print(lang.old.." "..config[entry])
+print()
+print(lang.default.." "..default)
 print()
 term.setTextColor(colors.green)
 write("true ")
@@ -725,7 +775,7 @@ if restart == true then
 end
 while true do
 local ev,me,x,y = os.pullEvent("mouse_click")
-if y == 7 then
+if y == 9 then
   if x < 5 then
     config[entry] = "true"
     break
@@ -737,7 +787,9 @@ end
 end
 end
 
-function mynaptic.configKey(entry,restart)
+function mynaptic.configKey(entry,restart,default)
+term.setTextColor(colors[config.menuTextColour] or colors.black)
+term.setBackgroundColor(colors[config.menuBackgroundColour] or colors.white)
 term.clear()
 term.setCursorPos(1,1)
 print(lang.keyEntry)
@@ -746,7 +798,9 @@ print(lang.youEdit.." "..entry)
 print()
 print(lang.old.." "..config[entry])
 print()
-local ev,me = os.pullEvent("key_up")
+print(lang.default.." "..default)
+print()
+local ev,me = os.pullEvent("key")
 config[entry] = keys.getName(me)
 end
 
@@ -766,7 +820,9 @@ end
 term.setCursorPos(1,mynaptic.screenh)
 term.setBackgroundColor(colors[config.bottomBarColour])
 term.clearLine()
-write("OK")
+term.write( lang.ok )
+term.setCursorPos(mynaptic.screenw-#lang.reset+1,mynaptic.screenh)
+term.write(lang.reset)
 term.setBackgroundColor(colors[config.menuBackgroundColour])
 if config.showScrollArrows == "true" then
   if configpos ~= 0 then
@@ -789,25 +845,34 @@ if ev == "mouse_scroll" or ev == "key" then
       configpos = configpos - 1
     end
   end
+elseif ev == "term_resize" then
+  mynaptic.screenw, mynaptic.screenh = term.getSize()
 elseif ev == "mouse_click" then
   if y == mynaptic.screenh then
-    configloop = nil
-    break
+    if x < #lang.ok+1 then
+      configloop = nil
+      break
+    elseif x > mynaptic.screenw-#lang.reset then
+      for k,v in ipairs( configed ) do
+        config[v.name] = v.default
+      end
+      mynaptic.showTextWindow( lang.resetConfig )
+    end
   elseif type(configed[configpos+y]) == "table" then
     if configed[configpos+y]["contype"] == "col" then
-      mynaptic.configColor(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+      mynaptic.configColor(configed[configpos+y]["name"],configed[configpos+y]["restart"],configed[configpos+y]["default"])
     elseif configed[configpos+y]["contype"] == "bool" then
-      mynaptic.configBool(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+      mynaptic.configBool(configed[configpos+y]["name"],configed[configpos+y]["restart"],configed[configpos+y]["default"])
     elseif configed[configpos+y]["contype"] == "key" then
-      mynaptic.configKey(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+      mynaptic.configKey(configed[configpos+y]["name"],configed[configpos+y]["restart"],configed[configpos+y]["default"])
     else
-      mynaptic.configNormal(configed[configpos+y]["name"],configed[configpos+y]["restart"])
+      mynaptic.configNormal(configed[configpos+y]["name"],configed[configpos+y]["restart"],configed[configpos+y]["default"])
     end
   end
 end
 end
 --write config
-local writecon = io.open("/etc/mynaptic","w")
+local writecon = io.open(mynaptic.ops.configPath or "/etc/mynaptic","w")
 for ind,con in pairs(config) do
   writecon:write(ind.." "..con.."\n")
 end
@@ -841,16 +906,12 @@ term.setBackgroundColor(colors[config.menuBackgroundColour])
 end
 
 function mynaptic.showHelp(num)
-term.clear()
-term.setCursorPos(1,1)
-print(helpta[num]["con"])
-print()
-print(lang["keyContinue"])
 if type(helpta[num]["url"]) == "table" and commands and config.helpChatURL == "true" then
     for k,v in ipairs(helpta[num]["url"]) do
         commands.execAsync('tellraw @p ["",{"text":"'..v[1]..'","color":"blue","clickEvent":{"action":"open_url","value":"'..v[2]..'"},"hoverEvent":{"action":"show_text","value":{"text":"","extra":[{"text":"'..v[2]..'"}]}}}]')
     end
 end
+mynaptic.showTextWindow(helpta[num]["con"])
 end
 
 function mynaptic.helpMenu()
@@ -864,7 +925,6 @@ if ev == "mouse_click" then
     break
   elseif type(helpta[mynaptic.helpos+y]) == "table" then
     mynaptic.showHelp(mynaptic.helpos+y)
-    os.pullEvent("key_up")
     mynaptic.helpList()
   end
 elseif ev == "mouse_scroll" then
@@ -916,9 +976,19 @@ while true do
   term.setCursorPos(1,1)
   for i=1,mynaptic.screenh-1 do
     if type(hiscon[hispos+i]) == "string" then
+      if config.showHistoryColours == "true" then
+        if hiscon[hispos+i]:find("Installed") == 1 then
+          term.setTextColour( colors[config.historyInstalledColour] )
+        elseif hiscon[hispos+i]:find("Removed") == 1 then
+          term.setTextColour( colors[config.historyRemovedColour] )
+        else
+          term.setTextColour( colors[config.menuTextColour] )
+        end
+      end
       print(hiscon[hispos+i])
     end
   end
+  term.setTextColour( colors[config.menuTextColour] )
   if hispos ~= 0 and config.showScrollArrows == "true" then
     term.setCursorPos(mynaptic.screenw,1)
     term.write("\30")
@@ -932,7 +1002,7 @@ while true do
   term.clearLine()
   write(lang.back)
   term.setCursorPos(mynaptic.screenw-#lang.clear+1,mynaptic.screenh)
-  write(lang.clear)
+  term.write(lang.clear)
   term.setBackgroundColor(colors[config.menuBackgroundColour])
   local ev,me,x,y = os.pullEvent()
   if ev == "mouse_scroll" or ev == "key" then
@@ -1071,24 +1141,21 @@ for _,sete in ipairs(backupta) do
 end
 end
 
-function mynaptic.testConfig(name,contype,restart)
+function mynaptic.testConfig(name,contype,default,restart)
 if not(type(config[name]) == "string") then
-print("There is no config entry for "..name) 
-configstatus = false
+    config[name] = default
+    configstatus = false
 elseif contype == "bool" then
   if not(config[name] == "true" or config[name] == "false") then
-  print("The config entry for "..name.." is not true/false")
-  configstatus = false
+    table.insert(mynaptic.wrongconfig,mynaptic.configcou+1)
   end 
 elseif contype == "col" then
   if not(type(colors[config[name]]) == "number") then
-    print("There is no existing Colour in the config entry for "..name)
-    configstatus = false
+    table.insert(mynaptic.wrongconfig,mynaptic.configcou+1)
   end
 elseif contype == "key" then
   if type(keys[config[name]]) ~= "number" then
-    print("The config entry for "..name.." is not a key")
-    configstatus = false
+    table.insert(mynaptic.wrongconfig,mynaptic.configcou+1)
   end
 end
 local tmpta = {}
@@ -1096,6 +1163,7 @@ tmpta.contype = contype
 tmpta.name = name
 tmpta.con = config[name]
 tmpta.restart = restart
+tmpta.default = default
 table.insert(configed,tmpta)
 mynaptic.configcou = mynaptic.configcou + 1
 end
@@ -1136,151 +1204,97 @@ shelltext = ""
 configstatus = true
 updateta = {}
 mynaptic.configcou = 0
+mynaptic.wrongconfig = {}
 
 --Read Config
-if fs.exists("/etc/mynaptic") == true then
-confile = fs.open("/etc/mynaptic","r")
-local loop = true
-while loop == true do
-  text = confile.readLine()
-  if text == nil then
-    loop = nil
-  elseif not(text:find("#") == 1) then
-    head,cont = wilmaapi.splitString(text," ")
-    if type(head) == "string" then
-      config[head] = cont
+if fs.exists(mynaptic.ops.configPath or "/etc/mynaptic") then
+    local confile = io.open(mynaptic.ops.configPath or "/etc/mynaptic","r")
+    for sLinecon in confile:lines() do
+        if sLinecon:find("#") ~= 1 then
+            local head,cont = wilmaapi.splitString(sLinecon," ")
+            config[head] = cont
+        end
     end
-  end
-end
 else
-confile = fs.open("/etc/mynaptic","w")
-confile.writeLine("showVersion false")
-confile.writeLine("showRepository true")
-confile.writeLine("writeHistory true")
-confile.writeLine("sortAlphabetically false")
-confile.writeLine("loadPlugins true")
-confile.writeLine("showExitText true")
-confile.writeLine("showScrollArrows true")
-confile.writeLine("closeButtonRight false")
-confile.writeLine("showCursorBlink true")
-confile.writeLine("helpChatURL true")
-confile.writeLine("fetchUpdate false")
-confile.writeLine("pluginPath /usr/share/mynaptic/plugins")
-confile.writeLine("textColour black")
-confile.writeLine("backgroundColour gray")
-confile.writeLine("menubarColour blue")
-confile.writeLine("closeColour red")
-confile.writeLine("notinstaledColour white")
-confile.writeLine("instaledColour green")
-confile.writeLine("installColour orange")
-confile.writeLine("removeColour red")
-confile.writeLine("searchColour brown")
-confile.writeLine("bottomBarColour blue")
-confile.writeLine("menuBackgroundColour white")
-confile.writeLine("menuTextColour black")
-confile.writeLine("scrollUpKey up")
-confile.writeLine("scrollDownKey down")
-confile.writeLine("deleteKey backspace")
-confile.writeLine("debugKey rightAlt")
-confile.writeLine("shellSwitchKey leftCtrl")
-confile.writeLine("completeKey tab")
-confile.writeLine("shellRunKey enter")
-confile.writeLine("deleteAllKey delete")
-if minepackapi then
-  confile.writeLine("writeHistory false")
-  confile.writeLine("historyPath "..fs.combine(minepackapi.config.minepackDirectory,"log.txt"))
-  confile.writeLine("packmanPath /usr/bin/minepack.lua")
-else
-  confile.writeLine("writeHistory true")
-  confile.writeLine("historyPath /var/MynapticHistory.txt")
-  confile.writeLine("packmanPath /usr/bin/packman")
+    configstatus = false
 end
-confile.close()
-config["showVersion"] = "false"
-config["showRepository"] = "true"
-config["loadPlugins"] = "true"
-config["sortAlphabetically"] = "false"
-config["showExitText"] = "true"
-config.showScrollArrows = "true"
-config.closeButtonRight = "false"
-config.showCursorBlink = "true"
-config.helpChatURL = "true"
-config.fetchUpdate = "false"
-config["pluginPath"] = "/usr/share/mynaptic/plugins"
-config["packmanPath"] = "/usr/bin/packman"
-config["backgroundColour"] = "gray"
-config["menubarColour"] = "blue"
-config["closeColour"] = "red"
-config["notinstaledColour"] = "white"
-config["instaledColour"] = "green"
-config["installColour"] = "orange"
-config["removeColour"] = "red"
-config["textColour"] = "black"
-config["searchColour"] = "brown"
-config["bottomBarColour"] = "blue"
-config.menuBackgroundColour = "white"
-config.menuTextColour = "black"
-config["scrollUpKey"] = "up"
-config["scrollDownKey"] = "down"
-config["deleteKey"] = "backspace"
-config["debugKey"] = "rightAlt"
-config["shellSwitchKey"] = "leftCtrl"
-config["completeKey"] = "tab"
-config["shellRunKey"] = "enter"
-config.deleteAllKey = "delete"
-if minepackapi then
-  config["writeHistory"] = "false"
-  config["historyPath"] = fs.combine(minepackapi.config.minepackDirectory,"log.txt")
-  config["packmanPath"] = "/usr/bin/minepack.lua"
-else
-  config["writeHistory"] = "true"
-  config["historyPath"] = "/var/MynapticHistory.txt"
-  config["packmanPath"] = "/usr/bin/packman"
-end
+
+--Set Config from Commandline Arguments
+for k,v in pairs(config) do
+    if mynaptic.ops[k] ~= nil then
+        config[k] = mynaptic.ops[k]
+    end
 end
 
 term.setTextColor(colors.red)
-mynaptic.testConfig("showVersion","bool") 
-mynaptic.testConfig("showRepository","bool")
-mynaptic.testConfig("writeHistory","bool")
-mynaptic.testConfig("sortAlphabetically","bool",true)
-mynaptic.testConfig("loadPlugins","bool",true)
-mynaptic.testConfig("showExitText","bool")
-mynaptic.testConfig("showScrollArrows","bool")
-mynaptic.testConfig("closeButtonRight","bool")
-mynaptic.testConfig("showCursorBlink","bool")
-mynaptic.testConfig("pluginPath",nil,true)
-mynaptic.testConfig("helpChatURL","bool")
-mynaptic.testConfig("fetchUpdate","bool")
-mynaptic.testConfig("historyPath")
-mynaptic.testConfig("packmanPath")
-mynaptic.testConfig("backgroundColour","col")
-mynaptic.testConfig("menubarColour","col")
-mynaptic.testConfig("closeColour","col")
-mynaptic.testConfig("notinstaledColour","col")
-mynaptic.testConfig("instaledColour","col")
-mynaptic.testConfig("installColour","col")
-mynaptic.testConfig("removeColour","col")
-mynaptic.testConfig("textColour","col")
-mynaptic.testConfig("searchColour","col")
-mynaptic.testConfig("bottomBarColour","col")
-mynaptic.testConfig("menuBackgroundColour","col")
-mynaptic.testConfig("menuTextColour","col")
-mynaptic.testConfig("scrollUpKey","key")
-mynaptic.testConfig("scrollDownKey","key")
-mynaptic.testConfig("deleteKey","key")
-mynaptic.testConfig("debugKey","key")
-mynaptic.testConfig("shellSwitchKey","key")
-mynaptic.testConfig("completeKey","key")
-mynaptic.testConfig("shellRunKey","key")
-mynaptic.testConfig("deleteAllKey","key")
+mynaptic.testConfig("showVersion","bool","false") 
+mynaptic.testConfig("showRepository","bool","true")
+mynaptic.testConfig("sortAlphabetically","bool","false",true)
+mynaptic.testConfig("loadPlugins","bool","true",true)
+mynaptic.testConfig("showExitText","bool","true")
+mynaptic.testConfig("showScrollArrows","bool","true")
+mynaptic.testConfig("closeButtonRight","bool","false")
+mynaptic.testConfig("showCursorBlink","bool","true")
+mynaptic.testConfig("pluginPath",nil,"/usr/share/mynaptic/plugins",true)
+mynaptic.testConfig("helpChatURL","bool","true")
+mynaptic.testConfig("fetchUpdate","bool","false")
+mynaptic.testConfig("forcePocketMode","bool","false",true)
+mynaptic.testConfig("showHistoryColours","bool","true")
+if minepackapi then
+    mynaptic.testConfig("writeHistory","bool","false")
+    mynaptic.testConfig("historyPath",nil,fs.combine(minepackapi.config.minepackDirectory,"log.txt"))
+    mynaptic.testConfig("packmanPath",nil,"/usr/bin/minepack.lua")
+else
+    mynaptic.testConfig("writeHistory","bool","true")
+    mynaptic.testConfig("historyPath",nil,"/var/MynapticHistory.txt")
+    mynaptic.testConfig("packmanPath",nil,"/usr/bin/packman")
+end
+mynaptic.testConfig("multishellTitle",nil,"Mynaptic",true)
+mynaptic.testConfig("backgroundColour","col","gray")
+mynaptic.testConfig("menubarColour","col","blue")
+mynaptic.testConfig("closeColour","col","red")
+mynaptic.testConfig("notinstalledColour","col","white")
+mynaptic.testConfig("installedColour","col","green")
+mynaptic.testConfig("installColour","col","orange")
+mynaptic.testConfig("removeColour","col","red")
+mynaptic.testConfig("textColour","col","black")
+mynaptic.testConfig("searchColour","col","brown")
+mynaptic.testConfig("bottomBarColour","col","blue")
+mynaptic.testConfig("menuBackgroundColour","col","white")
+mynaptic.testConfig("menuTextColour","col","black")
+mynaptic.testConfig("historyInstalledColour","col","green")
+mynaptic.testConfig("historyRemovedColour","col","red")
+mynaptic.testConfig("scrollUpKey","key","up")
+mynaptic.testConfig("scrollDownKey","key","down")
+mynaptic.testConfig("deleteKey","key","backspace")
+mynaptic.testConfig("debugKey","key","rightAlt")
+mynaptic.testConfig("shellSwitchKey","key","leftCtrl")
+mynaptic.testConfig("completeKey","key","tab")
+mynaptic.testConfig("shellRunKey","key","enter")
+mynaptic.testConfig("deleteAllKey","key","delete")
 term.setTextColor(colors.white)
 
-
-if configstatus == false then
-print("There are problems with your config. Please read the Errors. If you haven't change the config, you can delete it by run 'rm /etc/mynaptic' and the the config will be rebuild by the next start.")
-mynaptic.deleteVars()
-return 4
+if #mynaptic.wrongconfig ~= 0 then
+    term.setBackgroundColor(colors.white)
+    term.setTextColor(colors.black)
+    term.clear()
+    term.setCursorPos(1,1)
+    print(lang.configerror)
+    print()
+    print(lang.keyContinue)
+    os.pullEvent("key")
+    configstatus = false
+    for k,v in ipairs(mynaptic.wrongconfig) do
+        if configed[v]["contype"] == "col" then
+            mynaptic.configColor(configed[v]["name"],configed[v]["restart"],configed[v]["default"])
+        elseif configed[v]["contype"] == "bool" then
+            mynaptic.configBool(configed[v]["name"],configed[v]["restart"],configed[v]["default"])
+        elseif configed[v]["contype"] == "key" then
+            mynaptic.configKey(configed[v]["name"],configed[v]["restart"],configed[v]["default"])
+        else
+            mynaptic.configNormal(configed[v]["name"],configed[v]["restart"],configed[v]["default"])
+        end
+    end
 end
 
 --[[
@@ -1291,9 +1305,21 @@ if fs.exists(config["packmanPath"]) == false then
 end
 --]]
 
+if not configstatus then
+    local file = fs.open(mynaptic.ops.configPath or "/etc/mynaptic","w")
+    for k,v in pairs(config) do
+        file.writeLine(k.." "..v)
+    end
+    file.close()
+end
+
+if multishell then
+    multishell.setTitle(multishell.getCurrent(),config.multishellTitle)
+end
+
 --Add Menuitems
 mynaptic.menubar = {}
-if pocket then
+if pocket or config.forcePocketMode == "true" then
   table.insert(mynaptic.menubar,{text = lang.menu,func = function() mynaptic.showMenulist() end})
 else
   table.insert(mynaptic.menubar,{text = lang.apply,func = function() mynaptic.doChanges() end})
