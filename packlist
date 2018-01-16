@@ -628,3 +628,15 @@ name = touch
   size = 302
   description = touch for Computercraft
 end
+
+name = charmap
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Programs/charmap.lua
+   filename = charmap.lua
+  category = programs
+  dependencies = none
+  target = /usr/bin
+  version = 1.0
+  size = 796
+  description = Show all aviable Chars in CC
+end
