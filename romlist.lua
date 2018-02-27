@@ -1183,4 +1183,7 @@ tFiles["1.8"]["programs/label.lua"] = "https://raw.githubusercontent.com/dan200/
 tFiles["1.8"]["programs/id.lua"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/programs/id.lua"
 tFiles["1.8"]["programs/shell.lua"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/programs/shell.lua"
 tFiles["1.8"]["programs/programs.lua"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/programs/programs.lua"
+tFiles["1.8"]["modules/command/.ignoreme"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/modules/command/.ignoreme"
+tFiles["1.8"]["modules/main/.ignoreme"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/modules/main/.ignoreme"
+tFiles["1.8"]["modules/turtle/.ignoreme"] = "https://raw.githubusercontent.com/dan200/ComputerCraft/master/src/main/resources/assets/computercraft/lua/rom/modules/turtle/.ignoreme"
 return tFiles
