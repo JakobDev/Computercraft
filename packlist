@@ -36,8 +36,8 @@ name = mynaptic
   category = packman mynaptic
   dependencies = wilma456/wilmaapi wilma456/clipboard
   target = /usr/bin
-  version = 11.0
-  size = 49495
+  version = 12.0
+  size = 52028
   description = A GUI for Packman
 end
 
@@ -639,4 +639,16 @@ name = charmap
   version = 1.0
   size = 796
   description = Show all aviable Chars in CC
+end
+
+name = mynaptic-minepackextra
+  type = raw
+   url = https://raw.githubusercontent.com/Wilma456/Computercraft/master/Other/mynaptic-minepackextra.lua
+   filename = minepackextra.lua
+  category = mynaptic
+  dependencies = wilma456/mynaptic
+  target = /usr/share/mynaptic/plugins
+  version = 1.0
+  size = 6962
+  description = A Plugin for Mynaptic, which adds some Functions for Minepack.
 end
