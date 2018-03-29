@@ -51,7 +51,7 @@ end
 
 mynaptic = {}
 
-mynaptic.version = "11.0"
+mynaptic.version = "12.0"
 
 --Get Options for Commandline
 mynaptic.ops = {}
@@ -76,6 +76,8 @@ end
 local screenw,screenh = term.getSize()
 mynaptic.screenw = screenw
 mynaptic.screenh = screenh
+
+mynaptic.isUpdateDone = {}
 
 --Write lang
 lang = {}
@@ -128,6 +130,11 @@ lang.history = "History"
 lang.clear = "Clear"
 lang.exitText = "Thank you for using Mynaptic!"
 lang.configerror = "There are Errors in the your Config. You now had to set some Entrys new"
+lang.updating = "Updating: "
+lang.noUpdates = "All Packages are up to date"
+lang.pluginError = "The following Errors hapens while loading Plugin \"{pluginName}\""
+lang.mynapticCrash = "It looks like Mynaptic had crashed. Sorry for that. Please report this Bug in the CC Forum."
+
 --Start Help
 local tmpta = {}
 
@@ -368,6 +375,29 @@ function mynaptic.showTextWindow(sText)
   end
 end
 
+function mynaptic.showErrorWindow(sText,sError)
+  while true do
+    term.setTextColor(colors[config.menuTextColour])
+    term.setBackgroundColor(colors[config.menuBackgroundColour])
+    term.clear()
+    term.setCursorPos(1,1)
+    print(sText)
+    term.setTextColor(colors[config.errorColour])
+    print(sError)
+    term.setTextColor(colors[config.menuTextColour])
+    term.setCursorPos(1,mynaptic.screenh)
+    term.setBackgroundColor(colors[config.bottomBarColour])
+    term.clearLine()
+    term.write(lang.ok)
+    local ev,me,x,y = os.pullEvent()
+    if ev == "mouse_click" and y == mynaptic.screenh then
+      return
+    elseif ev == "term_resize" then
+      mynaptic.screenw, mynaptic.screenh = term.getSize()
+    end
+  end
+end
+
 function mynaptic.setLineColor(text,arrow)
 if type(text) == "string" then
 term.clearLine()
@@ -524,7 +554,6 @@ while true do
     end
   end
 end
-io.output(mynaptic.iomute)
 term.setBackgroundColor(colors[config.menuBackgroundColour])
 term.clear()
 term.setCursorPos(1,1)
@@ -573,7 +602,6 @@ term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
 term.clear()
 term.setCursorPos(1,1)
-io.output(mynaptic.iodefault)
 shell.run(config.packmanPath.." fetch")
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
@@ -582,24 +610,62 @@ term.setCursorPos(1,1)
 mynaptic.drawMenu()
 end
 
-function mynaptic.updatemenu()
+function mynaptic.showUpdates(tUpdate)
+while true do
+  local w,h = term.getSize()
+  term.setBackgroundColor(colors[config.menuBackgroundColour])
+  term.setTextColor(colors[config.menuTextColour])
+  term.clear()
+  term.setCursorPos(1,1)
+  print(lang.updatePack)
+  for k,v in ipairs(tUpdate) do
+    print(v)
+  end
+  term.setBackgroundColor(colors[config.bottomBarColour])
+  term.setCursorPos(1,h)
+  term.clearLine()
+  term.write(lang.cancel)
+  term.setCursorPos(w-#lang.ok+1,h)
+  term.write(lang.ok)
+  local ev,me,x,y = os.pullEvent()
+  if y == mynaptic.screenh then
+      if x < #lang.cancel+1 then
+        return
+      elseif x > w-#lang.ok then
+        break
+      end
+  end
+end
 term.setBackgroundColor(colors[config.menuBackgroundColour])
-term.setTextColor(colors[config.menuTextColour])
 term.clear()
 term.setCursorPos(1,1)
-io.output(mynaptic.iodefault)
-if config.fetchUpdate == "true" and minepackapi then
-  shell.run(config.packmanPath.." fetch update")
-elseif config.fetchUpdate == "true" then
-  shell.run(config.packmanPath.." auto fetch update")
-elseif minepackapi then
-  shell.run(config.packmanPath.." update")
-else
-  shell.run(config.packmanPath.." auto update")
+local hisfile = fs.open(config.historyPath,"a")
+for k,v in ipairs(tUpdate) do
+  print(lang.updating..v)
+  mynaptic.packapi.list[v]:upgrade()
+  if config.writeHistory == "true" and not minepackapi then
+    hisfile.writeLine("Updated "..v)
+  end
 end
-print()
-print(lang.keyContinue)
-os.pullEvent("key")
+hisfile.close()
+end
+
+function mynaptic.updatemenu()
+local tUpdate = {}
+for k,v in pairs(mynaptic.packapi.installed) do
+  if k:find("/") ~= nil then
+    if mynaptic.packapi.installed[k]["version"] ~= mynaptic.packapi.list[k]["version"] and not mynaptic.isUpdateDone[k] then
+      write(k.." ")
+      table.insert(tUpdate,k)
+      mynaptic.isUpdateDone[k] = true
+    end
+  end
+end
+if #tUpdate == 0 then
+  mynaptic.showTextWindow(lang.noUpdates)
+else
+  mynaptic.showUpdates(tUpdate)
+end
 mynaptic.drawMenu()
 end
 
@@ -981,6 +1047,8 @@ while true do
           term.setTextColour( colors[config.historyInstalledColour] )
         elseif hiscon[hispos+i]:find("Removed") == 1 then
           term.setTextColour( colors[config.historyRemovedColour] )
+        elseif hiscon[hispos+i]:find("Updated") == 1 then
+          term.setTextColour( colors[config.historyUpdatedColour] )
         else
           term.setTextColour( colors[config.menuTextColour] )
         end
@@ -1240,6 +1308,8 @@ mynaptic.testConfig("helpChatURL","bool","true")
 mynaptic.testConfig("fetchUpdate","bool","false")
 mynaptic.testConfig("forcePocketMode","bool","false",true)
 mynaptic.testConfig("showHistoryColours","bool","true")
+mynaptic.testConfig("showPluginError","bool","true")
+mynaptic.testConfig("showCrashMessage","bool","true",true)
 if minepackapi then
     mynaptic.testConfig("writeHistory","bool","false")
     mynaptic.testConfig("historyPath",nil,fs.combine(minepackapi.config.minepackDirectory,"log.txt"))
@@ -1264,6 +1334,8 @@ mynaptic.testConfig("menuBackgroundColour","col","white")
 mynaptic.testConfig("menuTextColour","col","black")
 mynaptic.testConfig("historyInstalledColour","col","green")
 mynaptic.testConfig("historyRemovedColour","col","red")
+mynaptic.testConfig("historyUpdatedColour","col","orange")
+mynaptic.testConfig("errorColour","col","red")
 mynaptic.testConfig("scrollUpKey","key","up")
 mynaptic.testConfig("scrollDownKey","key","down")
 mynaptic.testConfig("deleteKey","key","backspace")
@@ -1339,9 +1411,6 @@ table.insert(mynaptic.menulist,{text = lang.history,func = function() mynaptic.h
 
 textta = {}
 packcou = 0
-mynaptic.iodefault = io.output()
-mynaptic.iomute = {write = function() end}
-io.output(mynaptic.iomute)
 --shell.run(config.packmanPath.." install")
 mynaptic.packapi.load()
 for name,con in pairs(mynaptic.packapi.list) do
@@ -1426,13 +1495,6 @@ while mainloop == true do
   if y == 1 then
     if (x == mynaptic.screenw and config.closeButtonRight == "false") or (x == 1 and config.closeButtonRight == "true") then
       mainloop = nil
-      term.setBackgroundColor(colors.black)
-      term.setTextColor(colors.white)
-      term.clear()
-      term.setCursorPos(1,1)
-      if config["showExitText"] == "true" then
-        print(lang.exitText)
-      end
     end
     local menupos = 0
     if config.closeButtonRight == "true" then
@@ -1613,6 +1675,7 @@ while mainloop == true do
         end
         shelltext = ""
         if type(shellcom[runstr]) == "function" then
+          term.setCursorBlink(false)
           shellcom[runstr](runargs)
         else
           term.setCursorPos(1,screenh)
@@ -1626,29 +1689,43 @@ end
 end
 
 --Load Plugins
-local plugintest
 if config["loadPlugins"] == "true" then
   if fs.isDir(config.pluginPath) == true then
     local pluginlist = fs.list(config.pluginPath)
     for _,plugname in ipairs(pluginlist) do
-      if shell.run(config.pluginPath.."/"..plugname) == false then
-        plugintest = false
+      local fnPlugin,err  = loadfile(config.pluginPath.."/"..plugname)
+      if not fnPlugin then
+        if config.showPluginError == "true" then
+          mynaptic.showErrorWindow(lang.pluginError:gsub("{pluginName}",plugname),err)
+        end
+      else
+        setfenv(fnPlugin,getfenv())
+        local ok,err = pcall(fnPlugin)
+        if not ok and config.showPluginError == "true" then
+          mynaptic.showErrorWindow(lang.pluginError:gsub("{pluginName}",plugname),err)
+        end
       end
-      --shell.run(config.pluginPath.."/"..plugname)
     end
   end
 end
 
-if plugintest == false then
-  print(lang.keyContinue)
-  os.pullEvent("key")
-end
-
 mynaptic.drawMenu()
-mynaptic.mainMenu()
-io.output(mynaptic.iodefault)
+if config.showCrashMessage == "true" then
+  local ok,err = pcall(mynaptic.mainMenu)
+  if not ok then
+    mynaptic.showErrorWindow(lang.mynapticCrash,err)
+  end
+else
+  mynaptic.mainMenu()
+end
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.clear()
+term.setCursorPos(1,1)
+if config["showExitText"] == "true" then
+  print(lang.exitText)
+end
 mynaptic.deleteVars()
 
 return 0
---Thanks for using this Programm and reading the
---source code
+--Thanks for using this Programm and reading the source code
