@@ -600,8 +600,8 @@ name = virtualos
   category = programs
   dependencies = none
   target = /usr/bin
-  version = 4.0
-  size = 11831
+  version = 4.2
+  size = 12096
   description = Run CraftOS in a virtual Machine
 end
 
