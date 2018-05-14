@@ -294,7 +294,6 @@ tEnv.loadstring = loadstring
 tEnv.setfenv = setfenv
 tEnv.pairs = pairs
 tEnv.rawset = rawset
-tEnv.getfenv = getfenv
 tEnv.pcall = pcall
 tEnv.xpcall = xpcall
 tEnv.tostring = tostring
@@ -334,12 +333,25 @@ end
 if ops.diskapi then
     tEnv.disk = tablecopy(disk)
 end
-tEnv._HOST = ops.host or "VirtualOS 4.1"
+tEnv._HOST = ops.host or "VirtualOS 4.2"
 tEnv._CC_VERSION = ops.ccversion
 tEnv._MC_VERSION = ops.mcversion
 tEnv._VERSION = _VERSION
 tEnv._CC_DEFAULT_SETTINGS = ops.settings or ""
 tEnv._G = tEnv
+
+function tEnv.getfenv(arg)
+    local tGetEnv = getfenv(arg)
+    if type(tGetEnv._HOST) == "string" then
+        if tGetEnv._HOST:find("ComputerCraft") == 1 then
+            return getfenv()
+        else
+            return tGetEnv
+        end
+    else
+        return tGetEnv
+    end
+end
 
 local file = fs.open(sBiosPath,"r")
 if not file then
